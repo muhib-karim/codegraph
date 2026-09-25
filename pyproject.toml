@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "codegraph"
+version = "0.1.0"
+description = "Codebase knowledge graph CLI: callers, inherits, dead-code and blast radius with file:line citations"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+dependencies = [
+  "tree-sitter>=0.23",
+  "tree-sitter-python>=0.23",
+  "tree-sitter-java>=0.23",
+  "ladybug>=0.20",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.scripts]
+codegraph = "codegraph.cli:main"
+
+[tool.setuptools]
+packages = ["codegraph"]

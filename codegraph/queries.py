@@ -24,7 +24,7 @@ def resolve_symbol(conn, query: str, in_file: str = "", allow_external: bool = F
     base = f"MATCH (s:Symbol) WHERE s.kind IN $kinds "
     tries = []
     if "::" in query:
-        tries.append((base + "AND (s.id = $q OR s.id STARTS WITH $q + '/' OR s.id STARTS WITH $q + '@')", {"q": query}))
+        tries.append((base + "AND (s.id = $q OR s.id STARTS WITH ($q + '/') OR s.id STARTS WITH ($q + '@'))", {"q": query}))
     else:
         tries.append((base + "AND s.qualname = $q", {"q": query}))
         if "." in query:

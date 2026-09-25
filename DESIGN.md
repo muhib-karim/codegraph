@@ -175,3 +175,7 @@ fields by command: callers/blast add `edge` (call|ref|inherits), `target`
   flags documented; explicit limit line for string/data-contract coupling and
   shell invocations; NULL/edge notes for query writers.
 - 2026-09-25 14:58 AEST: section 6 (open convention items) added.
+
+## 8. Explorer visual layer (v0.2 proposal)
+
+The local web explorer is specified in [docs/DESIGN-v0.2-explorer.md](docs/DESIGN-v0.2-explorer.md). This proposal does not change the v0.1 CLI, graph schema, or eval contract.

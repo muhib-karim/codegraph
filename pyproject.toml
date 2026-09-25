@@ -24,3 +24,6 @@ codegraph = "codegraph.cli:main"
 
 [tool.setuptools]
 packages = ["codegraph"]
+
+[tool.setuptools.package-data]
+codegraph = ["web/*.html", "web/*.css", "web/*.js"]

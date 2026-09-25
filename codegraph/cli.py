@@ -145,7 +145,20 @@ def main(argv=None):
     p.add_argument("--repo")
     p.add_argument("--json", action="store_true")
 
+    p = sub.add_parser("explore", help="serve the read-only graph explorer on loopback")
+    p.add_argument("--repo", help="repo root whose graph to view")
+    p.add_argument("--db", help="graph path")
+    p.add_argument("--port", type=int, default=8765)
+
     args = ap.parse_args(argv)
+    if args.cmd == "explore":
+        from .explorer_server import serve
+        try:
+            serve(find_db(args), args.port)
+        except (FileNotFoundError, ValueError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        return 0
     if args.cmd == "index":
         return cmd_index(args)
     if args.cmd == "callers":

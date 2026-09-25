@@ -10,6 +10,7 @@ codegraph callers parse_const_string --repo path/to/repo
 codegraph inherits Shape --repo path/to/repo
 codegraph dead-code --repo path/to/repo --confidence likely
 codegraph blast rename/axml_pool.py --repo path/to/repo --depth 2 --json
+codegraph explore --repo path/to/repo --port 8765  # local read-only viewer
 ```
 
 v0.1 parses Python and Java. Other files are recorded but not parsed (no
@@ -17,6 +18,8 @@ Kotlin, Shell or Smali yet), and there are no cross-language edges. See
 [DESIGN.md](DESIGN.md) for the pipeline, schema, output contract and limits.
 
 `eval/codegraph_adapter.py` plugs the CLI into the codegraph eval harness.
+
+Explorer (v0.2 preview): local loopback UI over the indexed snapshot. It needs an existing graph, never reindexes while running, and shows coverage/staleness notices. Stop it before reindexing. See [explorer design and limits](docs/DESIGN-v0.2-explorer.md).
 
 License: MIT. Clean-room implementation; no third-party code-graph source was
 used.

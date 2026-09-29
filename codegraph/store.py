@@ -1,4 +1,5 @@
 """Stage 3: write the resolved graph into LadybugDB (bulk COPY from CSV)."""
+
 from __future__ import annotations
 
 import csv
@@ -6,6 +7,7 @@ import json
 import os
 import shutil
 import tempfile
+from typing import Any
 
 import ladybug as lb
 
@@ -42,6 +44,7 @@ def write(graph, db_path: str, meta: dict):
     os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
     tmp = tempfile.mkdtemp(prefix="codegraph-")
     try:
+
         def dump(name, rows, header=None):
             p = os.path.join(tmp, name + ".csv")
             with open(p, "w", newline="", encoding="utf-8") as f:
@@ -51,11 +54,34 @@ def write(graph, db_path: str, meta: dict):
                 w.writerows(rows)
             return p
 
-        files = [(fi.path, fi.lang, fi.loc, _b(fi.parsed), fi.package) for fi in graph.files.values()]
-        syms = [(s.id, s.name, s.qualname, s.kind, s.lang, s.file, s.line, s.end_line, s.arity_min, s.arity_max,
-                 s.visibility, _b(s.is_static), ",".join(s.annotations), s.parent_id or "", s.entry_reason)
-                for s in graph.symbols.values()]
-        defines = [(s.file, s.id) for s in graph.symbols.values() if s.file and s.kind != "module" or (s.kind == "module")]
+        files = [
+            (fi.path, fi.lang, fi.loc, _b(fi.parsed), fi.package) for fi in graph.files.values()
+        ]
+        syms = [
+            (
+                s.id,
+                s.name,
+                s.qualname,
+                s.kind,
+                s.lang,
+                s.file,
+                s.line,
+                s.end_line,
+                s.arity_min,
+                s.arity_max,
+                s.visibility,
+                _b(s.is_static),
+                ",".join(s.annotations),
+                s.parent_id or "",
+                s.entry_reason,
+            )
+            for s in graph.symbols.values()
+        ]
+        defines = [
+            (s.file, s.id)
+            for s in graph.symbols.values()
+            if s.file and s.kind != "module" or (s.kind == "module")
+        ]
         defines = [(f, i) for f, i in defines if f]
         contains = [(s.parent_id, s.id) for s in graph.symbols.values() if s.parent_id]
         calls = [(e.src, e.dst, e.file, e.line, e.col, e.confidence, e.reason) for e in graph.calls]
@@ -65,13 +91,21 @@ def write(graph, db_path: str, meta: dict):
         meta_rows = [(k, v if isinstance(v, str) else json.dumps(v)) for k, v in meta.items()]
         meta_rows += [("schema_version", str(SCHEMA_VERSION)), ("codegraph_version", __version__)]
 
-        db = lb.Database(db_path)
+        db = lb.Database(db_path, buffer_pool_size=64 * 1024 * 1024, max_num_threads=2)
         conn = lb.Connection(db)
         for stmt in DDL:
             conn.execute(stmt)
-        for table, rows in (("File", files), ("Symbol", syms), ("Meta", meta_rows), ("DEFINES", defines),
-                            ("CONTAINS", contains), ("CALLS", calls), ("REFERENCES", refs),
-                            ("INHERITS", inh), ("IMPORTS", imps)):
+        for table, rows in (
+            ("File", files),
+            ("Symbol", syms),
+            ("Meta", meta_rows),
+            ("DEFINES", defines),
+            ("CONTAINS", contains),
+            ("CALLS", calls),
+            ("REFERENCES", refs),
+            ("INHERITS", inh),
+            ("IMPORTS", imps),
+        ):
             if rows:
                 p = dump(table, rows)
                 conn.execute(f"COPY {table} FROM '{p}' (HEADER=false)")
@@ -81,8 +115,10 @@ def write(graph, db_path: str, meta: dict):
         shutil.rmtree(tmp, ignore_errors=True)
 
 
-def connect(db_path: str, read_only: bool = True):
+def connect(db_path: str, read_only: bool = True) -> tuple[Any, Any]:
     if not os.path.exists(db_path):
         raise FileNotFoundError(db_path)
-    db = lb.Database(db_path, read_only=read_only)
+    db = lb.Database(
+        db_path, read_only=read_only, buffer_pool_size=64 * 1024 * 1024, max_num_threads=2
+    )
     return db, lb.Connection(db)

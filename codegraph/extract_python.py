@@ -1,4 +1,5 @@
 """Pass 1 for Python: definitions, imports, bases, call sites, references, type facts."""
+
 from __future__ import annotations
 
 import tree_sitter_python as tsp
@@ -11,9 +12,19 @@ PY = Language(tsp.language())
 
 # Parent node types in which a bare identifier is a value use (a reference).
 _VALUE_PARENTS = {
-    "argument_list", "list", "tuple", "set", "pair", "return_statement",
-    "expression_list", "conditional_expression", "boolean_operator", "lambda",
-    "parenthesized_expression", "subscript", "yield",
+    "argument_list",
+    "list",
+    "tuple",
+    "set",
+    "pair",
+    "return_statement",
+    "expression_list",
+    "conditional_expression",
+    "boolean_operator",
+    "lambda",
+    "parenthesized_expression",
+    "subscript",
+    "yield",
 }
 
 
@@ -27,7 +38,9 @@ def _params(params_node, is_method: bool, is_static: bool):
     for p in params_node.named_children:
         t = p.type
         s = text(p)
-        if t in ("list_splat_pattern",) or (t in ("typed_parameter",) and s.startswith("*") and not s.startswith("**")):
+        if t in ("list_splat_pattern",) or (
+            t in ("typed_parameter",) and s.startswith("*") and not s.startswith("**")
+        ):
             unbounded = True
             continue
         if t == "dictionary_splat_pattern" or s.startswith("**"):
@@ -106,15 +119,32 @@ def extract(path: str, src: bytes) -> FileInfo:
             name = text(left)
             if scope.kind == "module" and assign_node is not None:
                 if name not in module_vars:
-                    sym = Symbol(id=ids.make(path, name, None, line(left)), name=name, qualname=name,
-                                 kind="variable", lang="python", file=path, line=line(left),
-                                 end_line=end_line(assign_node), visibility=_vis(name), parent_id=scope.id)
+                    sym = Symbol(
+                        id=ids.make(path, name, None, line(left)),
+                        name=name,
+                        qualname=name,
+                        kind="variable",
+                        lang="python",
+                        file=path,
+                        line=line(left),
+                        end_line=end_line(assign_node),
+                        visibility=_vis(name),
+                        parent_id=scope.id,
+                    )
                     fi.symbols.append(sym)
                     module_vars[name] = sym
             else:
                 _bind_local(scope, name)
             return
-        if left.type in ("pattern_list", "tuple_pattern", "list_pattern", "tuple", "list", "list_splat_pattern", "parenthesized_expression"):
+        if left.type in (
+            "pattern_list",
+            "tuple_pattern",
+            "list_pattern",
+            "tuple",
+            "list",
+            "list_splat_pattern",
+            "parenthesized_expression",
+        ):
             for c in left.named_children:
                 bind_targets(c, scope, qual, assign_node)
             return
@@ -123,7 +153,11 @@ def extract(path: str, src: bytes) -> FileInfo:
     def visit(node, scope: Symbol, qual: str, decorators=()):
         t = node.type
         if t == "decorated_definition":
-            decs = [text(d).lstrip("@").split("(")[0].strip() for d in node.named_children if d.type == "decorator"]
+            decs = [
+                text(d).lstrip("@").split("(")[0].strip()
+                for d in node.named_children
+                if d.type == "decorator"
+            ]
             for d in node.named_children:
                 if d.type == "decorator":
                     visit(d, scope, qual)
@@ -134,9 +168,19 @@ def extract(path: str, src: bytes) -> FileInfo:
         if t == "class_definition":
             name = text(node.child_by_field_name("name"))
             qn = f"{qual}.{name}" if qual else name
-            sym = Symbol(id=ids.make(path, qn, None, line(node)), name=name, qualname=qn, kind="class",
-                         lang="python", file=path, line=line(node), end_line=end_line(node),
-                         visibility=_vis(name), annotations=list(decorators), parent_id=scope.id)
+            sym = Symbol(
+                id=ids.make(path, qn, None, line(node)),
+                name=name,
+                qualname=qn,
+                kind="class",
+                lang="python",
+                file=path,
+                line=line(node),
+                end_line=end_line(node),
+                visibility=_vis(name),
+                annotations=list(decorators),
+                parent_id=scope.id,
+            )
             fi.symbols.append(sym)
             sup = node.child_by_field_name("superclasses")
             if sup is not None:
@@ -159,16 +203,35 @@ def extract(path: str, src: bytes) -> FileInfo:
             is_static = "staticmethod" in decorators
             amin, amax = _params(node.child_by_field_name("parameters"), is_method, is_static)
             kind = "method" if is_method else "function"
-            sym = Symbol(id=ids.make(path, qn, amin, line(node)), name=name, qualname=qn, kind=kind,
-                         lang="python", file=path, line=line(node), end_line=end_line(node),
-                         arity_min=amin, arity_max=amax, visibility=_vis(name), is_static=is_static,
-                         annotations=list(decorators), parent_id=scope.id)
+            sym = Symbol(
+                id=ids.make(path, qn, amin, line(node)),
+                name=name,
+                qualname=qn,
+                kind=kind,
+                lang="python",
+                file=path,
+                line=line(node),
+                end_line=end_line(node),
+                arity_min=amin,
+                arity_max=amax,
+                visibility=_vis(name),
+                is_static=is_static,
+                annotations=list(decorators),
+                parent_id=scope.id,
+            )
             fi.symbols.append(sym)
             params = node.child_by_field_name("parameters")
             loc_names = fi.locals.setdefault(sym.id, set())
             if params is not None:
                 for p in params.named_children:
-                    nm = p if p.type == "identifier" else (p.child_by_field_name("name") or next((c for c in p.named_children if c.type == "identifier"), None))
+                    nm = (
+                        p
+                        if p.type == "identifier"
+                        else (
+                            p.child_by_field_name("name")
+                            or next((c for c in p.named_children if c.type == "identifier"), None)
+                        )
+                    )
                     if nm is not None:
                         loc_names.add(text(nm))
                     for c in p.named_children:
@@ -184,8 +247,14 @@ def extract(path: str, src: bytes) -> FileInfo:
                 if n.type == "dotted_name":
                     fi.imports.append(Import(line=line(node), module=text(n), kind="module"))
                 elif n.type == "aliased_import":
-                    fi.imports.append(Import(line=line(node), module=text(n.child_by_field_name("name")),
-                                             alias=text(n.child_by_field_name("alias")), kind="module"))
+                    fi.imports.append(
+                        Import(
+                            line=line(node),
+                            module=text(n.child_by_field_name("name")),
+                            alias=text(n.child_by_field_name("alias")),
+                            kind="module",
+                        )
+                    )
             return
         if t == "import_from_statement":
             modn = node.child_by_field_name("module_name")
@@ -195,11 +264,19 @@ def extract(path: str, src: bytes) -> FileInfo:
                 fi.imports.append(Import(line=line(node), module=modtxt, kind="star"))
             for n in node.children_by_field_name("name"):
                 if n.type == "dotted_name":
-                    fi.imports.append(Import(line=line(node), module=modtxt, name=text(n), kind="from"))
+                    fi.imports.append(
+                        Import(line=line(node), module=modtxt, name=text(n), kind="from")
+                    )
                 elif n.type == "aliased_import":
-                    fi.imports.append(Import(line=line(node), module=modtxt,
-                                             name=text(n.child_by_field_name("name")),
-                                             alias=text(n.child_by_field_name("alias")), kind="from"))
+                    fi.imports.append(
+                        Import(
+                            line=line(node),
+                            module=modtxt,
+                            name=text(n.child_by_field_name("name")),
+                            alias=text(n.child_by_field_name("alias")),
+                            kind="from",
+                        )
+                    )
             return
         if t == "if_statement" and scope.kind == "module":
             cond = text(node.child_by_field_name("condition")).replace("'", '"').replace(" ", "")
@@ -209,7 +286,11 @@ def extract(path: str, src: bytes) -> FileInfo:
             fn = node.child_by_field_name("function")
             argc, splat = _argc(node.child_by_field_name("arguments"))
             if fn is not None and fn.type == "identifier":
-                fi.calls.append(CallSite(scope.id, line(node), node.start_point[1], text(fn), "none", "", argc, splat))
+                fi.calls.append(
+                    CallSite(
+                        scope.id, line(node), node.start_point[1], text(fn), "none", "", argc, splat
+                    )
+                )
             elif fn is not None and fn.type == "attribute":
                 obj = fn.child_by_field_name("object")
                 attr = text(fn.child_by_field_name("attribute"))
@@ -220,15 +301,27 @@ def extract(path: str, src: bytes) -> FileInfo:
                 elif obj.type == "identifier":
                     rk, rv = "name", text(obj)
                     fi.refs.append(Ref(scope.id, line(obj), obj.start_point[1], rv, "recv"))
-                elif obj.type == "attribute" and text(obj.child_by_field_name("object")) in ("self", "cls"):
+                elif obj.type == "attribute" and text(obj.child_by_field_name("object")) in (
+                    "self",
+                    "cls",
+                ):
                     rk, rv = "attr_self", text(obj.child_by_field_name("attribute"))
                 elif obj.type == "attribute":
                     rk, rv = "dotted", text(obj).replace(" ", "")
                 else:
                     rk, rv = "expr", ""
-                fi.calls.append(CallSite(scope.id, line(fn.child_by_field_name("attribute")),
-                                         fn.child_by_field_name("attribute").start_point[1],
-                                         attr, rk, rv, argc, splat))
+                fi.calls.append(
+                    CallSite(
+                        scope.id,
+                        line(fn.child_by_field_name("attribute")),
+                        fn.child_by_field_name("attribute").start_point[1],
+                        attr,
+                        rk,
+                        rv,
+                        argc,
+                        splat,
+                    )
+                )
                 if rk in ("expr", "dotted", "attr_self"):
                     visit(obj, scope, qual)
             elif fn is not None:
@@ -241,16 +334,26 @@ def extract(path: str, src: bytes) -> FileInfo:
         if t in ("assignment", "augmented_assignment"):
             left = node.child_by_field_name("left")
             right = node.child_by_field_name("right")
-            if t == "assignment" and right is not None and right.type == "call" and left is not None:
+            if (
+                t == "assignment"
+                and right is not None
+                and right.type == "call"
+                and left is not None
+            ):
                 fn = right.child_by_field_name("function")
                 if fn is not None and fn.type in ("identifier", "attribute"):
                     tname = text(fn).replace(" ", "")
                     if left.type == "identifier":
                         fi.var_types.setdefault(scope.id, {})[text(left)] = tname
-                    elif left.type == "attribute" and text(left.child_by_field_name("object")) == "self":
+                    elif (
+                        left.type == "attribute"
+                        and text(left.child_by_field_name("object")) == "self"
+                    ):
                         cls_id = scope.parent_id if scope.kind == "method" else None
                         if cls_id:
-                            fi.var_types.setdefault(cls_id, {})[text(left.child_by_field_name("attribute"))] = tname
+                            fi.var_types.setdefault(cls_id, {})[
+                                text(left.child_by_field_name("attribute"))
+                            ] = tname
             if t == "assignment" and left is not None:
                 bind_targets(left, scope, qual, node)
             elif left is not None and left.type != "identifier":
@@ -310,7 +413,12 @@ def extract(path: str, src: bytes) -> FileInfo:
         if t == "attribute":
             obj = node.child_by_field_name("object")
             par = node.parent
-            if obj is not None and text(obj) in ("self", "cls") and par is not None and par.type in _VALUE_PARENTS | {"keyword_argument"}:
+            if (
+                obj is not None
+                and text(obj) in ("self", "cls")
+                and par is not None
+                and par.type in _VALUE_PARENTS | {"keyword_argument"}
+            ):
                 a = node.child_by_field_name("attribute")
                 fi.refs.append(Ref(scope.id, line(a), a.start_point[1], text(a), "self"))
                 return

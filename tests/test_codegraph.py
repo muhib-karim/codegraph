@@ -12,8 +12,12 @@ MINI = os.path.join(HERE, "fixtures", "mini")
 
 
 def cg(*args, db):
-    p = subprocess.run([sys.executable, "-m", "codegraph", *args, "--db", db, "--json"], capture_output=True,
-                       text=True, cwd=ROOT)
+    p = subprocess.run(
+        [sys.executable, "-m", "codegraph", *args, "--db", db, "--json"],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
     assert p.returncode in (0, 2), p.stderr
     return json.loads(p.stdout)
 
@@ -22,8 +26,12 @@ def cg(*args, db):
 def db():
     d = tempfile.mkdtemp()
     path = os.path.join(d, "g.lbug")
-    subprocess.run([sys.executable, "-m", "codegraph", "index", MINI, "--db", path], check=True, cwd=ROOT,
-                   capture_output=True)
+    subprocess.run(
+        [sys.executable, "-m", "codegraph", "index", MINI, "--db", path],
+        check=True,
+        cwd=ROOT,
+        capture_output=True,
+    )
     return path
 
 
@@ -91,6 +99,10 @@ def test_blast(db):
 
 
 def test_not_found_exit_code(db):
-    p = subprocess.run([sys.executable, "-m", "codegraph", "callers", "nope_zzz", "--db", db, "--json"],
-                       capture_output=True, text=True, cwd=ROOT)
+    p = subprocess.run(
+        [sys.executable, "-m", "codegraph", "callers", "nope_zzz", "--db", db, "--json"],
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
     assert p.returncode == 2 and "error" in json.loads(p.stdout)

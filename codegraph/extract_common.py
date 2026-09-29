@@ -1,4 +1,5 @@
 """Helpers shared by the per-language extractors."""
+
 from __future__ import annotations
 
 from .model import Symbol
@@ -38,5 +39,13 @@ class IdAllocator:
 
 
 def module_symbol(ids: IdAllocator, path: str, lang: str, loc: int, name: str) -> Symbol:
-    return Symbol(id=ids.make(path, "<module>"), name=name, qualname="<module>", kind="module",
-                  lang=lang, file=path, line=1, end_line=max(loc, 1))
+    return Symbol(
+        id=ids.make(path, "<module>"),
+        name=name,
+        qualname="<module>",
+        kind="module",
+        lang=lang,
+        file=path,
+        line=1,
+        end_line=max(loc, 1),
+    )

@@ -1,4 +1,5 @@
 """Plain data records produced by pass 1 and consumed by pass 2."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -26,39 +27,39 @@ class Symbol:
 
 @dataclass
 class CallSite:
-    caller: str            # Symbol id of enclosing scope
+    caller: str  # Symbol id of enclosing scope
     line: int
     col: int
-    name: str              # callee simple name ("<init>" for constructors via new)
-    recv_kind: str         # none | self | super | name | attr_self | expr | new | ctor_this | ctor_super
-    recv: str = ""         # receiver identifier / type text
+    name: str  # callee simple name ("<init>" for constructors via new)
+    recv_kind: str  # none | self | super | name | attr_self | expr | new | ctor_this | ctor_super
+    recv: str = ""  # receiver identifier / type text
     argc: int = 0
     splat: bool = False
 
 
 @dataclass
 class Ref:
-    owner: str             # Symbol id of enclosing scope
+    owner: str  # Symbol id of enclosing scope
     line: int
     col: int
     name: str
-    recv_kind: str = "none"   # none | self | type (Java Type::m) | this | super
+    recv_kind: str = "none"  # none | self | type (Java Type::m) | this | super
     recv: str = ""
 
 
 @dataclass
 class Import:
     line: int
-    module: str            # python: dotted module (with leading dots if relative); java: full name
-    name: str = ""         # python from-import name; "" for plain import
+    module: str  # python: dotted module (with leading dots if relative); java: full name
+    name: str = ""  # python from-import name; "" for plain import
     alias: str = ""
-    kind: str = "module"   # module | from | star | java | java_star | java_static | java_static_star
+    kind: str = "module"  # module | from | star | java | java_star | java_static | java_static_star
 
 
 @dataclass
 class BaseDecl:
-    cls: str               # Symbol id
-    text: str              # base expression text (generics stripped)
+    cls: str  # Symbol id
+    text: str  # base expression text (generics stripped)
     line: int
     kind: str = "extends"  # extends | implements
 
@@ -69,6 +70,7 @@ class FileInfo:
     lang: str
     loc: int
     parsed: bool
+    content_hash: str = ""
     package: str = ""
     symbols: list = field(default_factory=list)
     calls: list = field(default_factory=list)

@@ -1,0 +1,55 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: python -m venv .venv
+      - run: .venv/bin/pip install -e '.[dev,mcp]'
+      - run: make lint typecheck test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python }}
+          path: coverage.xml
+  evaluation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install .
+      - run: codegraph eval
+      - run: git diff --exit-code -- eval/reports
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retrieval-evaluation
+          path: eval/reports/
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t codegraph:1.0.0 .
+      - name: Non-root index and query smoke test
+        run: |
+          docker run --rm --entrypoint sh -v "$PWD/tests/fixtures/mini:/fixture:ro" codegraph:1.0.0 -ec '
+            test "$(id -u)" != 0
+            cp -r /fixture /tmp/repo
+            codegraph index /tmp/repo
+            codegraph callers make --repo /tmp/repo --json > /tmp/result.json
+            python -c "import json; r=json.load(open(\"/tmp/result.json\")); assert [x[\"citation\"] for x in r[\"results\"]] == [\"app.py:6\", \"app.py:10\"]"
+            python -c "from codegraph.mcp_server import create_server; s=create_server(\"/tmp/repo/.codegraph/graph.lbug\"); assert s.name == \"codegraph\""
+          '

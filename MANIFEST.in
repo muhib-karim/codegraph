@@ -1,0 +1,7 @@
+include LICENSE README.md DESIGN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md Makefile Dockerfile
+recursive-include docs *.md
+recursive-include eval *.md *.json *.jsonl
+recursive-include tests *.py *.java
+recursive-exclude tests *.pyc *.lbug *.wal *.shadow
+prune tests/fixtures/mini/.codegraph
+prune tests/fixtures/workflow/.codegraph

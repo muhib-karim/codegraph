@@ -1,29 +1,60 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "codegraph"
-version = "0.1.0"
-description = "Codebase knowledge graph CLI: callers, inherits, dead-code and blast radius with file:line citations"
+version = "1.0.0"
+description = "Code graph queries with file:line evidence, a local explorer, and MCP tools"
 readme = "README.md"
-license = {text = "MIT"}
-requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
 dependencies = [
-  "tree-sitter>=0.23",
-  "tree-sitter-python>=0.23",
-  "tree-sitter-java>=0.23",
-  "ladybug>=0.20",
+  "tree-sitter>=0.23,<0.26",
+  "tree-sitter-python>=0.23,<0.26",
+  "tree-sitter-java>=0.23,<0.24",
+  "ladybug>=0.20,<0.21",
 ]
 
 [project.optional-dependencies]
-test = ["pytest"]
+mcp = ["mcp>=1.26,<2"]
+browser = ["playwright>=1.49,<2"]
+dev = ["pytest>=8", "pytest-cov>=7", "ruff>=0.12", "mypy>=1.15", "coverage>=7.10"]
 
 [project.scripts]
 codegraph = "codegraph.cli:main"
 
-[tool.setuptools]
-packages = ["codegraph"]
+[tool.setuptools.packages.find]
+include = ["codegraph*"]
 
 [tool.setuptools.package-data]
 codegraph = ["web/*.html", "web/*.css", "web/*.js"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["tests/fixtures"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["codegraph/service.py", "codegraph/mcp_server.py", "codegraph/evaluation.py"]
+strict = true
+follow_imports = "silent"
+
+[[tool.mypy.overrides]]
+module = ["ladybug.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=codegraph --cov-report=term-missing --cov-report=xml --cov-fail-under=85"
+
+[tool.coverage.run]
+source = ["codegraph"]
+patch = ["subprocess"]
+
+[tool.coverage.report]
+show_missing = true

@@ -1,0 +1,3991 @@
+{
+  "schema_version": 1,
+  "codegraph_version": "1.0.0",
+  "command": "codegraph eval",
+  "questions": 50,
+  "k": 5,
+  "questions_sha256": "4a27330ebf72d3c336b182e61874a0ea3d8dcce94b8ab51e5cc04aaf68c9c987",
+  "fixture_hashes": {
+    "mini": {
+      "app.py": "ef00c48a8a40937c03ad704c62178bce37bfd3ced16081125580c87aaa83f339",
+      "decoys.py": "53dd9d4437486890975e4edb7762f6c2f3e2ed40cece7a58973213a424ce2701",
+      "pkg/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "pkg/shapes.py": "c505fdf59753710c43e16fc2ca1586e94a6c1f5d128a3bfe2e1d8a314e791164",
+      "src/demo/Animal.java": "8a2011c75d3714d545a1dee575c167cf698631b2b701e303ca27e1887719c07e",
+      "src/demo/Dog.java": "acf009ee4add5733397d81854e004c443f6a647f37d72421ca2ca8bbf7832986"
+    },
+    "workflow": {
+      "main.py": "9e0c77b42531d5c9526bacedc3512b9fc916f04111c1cb29c7ca98b5e19dd502",
+      "orders/__init__.py": "1412304efb4c8e15620ca1901887ac6e9b5a0a398ae10c57b7ecc4eadc1ff508",
+      "orders/decoys.py": "74448855a543d9ead9ccbf9ed1a4e6fdc2248c1f25b3af7c0c4e570f43e1cbb7",
+      "orders/pricing.py": "0171a255a13024085939f8e06f3620ba368873d4d3f2ab798aa78f9ba0c69596",
+      "orders/service.py": "1b74ae27b7e08a02ef894454508cc815d9033b824f1e7b90aae4ddb1be759d87",
+      "orders/sinks.py": "1aaa159cab70dad57e8faf0f1bb32afbc897f1a702d9701695bf0e79f887f600",
+      "src/flow/BaseProcessor.java": "69380d066ddbecc730ecd96aa1f4366f492e3bf24e9f9b300796b07de6c0c2b8",
+      "src/flow/CardProcessor.java": "a69dd57ec6e9f5c72a5239150a1686d6f80b47ad3297c3a21e24a0e481b005c2",
+      "src/flow/Decoy.java": "ba84ed1d7767d930ac381d3517f3f38a6d172c977309bbf869f55fb2f27fd8ff",
+      "src/flow/Processor.java": "af71666dfc04c7cf37a0948a8310a4885bf44b6c4d3ab8531672324c56a1d8da",
+      "src/flow/Runner.java": "59d3781687e05b629b12c8e6d611663011be53c6eea3ea55f5f6c957014c4eef"
+    }
+  },
+  "overall": {
+    "graph": {
+      "questions": 50,
+      "precision": 0.92,
+      "recall": 0.92,
+      "f1": 0.9066666666666666,
+      "mrr": 0.9361702127659575,
+      "hit_at_k": 0.9361702127659575,
+      "citation_accuracy": 0.92
+    },
+    "text": {
+      "questions": 50,
+      "precision": 0.7866666666666666,
+      "recall": 0.9066666666666666,
+      "f1": 0.7966666666666666,
+      "mrr": 0.8546099290780141,
+      "hit_at_k": 1.0,
+      "citation_accuracy": 0.7933333333333333
+    }
+  },
+  "by_kind": {
+    "blast": {
+      "graph": {
+        "questions": 10,
+        "precision": 0.9,
+        "recall": 0.9,
+        "f1": 0.9,
+        "mrr": 0.8888888888888888,
+        "hit_at_k": 0.8888888888888888,
+        "citation_accuracy": 0.9
+      },
+      "text": {
+        "questions": 10,
+        "precision": 0.6666666666666666,
+        "recall": 0.8333333333333334,
+        "f1": 0.72,
+        "mrr": 0.7222222222222222,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 0.6833333333333333
+      }
+    },
+    "callers": {
+      "graph": {
+        "questions": 12,
+        "precision": 0.75,
+        "recall": 0.8333333333333334,
+        "f1": 0.75,
+        "mrr": 0.8181818181818182,
+        "hit_at_k": 0.8181818181818182,
+        "citation_accuracy": 0.75
+      },
+      "text": {
+        "questions": 12,
+        "precision": 0.5138888888888888,
+        "recall": 1.0,
+        "f1": 0.6361111111111111,
+        "mrr": 0.696969696969697,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 0.5277777777777778
+      }
+    },
+    "dead-code": {
+      "graph": {
+        "questions": 8,
+        "precision": 1.0,
+        "recall": 0.9375,
+        "f1": 0.9583333333333334,
+        "mrr": 1.0,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 1.0
+      },
+      "text": {
+        "questions": 8,
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1": 0.9166666666666666,
+        "mrr": 1.0,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 1.0
+      }
+    },
+    "find": {
+      "graph": {
+        "questions": 12,
+        "precision": 1.0,
+        "recall": 0.9583333333333334,
+        "f1": 0.9722222222222222,
+        "mrr": 1.0,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 1.0
+      },
+      "text": {
+        "questions": 12,
+        "precision": 0.875,
+        "recall": 1.0,
+        "f1": 0.9166666666666666,
+        "mrr": 0.9090909090909091,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 0.875
+      }
+    },
+    "inherits": {
+      "graph": {
+        "questions": 8,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mrr": 1.0,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 1.0
+      },
+      "text": {
+        "questions": 8,
+        "precision": 1.0,
+        "recall": 0.75,
+        "f1": 0.8333333333333333,
+        "mrr": 1.0,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 1.0
+      }
+    }
+  },
+  "by_confidence": {
+    "graph/exact": {
+      "questions": 50,
+      "precision": 1.0,
+      "recall": 0.9148936170212766,
+      "f1": 0.9848484848484849,
+      "mrr": 0.9361702127659575,
+      "hit_at_k": 0.9361702127659575,
+      "citation_accuracy": 1.0,
+      "tagged_questions": 44
+    },
+    "graph/heuristic": {
+      "questions": 50,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mrr": 0.0,
+      "hit_at_k": 0.0,
+      "citation_accuracy": 0.0,
+      "tagged_questions": 1
+    },
+    "graph/likely": {
+      "questions": 50,
+      "precision": 1.0,
+      "recall": 0.11702127659574468,
+      "f1": 0.9444444444444444,
+      "mrr": 0.1276595744680851,
+      "hit_at_k": 0.1276595744680851,
+      "citation_accuracy": 1.0,
+      "tagged_questions": 6
+    },
+    "graph/possible": {
+      "questions": 50,
+      "precision": 1.0,
+      "recall": 0.0425531914893617,
+      "f1": 1.0,
+      "mrr": 0.0425531914893617,
+      "hit_at_k": 0.0425531914893617,
+      "citation_accuracy": 1.0,
+      "tagged_questions": 2
+    },
+    "text/text": {
+      "questions": 50,
+      "precision": 0.7777777777777778,
+      "recall": 0.900709219858156,
+      "f1": 0.7881944444444444,
+      "mrr": 0.8546099290780141,
+      "hit_at_k": 1.0,
+      "citation_accuracy": 0.7847222222222222,
+      "tagged_questions": 48
+    }
+  },
+  "results": [
+    {
+      "schema_version": 1,
+      "id": "blast-001",
+      "repo": "mini",
+      "kind": "blast",
+      "arguments": {
+        "target": "SCALE",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle.area/0",
+          "file": "pkg/shapes.py",
+          "line": 20
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:20",
+            "file": "pkg/shapes.py",
+            "line": 20,
+            "symbol": "pkg/shapes.py::Circle.area/0",
+            "qualname": "Circle.area",
+            "kind": "method",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "pkg/shapes.py:20",
+            "target": "pkg/shapes.py::SCALE",
+            "def": "pkg/shapes.py:19"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "decoys.py::brochure/0",
+            "file": "decoys.py",
+            "line": 5,
+            "citation": "decoys.py:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Circle.area/0",
+            "file": "pkg/shapes.py",
+            "line": 20,
+            "citation": "pkg/shapes.py:20",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-002",
+      "repo": "mini",
+      "kind": "blast",
+      "arguments": {
+        "target": "SCALE",
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle.area/0",
+          "file": "pkg/shapes.py",
+          "line": 20
+        },
+        {
+          "symbol": "pkg/shapes.py::Ring.area/0",
+          "file": "pkg/shapes.py",
+          "line": 25
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:20",
+            "file": "pkg/shapes.py",
+            "line": 20,
+            "symbol": "pkg/shapes.py::Circle.area/0",
+            "qualname": "Circle.area",
+            "kind": "method",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "pkg/shapes.py:20",
+            "target": "pkg/shapes.py::SCALE",
+            "def": "pkg/shapes.py:19"
+          },
+          {
+            "citation": "pkg/shapes.py:25",
+            "file": "pkg/shapes.py",
+            "line": 25,
+            "symbol": "pkg/shapes.py::Ring.area/0",
+            "qualname": "Ring.area",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "pkg/shapes.py:25",
+            "target": "pkg/shapes.py::Circle.area/0",
+            "def": "pkg/shapes.py:24"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "decoys.py::brochure/0",
+            "file": "decoys.py",
+            "line": 5,
+            "citation": "decoys.py:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Circle.area/0",
+            "file": "pkg/shapes.py",
+            "line": 20,
+            "citation": "pkg/shapes.py:20",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 0.5,
+          "f1": 0.5,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-003",
+      "repo": "mini",
+      "kind": "blast",
+      "arguments": {
+        "target": "make",
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "app.py::main/0",
+          "file": "app.py",
+          "line": 6
+        },
+        {
+          "symbol": "app.py::main/0",
+          "file": "app.py",
+          "line": 10
+        },
+        {
+          "symbol": "app.py::<module>",
+          "file": "app.py",
+          "line": 14
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "app.py:6",
+            "file": "app.py",
+            "line": 6,
+            "symbol": "app.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "app.py:6",
+            "target": "pkg/shapes.py::make/1",
+            "def": "app.py:5"
+          },
+          {
+            "citation": "app.py:10",
+            "file": "app.py",
+            "line": 10,
+            "symbol": "app.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "app.py:10",
+            "target": "pkg/shapes.py::make/1",
+            "def": "app.py:5"
+          },
+          {
+            "citation": "app.py:14",
+            "file": "app.py",
+            "line": 14,
+            "symbol": "app.py::<module>",
+            "qualname": "<module>",
+            "kind": "module",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "app.py:14",
+            "target": "app.py::main/0",
+            "def": "app.py:1"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "app.py::main/0",
+            "file": "app.py",
+            "line": 6,
+            "citation": "app.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "app.py::main/0",
+            "file": "app.py",
+            "line": 10,
+            "citation": "app.py:10",
+            "confidence": "text"
+          },
+          {
+            "symbol": "decoys.py::brochure/0",
+            "file": "decoys.py",
+            "line": 5,
+            "citation": "decoys.py:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 0.5,
+          "f1": 0.5,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.6666666666666666,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-004",
+      "repo": "mini",
+      "kind": "blast",
+      "arguments": {
+        "target": "_orphan",
+        "depth": 3
+      },
+      "expected": [],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [],
+        "text": []
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": null,
+          "hit_at_k": null,
+          "citation_accuracy": 1.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 0
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": null,
+          "hit_at_k": null,
+          "citation_accuracy": 1.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 0
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-005",
+      "repo": "mini",
+      "kind": "blast",
+      "arguments": {
+        "target": "Dog.helper",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog.main/1",
+          "file": "src/demo/Dog.java",
+          "line": 21
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/demo/Dog.java:21",
+            "file": "src/demo/Dog.java",
+            "line": 21,
+            "symbol": "src/demo/Dog.java::Dog.main/1",
+            "qualname": "Dog.main",
+            "kind": "method",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/demo/Dog.java:21",
+            "target": "src/demo/Dog.java::Dog.helper/0",
+            "def": "src/demo/Dog.java:18"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Dog.main/1",
+            "file": "src/demo/Dog.java",
+            "line": 21,
+            "citation": "src/demo/Dog.java:21",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-006",
+      "repo": "workflow",
+      "kind": "blast",
+      "arguments": {
+        "target": "TAX",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "orders/pricing.py::total/1",
+          "file": "orders/pricing.py",
+          "line": 10
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/pricing.py:10",
+            "file": "orders/pricing.py",
+            "line": 10,
+            "symbol": "orders/pricing.py::total/1",
+            "qualname": "total",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "orders/pricing.py:10",
+            "target": "orders/pricing.py::TAX",
+            "def": "orders/pricing.py:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/decoys.py::Preview.total/1",
+            "file": "orders/decoys.py",
+            "line": 6,
+            "citation": "orders/decoys.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/pricing.py::total/1",
+            "file": "orders/pricing.py",
+            "line": 10,
+            "citation": "orders/pricing.py:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-007",
+      "repo": "workflow",
+      "kind": "blast",
+      "arguments": {
+        "target": "orders/pricing.py::total/1",
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::checkout/1",
+          "file": "orders/service.py",
+          "line": 10
+        },
+        {
+          "symbol": "main.py::main/0",
+          "file": "main.py",
+          "line": 6
+        },
+        {
+          "symbol": "orders/service.py::configure/0",
+          "file": "orders/service.py",
+          "line": 23
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "main.py:6",
+            "file": "main.py",
+            "line": 6,
+            "symbol": "main.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "main.py:6",
+            "target": "orders/service.py::checkout/1",
+            "def": "main.py:4"
+          },
+          {
+            "citation": "orders/service.py:10",
+            "file": "orders/service.py",
+            "line": 10,
+            "symbol": "orders/service.py::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "orders/service.py:10",
+            "target": "orders/pricing.py::total/1",
+            "def": "orders/service.py:9"
+          },
+          {
+            "citation": "orders/service.py:23",
+            "file": "orders/service.py",
+            "line": 23,
+            "symbol": "orders/service.py::configure/0",
+            "qualname": "configure",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "orders/service.py:23",
+            "target": "orders/service.py::checkout/1",
+            "def": "orders/service.py:22"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/decoys.py::Preview.total/1",
+            "file": "orders/decoys.py",
+            "line": 6,
+            "citation": "orders/decoys.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/service.py::checkout/1",
+            "file": "orders/service.py",
+            "line": 10,
+            "citation": "orders/service.py:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 3,
+          "predicted_symbols": 3,
+          "expected_symbols": 3
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 0.3333333333333333,
+          "f1": 0.4,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 3
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-008",
+      "repo": "workflow",
+      "kind": "blast",
+      "arguments": {
+        "target": "dispatch",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::checkout/1",
+          "file": "orders/service.py",
+          "line": 12
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/service.py:12",
+            "file": "orders/service.py",
+            "line": 12,
+            "symbol": "orders/service.py::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "orders/service.py:12",
+            "target": "orders/service.py::dispatch/2",
+            "def": "orders/service.py:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/decoys.py::_retired/0",
+            "file": "orders/decoys.py",
+            "line": 10,
+            "citation": "orders/decoys.py:10",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/service.py::checkout/1",
+            "file": "orders/service.py",
+            "line": 12,
+            "citation": "orders/service.py:12",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-009",
+      "repo": "workflow",
+      "kind": "blast",
+      "arguments": {
+        "target": "MailSink.send",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::dispatch/2",
+          "file": "orders/service.py",
+          "line": 6
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [],
+        "text": [
+          {
+            "symbol": "orders/service.py::dispatch/2",
+            "file": "orders/service.py",
+            "line": 6,
+            "citation": "orders/service.py:6",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-010",
+      "repo": "workflow",
+      "kind": "blast",
+      "arguments": {
+        "target": "BaseProcessor.format",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.process/1",
+          "file": "src/flow/CardProcessor.java",
+          "line": 6
+        },
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+          "file": "src/flow/CardProcessor.java",
+          "line": 10
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/flow/CardProcessor.java:6",
+            "file": "src/flow/CardProcessor.java",
+            "line": 6,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.process/1",
+            "qualname": "CardProcessor.process",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/flow/CardProcessor.java:6",
+            "target": "src/flow/BaseProcessor.java::BaseProcessor.format/1",
+            "def": "src/flow/CardProcessor.java:4"
+          },
+          {
+            "citation": "src/flow/CardProcessor.java:10",
+            "file": "src/flow/CardProcessor.java",
+            "line": 10,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+            "qualname": "CardProcessor.convert",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/flow/CardProcessor.java:10",
+            "target": "src/flow/BaseProcessor.java::BaseProcessor.format/1",
+            "def": "src/flow/CardProcessor.java:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.process/1",
+            "file": "src/flow/CardProcessor.java",
+            "line": 6,
+            "citation": "src/flow/CardProcessor.java:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+            "file": "src/flow/CardProcessor.java",
+            "line": 10,
+            "citation": "src/flow/CardProcessor.java:10",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/Decoy.java::Decoy.process/1",
+            "file": "src/flow/Decoy.java",
+            "line": 5,
+            "citation": "src/flow/Decoy.java:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.6666666666666666,
+          "true_positives": 2,
+          "predicted_symbols": 3,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-001",
+      "repo": "mini",
+      "kind": "callers",
+      "arguments": {
+        "target": "make"
+      },
+      "expected": [
+        {
+          "symbol": "app.py::main/0",
+          "file": "app.py",
+          "line": 6
+        },
+        {
+          "symbol": "app.py::main/0",
+          "file": "app.py",
+          "line": 10
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "app.py:6",
+            "file": "app.py",
+            "line": 6,
+            "symbol": "app.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "app.py:6",
+            "target": "pkg/shapes.py::make/1",
+            "def": "app.py:5"
+          },
+          {
+            "citation": "app.py:10",
+            "file": "app.py",
+            "line": 10,
+            "symbol": "app.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "module-attr",
+            "depth": 1,
+            "via": "app.py:10",
+            "target": "pkg/shapes.py::make/1",
+            "def": "app.py:5"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "app.py::main/0",
+            "file": "app.py",
+            "line": 6,
+            "citation": "app.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "app.py::main/0",
+            "file": "app.py",
+            "line": 10,
+            "citation": "app.py:10",
+            "confidence": "text"
+          },
+          {
+            "symbol": "decoys.py::brochure/0",
+            "file": "decoys.py",
+            "line": 5,
+            "citation": "decoys.py:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.6666666666666666,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-002",
+      "repo": "mini",
+      "kind": "callers",
+      "arguments": {
+        "target": "Circle.area"
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Ring.area/0",
+          "file": "pkg/shapes.py",
+          "line": 25
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:25",
+            "file": "pkg/shapes.py",
+            "line": 25,
+            "symbol": "pkg/shapes.py::Ring.area/0",
+            "qualname": "Ring.area",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "super",
+            "depth": 1,
+            "via": "pkg/shapes.py:25",
+            "target": "pkg/shapes.py::Circle.area/0",
+            "def": "pkg/shapes.py:24"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "app.py::main/0",
+            "file": "app.py",
+            "line": 9,
+            "citation": "app.py:9",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Shape.describe/0",
+            "file": "pkg/shapes.py",
+            "line": 12,
+            "citation": "pkg/shapes.py:12",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Ring.area/0",
+            "file": "pkg/shapes.py",
+            "line": 25,
+            "citation": "pkg/shapes.py:25",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.3333333333333333,
+          "true_positives": 1,
+          "predicted_symbols": 3,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-003",
+      "repo": "mini",
+      "kind": "callers",
+      "arguments": {
+        "target": "Ring.area"
+      },
+      "expected": [
+        {
+          "symbol": "app.py::main/0",
+          "file": "app.py",
+          "line": 9
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "app.py:9",
+            "file": "app.py",
+            "line": 9,
+            "symbol": "app.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "typed-local",
+            "depth": 1,
+            "via": "app.py:9",
+            "target": "pkg/shapes.py::Ring.area/0",
+            "def": "app.py:5"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "app.py::main/0",
+            "file": "app.py",
+            "line": 9,
+            "citation": "app.py:9",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Shape.describe/0",
+            "file": "pkg/shapes.py",
+            "line": 12,
+            "citation": "pkg/shapes.py:12",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Ring.area/0",
+            "file": "pkg/shapes.py",
+            "line": 25,
+            "citation": "pkg/shapes.py:25",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.3333333333333333,
+          "true_positives": 1,
+          "predicted_symbols": 3,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-004",
+      "repo": "mini",
+      "kind": "callers",
+      "arguments": {
+        "target": "src/demo/Dog.java::Dog.bark/1"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog.sound/0",
+          "file": "src/demo/Dog.java",
+          "line": 10
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/demo/Dog.java:10",
+            "file": "src/demo/Dog.java",
+            "line": 10,
+            "symbol": "src/demo/Dog.java::Dog.sound/0",
+            "qualname": "Dog.sound",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "same-class",
+            "depth": 1,
+            "via": "src/demo/Dog.java:10",
+            "target": "src/demo/Dog.java::Dog.bark/1",
+            "def": "src/demo/Dog.java:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "decoys.py::brochure/0",
+            "file": "decoys.py",
+            "line": 5,
+            "citation": "decoys.py:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/demo/Dog.java::Dog.sound/0",
+            "file": "src/demo/Dog.java",
+            "line": 10,
+            "citation": "src/demo/Dog.java:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-005",
+      "repo": "mini",
+      "kind": "callers",
+      "arguments": {
+        "target": "Dog.helper"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog.main/1",
+          "file": "src/demo/Dog.java",
+          "line": 21
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/demo/Dog.java:21",
+            "file": "src/demo/Dog.java",
+            "line": 21,
+            "symbol": "src/demo/Dog.java::Dog.main/1",
+            "qualname": "Dog.main",
+            "kind": "method",
+            "edge": "ref",
+            "confidence": "exact",
+            "reason": "method-ref",
+            "depth": 1,
+            "via": "src/demo/Dog.java:21",
+            "target": "src/demo/Dog.java::Dog.helper/0",
+            "def": "src/demo/Dog.java:18"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Dog.main/1",
+            "file": "src/demo/Dog.java",
+            "line": 21,
+            "citation": "src/demo/Dog.java:21",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-006",
+      "repo": "mini",
+      "kind": "callers",
+      "arguments": {
+        "target": "SCALE"
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle.area/0",
+          "file": "pkg/shapes.py",
+          "line": 20
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:20",
+            "file": "pkg/shapes.py",
+            "line": 20,
+            "symbol": "pkg/shapes.py::Circle.area/0",
+            "qualname": "Circle.area",
+            "kind": "method",
+            "edge": "ref",
+            "confidence": "exact",
+            "reason": "same-file",
+            "depth": 1,
+            "via": "pkg/shapes.py:20",
+            "target": "pkg/shapes.py::SCALE",
+            "def": "pkg/shapes.py:19"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "decoys.py::brochure/0",
+            "file": "decoys.py",
+            "line": 5,
+            "citation": "decoys.py:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "pkg/shapes.py::Circle.area/0",
+            "file": "pkg/shapes.py",
+            "line": 20,
+            "citation": "pkg/shapes.py:20",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-007",
+      "repo": "workflow",
+      "kind": "callers",
+      "arguments": {
+        "target": "orders/pricing.py::total/1"
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::checkout/1",
+          "file": "orders/service.py",
+          "line": 10
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/service.py:10",
+            "file": "orders/service.py",
+            "line": 10,
+            "symbol": "orders/service.py::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "orders/service.py:10",
+            "target": "orders/pricing.py::total/1",
+            "def": "orders/service.py:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/decoys.py::Preview.total/1",
+            "file": "orders/decoys.py",
+            "line": 6,
+            "citation": "orders/decoys.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/service.py::checkout/1",
+            "file": "orders/service.py",
+            "line": 10,
+            "citation": "orders/service.py:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-008",
+      "repo": "workflow",
+      "kind": "callers",
+      "arguments": {
+        "target": "checkout"
+      },
+      "expected": [
+        {
+          "symbol": "main.py::main/0",
+          "file": "main.py",
+          "line": 6
+        },
+        {
+          "symbol": "orders/service.py::configure/0",
+          "file": "orders/service.py",
+          "line": 23
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "main.py:6",
+            "file": "main.py",
+            "line": 6,
+            "symbol": "main.py::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "main.py:6",
+            "target": "orders/service.py::checkout/1",
+            "def": "main.py:4"
+          },
+          {
+            "citation": "orders/service.py:23",
+            "file": "orders/service.py",
+            "line": 23,
+            "symbol": "orders/service.py::configure/0",
+            "qualname": "configure",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "reason": "same-file",
+            "depth": 1,
+            "via": "orders/service.py:23",
+            "target": "orders/service.py::checkout/1",
+            "def": "orders/service.py:22"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "main.py::main/0",
+            "file": "main.py",
+            "line": 6,
+            "citation": "main.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/decoys.py::Preview.total/1",
+            "file": "orders/decoys.py",
+            "line": 6,
+            "citation": "orders/decoys.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/service.py::configure/0",
+            "file": "orders/service.py",
+            "line": 23,
+            "citation": "orders/service.py:23",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.6666666666666666,
+          "true_positives": 2,
+          "predicted_symbols": 3,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-009",
+      "repo": "workflow",
+      "kind": "callers",
+      "arguments": {
+        "target": "dispatch"
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::checkout/1",
+          "file": "orders/service.py",
+          "line": 12
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/service.py:12",
+            "file": "orders/service.py",
+            "line": 12,
+            "symbol": "orders/service.py::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "same-file",
+            "depth": 1,
+            "via": "orders/service.py:12",
+            "target": "orders/service.py::dispatch/2",
+            "def": "orders/service.py:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/decoys.py::_retired/0",
+            "file": "orders/decoys.py",
+            "line": 10,
+            "citation": "orders/decoys.py:10",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/service.py::checkout/1",
+            "file": "orders/service.py",
+            "line": 12,
+            "citation": "orders/service.py:12",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-010",
+      "repo": "workflow",
+      "kind": "callers",
+      "arguments": {
+        "target": "MailSink.send"
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::dispatch/2",
+          "file": "orders/service.py",
+          "line": 6
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [],
+        "text": [
+          {
+            "symbol": "orders/service.py::dispatch/2",
+            "file": "orders/service.py",
+            "line": 6,
+            "citation": "orders/service.py:6",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-011",
+      "repo": "workflow",
+      "kind": "callers",
+      "arguments": {
+        "target": "CardProcessor.process"
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/Runner.java::Runner.execute/1",
+          "file": "src/flow/Runner.java",
+          "line": 5
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [],
+        "text": [
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.process/1",
+            "file": "src/flow/CardProcessor.java",
+            "line": 5,
+            "citation": "src/flow/CardProcessor.java:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/Decoy.java::Decoy.process/1",
+            "file": "src/flow/Decoy.java",
+            "line": 5,
+            "citation": "src/flow/Decoy.java:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/Runner.java::Runner.execute/1",
+            "file": "src/flow/Runner.java",
+            "line": 5,
+            "citation": "src/flow/Runner.java:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "mrr": 0.3333333333333333,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.3333333333333333,
+          "true_positives": 1,
+          "predicted_symbols": 3,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-012",
+      "repo": "workflow",
+      "kind": "callers",
+      "arguments": {
+        "target": "src/flow/CardProcessor.java::CardProcessor.convert/1@13"
+      },
+      "expected": [],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/flow/Runner.java:10",
+            "file": "src/flow/Runner.java",
+            "line": 10,
+            "symbol": "src/flow/Runner.java::Runner.main/1",
+            "qualname": "Runner.main",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "heuristic",
+            "reason": "overload-ambiguous",
+            "depth": 1,
+            "via": "src/flow/Runner.java:10",
+            "target": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "def": "src/flow/Runner.java:8"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/Decoy.java::Decoy.process/1",
+            "file": "src/flow/Decoy.java",
+            "line": 5,
+            "citation": "src/flow/Decoy.java:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/Runner.java::Runner.main/1",
+            "file": "src/flow/Runner.java",
+            "line": 10,
+            "citation": "src/flow/Runner.java:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 1.0,
+          "f1": 0.0,
+          "mrr": null,
+          "hit_at_k": null,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 1,
+          "expected_symbols": 0
+        },
+        "text": {
+          "precision": 0.0,
+          "recall": 1.0,
+          "f1": 0.0,
+          "mrr": null,
+          "hit_at_k": null,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 2,
+          "expected_symbols": 0
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-001",
+      "repo": "mini",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "pkg",
+        "kinds": [
+          "function"
+        ],
+        "confidence": "likely"
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::_orphan/0",
+          "file": "pkg/shapes.py",
+          "line": 28
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:28",
+            "file": "pkg/shapes.py",
+            "line": 28,
+            "symbol": "pkg/shapes.py::_orphan/0",
+            "qualname": "_orphan",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::_orphan/0",
+            "file": "pkg/shapes.py",
+            "line": 28,
+            "citation": "pkg/shapes.py:28",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-002",
+      "repo": "mini",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "src/demo/Dog.java",
+        "kinds": [
+          "method"
+        ],
+        "confidence": "likely"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog.bark/2",
+          "file": "src/demo/Dog.java",
+          "line": 14
+        },
+        {
+          "symbol": "src/demo/Dog.java::Dog.neverCalled/0",
+          "file": "src/demo/Dog.java",
+          "line": 16
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/demo/Dog.java:14",
+            "file": "src/demo/Dog.java",
+            "line": 14,
+            "symbol": "src/demo/Dog.java::Dog.bark/2",
+            "qualname": "Dog.bark",
+            "kind": "method",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          },
+          {
+            "citation": "src/demo/Dog.java:16",
+            "file": "src/demo/Dog.java",
+            "line": 16,
+            "symbol": "src/demo/Dog.java::Dog.neverCalled/0",
+            "qualname": "Dog.neverCalled",
+            "kind": "method",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Dog.neverCalled/0",
+            "file": "src/demo/Dog.java",
+            "line": 16,
+            "citation": "src/demo/Dog.java:16",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-003",
+      "repo": "mini",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "decoys.py",
+        "confidence": "likely"
+      },
+      "expected": [
+        {
+          "symbol": "decoys.py::_unused_helper/0",
+          "file": "decoys.py",
+          "line": 8
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "decoys.py:8",
+            "file": "decoys.py",
+            "line": 8,
+            "symbol": "decoys.py::_unused_helper/0",
+            "qualname": "_unused_helper",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "decoys.py::_unused_helper/0",
+            "file": "decoys.py",
+            "line": 8,
+            "citation": "decoys.py:8",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-004",
+      "repo": "mini",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "pkg",
+        "kinds": [
+          "variable"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::UNUSED_CONST",
+          "file": "pkg/shapes.py",
+          "line": 3
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:3",
+            "file": "pkg/shapes.py",
+            "line": 3,
+            "symbol": "pkg/shapes.py::UNUSED_CONST",
+            "qualname": "UNUSED_CONST",
+            "kind": "variable",
+            "confidence": "exact",
+            "dead_confidence": "possible",
+            "visibility": "public"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::UNUSED_CONST",
+            "file": "pkg/shapes.py",
+            "line": 3,
+            "citation": "pkg/shapes.py:3",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-005",
+      "repo": "workflow",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "orders/pricing.py",
+        "kinds": [
+          "function"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "orders/pricing.py::_old_discount/1",
+          "file": "orders/pricing.py",
+          "line": 13
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/pricing.py:13",
+            "file": "orders/pricing.py",
+            "line": 13,
+            "symbol": "orders/pricing.py::_old_discount/1",
+            "qualname": "_old_discount",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/pricing.py::_old_discount/1",
+            "file": "orders/pricing.py",
+            "line": 13,
+            "citation": "orders/pricing.py:13",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-006",
+      "repo": "workflow",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "orders/pricing.py",
+        "kinds": [
+          "variable"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "orders/pricing.py::UNUSED_RATE",
+          "file": "orders/pricing.py",
+          "line": 2
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/pricing.py:2",
+            "file": "orders/pricing.py",
+            "line": 2,
+            "symbol": "orders/pricing.py::UNUSED_RATE",
+            "qualname": "UNUSED_RATE",
+            "kind": "variable",
+            "confidence": "exact",
+            "dead_confidence": "possible",
+            "visibility": "public"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/pricing.py::UNUSED_RATE",
+            "file": "orders/pricing.py",
+            "line": 2,
+            "citation": "orders/pricing.py:2",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-007",
+      "repo": "workflow",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "src/flow/CardProcessor.java",
+        "kinds": [
+          "method"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+          "file": "src/flow/CardProcessor.java",
+          "line": 13
+        },
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.obsolete/0",
+          "file": "src/flow/CardProcessor.java",
+          "line": 17
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/flow/CardProcessor.java:17",
+            "file": "src/flow/CardProcessor.java",
+            "line": 17,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.obsolete/0",
+            "qualname": "CardProcessor.obsolete",
+            "kind": "method",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.obsolete/0",
+            "file": "src/flow/CardProcessor.java",
+            "line": 17,
+            "citation": "src/flow/CardProcessor.java:17",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-008",
+      "repo": "workflow",
+      "kind": "dead-code",
+      "arguments": {
+        "scope": "src/flow/Decoy.java",
+        "kinds": [
+          "field"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/Decoy.java::Decoy.unused",
+          "file": "src/flow/Decoy.java",
+          "line": 8
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/flow/Decoy.java:8",
+            "file": "src/flow/Decoy.java",
+            "line": 8,
+            "symbol": "src/flow/Decoy.java::Decoy.unused",
+            "qualname": "Decoy.unused",
+            "kind": "field",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/Decoy.java::Decoy.unused",
+            "file": "src/flow/Decoy.java",
+            "line": 8,
+            "citation": "src/flow/Decoy.java:8",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-001",
+      "repo": "mini",
+      "kind": "find",
+      "arguments": {
+        "target": "Circle"
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle",
+          "file": "pkg/shapes.py",
+          "line": 15
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "id": "pkg/shapes.py::Circle",
+            "qualname": "Circle",
+            "kind": "class",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "symbol": "pkg/shapes.py::Circle",
+            "citation": "pkg/shapes.py:15",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::Circle",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "citation": "pkg/shapes.py:15",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-002",
+      "repo": "mini",
+      "kind": "find",
+      "arguments": {
+        "target": "make.inner"
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::make.inner/1",
+          "file": "pkg/shapes.py",
+          "line": 33
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "pkg/shapes.py::make.inner/1",
+            "qualname": "make.inner",
+            "kind": "function",
+            "file": "pkg/shapes.py",
+            "line": 33,
+            "symbol": "pkg/shapes.py::make.inner/1",
+            "citation": "pkg/shapes.py:33",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::make.inner/1",
+            "file": "pkg/shapes.py",
+            "line": 33,
+            "citation": "pkg/shapes.py:33",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-003",
+      "repo": "mini",
+      "kind": "find",
+      "arguments": {
+        "target": "Dog.bark"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog.bark/1",
+          "file": "src/demo/Dog.java",
+          "line": 12
+        },
+        {
+          "symbol": "src/demo/Dog.java::Dog.bark/2",
+          "file": "src/demo/Dog.java",
+          "line": 14
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/demo/Dog.java::Dog.bark/1",
+            "qualname": "Dog.bark",
+            "kind": "method",
+            "file": "src/demo/Dog.java",
+            "line": 12,
+            "symbol": "src/demo/Dog.java::Dog.bark/1",
+            "citation": "src/demo/Dog.java:12",
+            "confidence": "exact",
+            "reason": "definition"
+          },
+          {
+            "id": "src/demo/Dog.java::Dog.bark/2",
+            "qualname": "Dog.bark",
+            "kind": "method",
+            "file": "src/demo/Dog.java",
+            "line": 14,
+            "symbol": "src/demo/Dog.java::Dog.bark/2",
+            "citation": "src/demo/Dog.java:14",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Dog.bark/1",
+            "file": "src/demo/Dog.java",
+            "line": 12,
+            "citation": "src/demo/Dog.java:12",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/demo/Dog.java::Dog.bark/2",
+            "file": "src/demo/Dog.java",
+            "line": 14,
+            "citation": "src/demo/Dog.java:14",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-004",
+      "repo": "mini",
+      "kind": "find",
+      "arguments": {
+        "target": "demo.Base"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Base",
+          "file": "src/demo/Dog.java",
+          "line": 27
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/demo/Dog.java::Base",
+            "qualname": "Base",
+            "kind": "class",
+            "file": "src/demo/Dog.java",
+            "line": 27,
+            "symbol": "src/demo/Dog.java::Base",
+            "citation": "src/demo/Dog.java:27",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Base",
+            "file": "src/demo/Dog.java",
+            "line": 27,
+            "citation": "src/demo/Dog.java:27",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/demo/Dog.java::Base.<init>/1",
+            "file": "src/demo/Dog.java",
+            "line": 28,
+            "citation": "src/demo/Dog.java:28",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-005",
+      "repo": "mini",
+      "kind": "find",
+      "arguments": {
+        "target": "SCALE"
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::SCALE",
+          "file": "pkg/shapes.py",
+          "line": 4
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "id": "pkg/shapes.py::SCALE",
+            "qualname": "SCALE",
+            "kind": "variable",
+            "file": "pkg/shapes.py",
+            "line": 4,
+            "symbol": "pkg/shapes.py::SCALE",
+            "citation": "pkg/shapes.py:4",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::SCALE",
+            "file": "pkg/shapes.py",
+            "line": 4,
+            "citation": "pkg/shapes.py:4",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-006",
+      "repo": "mini",
+      "kind": "find",
+      "arguments": {
+        "target": "not_present"
+      },
+      "expected": [],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [],
+        "text": []
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": null,
+          "hit_at_k": null,
+          "citation_accuracy": 1.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 0
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": null,
+          "hit_at_k": null,
+          "citation_accuracy": 1.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 0
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-007",
+      "repo": "workflow",
+      "kind": "find",
+      "arguments": {
+        "target": "total"
+      },
+      "expected": [
+        {
+          "symbol": "orders/pricing.py::total/1",
+          "file": "orders/pricing.py",
+          "line": 9
+        },
+        {
+          "symbol": "orders/decoys.py::Preview.total/1",
+          "file": "orders/decoys.py",
+          "line": 5
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "orders/pricing.py::total/1",
+            "qualname": "total",
+            "kind": "function",
+            "file": "orders/pricing.py",
+            "line": 9,
+            "symbol": "orders/pricing.py::total/1",
+            "citation": "orders/pricing.py:9",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/decoys.py::Preview.total/1",
+            "file": "orders/decoys.py",
+            "line": 5,
+            "citation": "orders/decoys.py:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/pricing.py::total/1",
+            "file": "orders/pricing.py",
+            "line": 9,
+            "citation": "orders/pricing.py:9",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-008",
+      "repo": "workflow",
+      "kind": "find",
+      "arguments": {
+        "target": "CardProcessor.convert"
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+          "file": "src/flow/CardProcessor.java",
+          "line": 9
+        },
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+          "file": "src/flow/CardProcessor.java",
+          "line": 13
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+            "qualname": "CardProcessor.convert",
+            "kind": "method",
+            "file": "src/flow/CardProcessor.java",
+            "line": 9,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+            "citation": "src/flow/CardProcessor.java:9",
+            "confidence": "exact",
+            "reason": "definition"
+          },
+          {
+            "id": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "qualname": "CardProcessor.convert",
+            "kind": "method",
+            "file": "src/flow/CardProcessor.java",
+            "line": 13,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "citation": "src/flow/CardProcessor.java:13",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+            "file": "src/flow/CardProcessor.java",
+            "line": 9,
+            "citation": "src/flow/CardProcessor.java:9",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "file": "src/flow/CardProcessor.java",
+            "line": 13,
+            "citation": "src/flow/CardProcessor.java:13",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-009",
+      "repo": "workflow",
+      "kind": "find",
+      "arguments": {
+        "target": "src/flow/CardProcessor.java::CardProcessor.convert/1@13"
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+          "file": "src/flow/CardProcessor.java",
+          "line": 13
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "qualname": "CardProcessor.convert",
+            "kind": "method",
+            "file": "src/flow/CardProcessor.java",
+            "line": 13,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "citation": "src/flow/CardProcessor.java:13",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1",
+            "file": "src/flow/CardProcessor.java",
+            "line": 9,
+            "citation": "src/flow/CardProcessor.java:9",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/CardProcessor.java::CardProcessor.convert/1@13",
+            "file": "src/flow/CardProcessor.java",
+            "line": 13,
+            "citation": "src/flow/CardProcessor.java:13",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-010",
+      "repo": "workflow",
+      "kind": "find",
+      "arguments": {
+        "target": "flow.Processor"
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/Processor.java::Processor",
+          "file": "src/flow/Processor.java",
+          "line": 3
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/flow/Processor.java::Processor",
+            "qualname": "Processor",
+            "kind": "interface",
+            "file": "src/flow/Processor.java",
+            "line": 3,
+            "symbol": "src/flow/Processor.java::Processor",
+            "citation": "src/flow/Processor.java:3",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/Processor.java::<module>",
+            "file": "src/flow/Processor.java",
+            "line": 1,
+            "citation": "src/flow/Processor.java:1",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/flow/Processor.java::Processor",
+            "file": "src/flow/Processor.java",
+            "line": 3,
+            "citation": "src/flow/Processor.java:3",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-011",
+      "repo": "workflow",
+      "kind": "find",
+      "arguments": {
+        "target": "AuditSink.record"
+      },
+      "expected": [
+        {
+          "symbol": "orders/sinks.py::AuditSink.record/1",
+          "file": "orders/sinks.py",
+          "line": 17
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "id": "orders/sinks.py::AuditSink.record/1",
+            "qualname": "AuditSink.record",
+            "kind": "method",
+            "file": "orders/sinks.py",
+            "line": 17,
+            "symbol": "orders/sinks.py::AuditSink.record/1",
+            "citation": "orders/sinks.py:17",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/sinks.py::AuditSink.record/1",
+            "file": "orders/sinks.py",
+            "line": 17,
+            "citation": "orders/sinks.py:17",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-012",
+      "repo": "workflow",
+      "kind": "find",
+      "arguments": {
+        "target": "checkout",
+        "in_file": "orders/service.py"
+      },
+      "expected": [
+        {
+          "symbol": "orders/service.py::checkout/1",
+          "file": "orders/service.py",
+          "line": 9
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "id": "orders/service.py::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "file": "orders/service.py",
+            "line": 9,
+            "symbol": "orders/service.py::checkout/1",
+            "citation": "orders/service.py:9",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/service.py::checkout/1",
+            "file": "orders/service.py",
+            "line": 9,
+            "citation": "orders/service.py:9",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-001",
+      "repo": "mini",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Shape",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle",
+          "file": "pkg/shapes.py",
+          "line": 15
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:15",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "symbol": "pkg/shapes.py::Circle",
+            "qualname": "Circle",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Shape"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::Circle",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "citation": "pkg/shapes.py:15",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-002",
+      "repo": "mini",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Shape",
+        "depth": 3
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle",
+          "file": "pkg/shapes.py",
+          "line": 15
+        },
+        {
+          "symbol": "pkg/shapes.py::Ring",
+          "file": "pkg/shapes.py",
+          "line": 23
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:15",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "symbol": "pkg/shapes.py::Circle",
+            "qualname": "Circle",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Shape"
+          },
+          {
+            "citation": "pkg/shapes.py:23",
+            "file": "pkg/shapes.py",
+            "line": 23,
+            "symbol": "pkg/shapes.py::Ring",
+            "qualname": "Ring",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 2,
+            "parent": "Circle"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::Circle",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "citation": "pkg/shapes.py:15",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-003",
+      "repo": "mini",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Ring",
+        "ancestors": true,
+        "depth": 3
+      },
+      "expected": [
+        {
+          "symbol": "pkg/shapes.py::Circle",
+          "file": "pkg/shapes.py",
+          "line": 23
+        },
+        {
+          "symbol": "pkg/shapes.py::Shape",
+          "file": "pkg/shapes.py",
+          "line": 15
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "pkg/shapes.py:15",
+            "file": "pkg/shapes.py",
+            "line": 15,
+            "symbol": "pkg/shapes.py::Shape",
+            "qualname": "Shape",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 2,
+            "declared_by": "Circle"
+          },
+          {
+            "citation": "pkg/shapes.py:23",
+            "file": "pkg/shapes.py",
+            "line": 23,
+            "symbol": "pkg/shapes.py::Circle",
+            "qualname": "Circle",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "declared_by": "Ring"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "pkg/shapes.py::Circle",
+            "file": "pkg/shapes.py",
+            "line": 23,
+            "citation": "pkg/shapes.py:23",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-004",
+      "repo": "mini",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Animal"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog",
+          "file": "src/demo/Dog.java",
+          "line": 3
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/demo/Dog.java:3",
+            "file": "src/demo/Dog.java",
+            "line": 3,
+            "symbol": "src/demo/Dog.java::Dog",
+            "qualname": "Dog",
+            "kind": "class",
+            "relation": "implements",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Animal"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Dog",
+            "file": "src/demo/Dog.java",
+            "line": 3,
+            "citation": "src/demo/Dog.java:3",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-005",
+      "repo": "mini",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Base"
+      },
+      "expected": [
+        {
+          "symbol": "src/demo/Dog.java::Dog",
+          "file": "src/demo/Dog.java",
+          "line": 3
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/demo/Dog.java:3",
+            "file": "src/demo/Dog.java",
+            "line": 3,
+            "symbol": "src/demo/Dog.java::Dog",
+            "qualname": "Dog",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Base"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/demo/Dog.java::Dog",
+            "file": "src/demo/Dog.java",
+            "line": 3,
+            "citation": "src/demo/Dog.java:3",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-006",
+      "repo": "workflow",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Sink"
+      },
+      "expected": [
+        {
+          "symbol": "orders/sinks.py::MailSink",
+          "file": "orders/sinks.py",
+          "line": 6
+        },
+        {
+          "symbol": "orders/sinks.py::ArchiveSink",
+          "file": "orders/sinks.py",
+          "line": 11
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "orders/sinks.py:6",
+            "file": "orders/sinks.py",
+            "line": 6,
+            "symbol": "orders/sinks.py::MailSink",
+            "qualname": "MailSink",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Sink"
+          },
+          {
+            "citation": "orders/sinks.py:11",
+            "file": "orders/sinks.py",
+            "line": 11,
+            "symbol": "orders/sinks.py::ArchiveSink",
+            "qualname": "ArchiveSink",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Sink"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "orders/sinks.py::MailSink",
+            "file": "orders/sinks.py",
+            "line": 6,
+            "citation": "orders/sinks.py:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "orders/sinks.py::ArchiveSink",
+            "file": "orders/sinks.py",
+            "line": 11,
+            "citation": "orders/sinks.py:11",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-007",
+      "repo": "workflow",
+      "kind": "inherits",
+      "arguments": {
+        "target": "Processor",
+        "depth": 3
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/BaseProcessor.java::BaseProcessor",
+          "file": "src/flow/BaseProcessor.java",
+          "line": 3
+        },
+        {
+          "symbol": "src/flow/CardProcessor.java::CardProcessor",
+          "file": "src/flow/CardProcessor.java",
+          "line": 3
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/flow/BaseProcessor.java:3",
+            "file": "src/flow/BaseProcessor.java",
+            "line": 3,
+            "symbol": "src/flow/BaseProcessor.java::BaseProcessor",
+            "qualname": "BaseProcessor",
+            "kind": "class",
+            "relation": "implements",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Processor"
+          },
+          {
+            "citation": "src/flow/CardProcessor.java:3",
+            "file": "src/flow/CardProcessor.java",
+            "line": 3,
+            "symbol": "src/flow/CardProcessor.java::CardProcessor",
+            "qualname": "CardProcessor",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 2,
+            "parent": "BaseProcessor"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/BaseProcessor.java::BaseProcessor",
+            "file": "src/flow/BaseProcessor.java",
+            "line": 3,
+            "citation": "src/flow/BaseProcessor.java:3",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-008",
+      "repo": "workflow",
+      "kind": "inherits",
+      "arguments": {
+        "target": "CardProcessor",
+        "ancestors": true,
+        "depth": 3
+      },
+      "expected": [
+        {
+          "symbol": "src/flow/BaseProcessor.java::BaseProcessor",
+          "file": "src/flow/CardProcessor.java",
+          "line": 3
+        },
+        {
+          "symbol": "src/flow/Processor.java::Processor",
+          "file": "src/flow/BaseProcessor.java",
+          "line": 3
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/flow/BaseProcessor.java:3",
+            "file": "src/flow/BaseProcessor.java",
+            "line": 3,
+            "symbol": "src/flow/Processor.java::Processor",
+            "qualname": "Processor",
+            "kind": "interface",
+            "relation": "implements",
+            "confidence": "exact",
+            "depth": 2,
+            "declared_by": "BaseProcessor"
+          },
+          {
+            "citation": "src/flow/CardProcessor.java:3",
+            "file": "src/flow/CardProcessor.java",
+            "line": 3,
+            "symbol": "src/flow/BaseProcessor.java::BaseProcessor",
+            "qualname": "BaseProcessor",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "declared_by": "CardProcessor"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/flow/BaseProcessor.java::BaseProcessor",
+            "file": "src/flow/CardProcessor.java",
+            "line": 3,
+            "citation": "src/flow/CardProcessor.java:3",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        }
+      }
+    }
+  ]
+}

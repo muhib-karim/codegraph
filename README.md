@@ -1,6 +1,14 @@
+<p align="center"><img src="docs/assets/banner.svg" alt="codegraph" width="100%"></p>
+
 # codegraph
 
-[![CI](https://github.com/ai-dev-2024/codegraph/actions/workflows/ci.yml/badge.svg)](https://github.com/ai-dev-2024/codegraph/actions/workflows/ci.yml)
+[![CI](https://github.com/muhib-karim/codegraph/actions/workflows/ci.yml/badge.svg)](https://github.com/muhib-karim/codegraph/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/badge/release-v1.0.0-2dd4bf)](https://github.com/muhib-karim/codegraph/releases/latest)
+![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)
+![Languages](https://img.shields.io/badge/indexes-Python%20%7C%20Java-0f766e)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+
+Docs: [Design](DESIGN.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 codegraph answers structural questions about a Python or Java codebase: where a
 symbol is defined, who calls it, what inherits from it, what looks unused and

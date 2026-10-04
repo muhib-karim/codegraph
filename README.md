@@ -269,3 +269,22 @@ browser is installed.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and
 [CHANGELOG.md](CHANGELOG.md). License: [MIT](LICENSE).
+
+## Architecture
+
+```mermaid
+flowchart LR
+  R[(Repository)] --> D[discover.py<br/>find Python + Java files]
+  D --> X[extract_python.py / extract_java.py<br/>tree-sitter parse]
+  X --> V[resolve.py<br/>link calls, imports, inheritance]
+  V --> S[(store.py<br/>embedded graph store)]
+  S --> Q[queries.py<br/>callers, subclasses, dead code, change impact]
+  Q --> SV[service.py]
+  SV --> CLI[cli.py]
+  SV --> MCP[mcp_server.py<br/>MCP tools for agents]
+  SV --> WEB[explorer_server.py + web/<br/>graph explorer]
+  Q --> E[evaluation.py<br/>labelled retrieval eval: eval/questions.jsonl]
+```
+
+Every answer carries `file:line` evidence from the index. `indexer.py` drives discover → extract → resolve → store
+and re-indexes only changed files.

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="300" viewBox="0 0 1280 300">
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a1020"/><stop offset="1" stop-color="#0f2a2a"/></linearGradient></defs>
+  <rect width="1280" height="300" rx="24" fill="url(#bg)"/>
+  <g transform="translate(90,60)" stroke="#2dd4bf" stroke-width="5" fill="none">
+    <line x1="40" y1="40" x2="140" y2="20"/><line x1="40" y1="40" x2="90" y2="140"/><line x1="140" y1="20" x2="190" y2="120"/>
+    <line x1="90" y1="140" x2="190" y2="120"/><line x1="90" y1="140" x2="60" y2="180"/>
+  </g>
+  <g transform="translate(90,60)" fill="#5eead4">
+    <circle cx="40" cy="40" r="16"/><circle cx="140" cy="20" r="13"/><circle cx="90" cy="140" r="18"/><circle cx="190" cy="120" r="14"/><circle cx="60" cy="180" r="10"/>
+  </g>
+  <text x="360" y="150" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="92" font-weight="700" fill="#ffffff">codegraph</text>
+  <text x="364" y="204" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#99f6e4">Checkable answers about Python and Java code, with file:line evidence.</text>
+  <text x="364" y="248" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="22" fill="#5eead4">$ codegraph callers &lt;symbol&gt;  →  every call site, cited as file:line</text>
+</svg>

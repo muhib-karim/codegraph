@@ -169,8 +169,8 @@ exact command and SHA-256 hashes of the question file and every fixture file.
 No network, external harness, browser or model is needed.
 
 The questions cover callers, inheritance, unused candidates, change impact and
-symbol lookup. Labels were written from the fixture source and the intended
-language behavior, not from tool output. Some questions involve runtime
+symbol lookup. Labels follow the fixture source and the intended language
+behavior. Some questions involve runtime
 dispatch and same-arity overloads that the resolver cannot answer correctly;
 they stay in the set and count as failures. Each expected answer has a symbol
 ID and a `file:line` citation. [The label policy](eval/README.md) documents
@@ -199,6 +199,9 @@ How to read the table:
   is no learned relevance score.
 - Citation accuracy is the share of returned `(symbol, file, line)` tuples that
   match a labelled tuple.
+- MRR and hit@5 read the same ranked list per question, so they match
+  whenever the first relevant result is either ranked first or missing from
+  the top 5. That is why the graph row shows 0.9362 for both.
 - Three questions have an empty expected answer. They are excluded from MRR
   and hit@5.
 
@@ -220,10 +223,9 @@ performance on arbitrary repositories.
   without a database server. LadybugDB stores the snapshot locally. The process
   uses a 64 MiB buffer pool and two database worker threads; this is not a cap
   on total memory.
-- **Clean-room implementation.** The parser adapters, resolver, queries and
-  explorer were written for this project without reusing third-party
-  code-graph source. Tree-sitter, the database and the optional MCP SDK are
-  ordinary dependencies.
+- **Small dependency surface.** The parser adapters, resolver, queries and
+  explorer live in this repository. Tree-sitter, the database and the optional
+  MCP SDK are ordinary dependencies.
 
 [DESIGN.md](DESIGN.md) records the original contracts, and
 [the v1 addendum](docs/DESIGN-v1.md) describes the interfaces added in 1.0.0.
@@ -294,22 +296,3 @@ browser is installed.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and
 [CHANGELOG.md](CHANGELOG.md). License: [MIT](LICENSE).
-
-## Architecture
-
-```mermaid
-flowchart LR
-  R[(Repository)] --> D[discover.py<br/>find Python + Java files]
-  D --> X[extract_python.py / extract_java.py<br/>tree-sitter parse]
-  X --> V[resolve.py<br/>link calls, imports, inheritance]
-  V --> S[(store.py<br/>embedded graph store)]
-  S --> Q[queries.py<br/>callers, subclasses, dead code, change impact]
-  Q --> SV[service.py]
-  SV --> CLI[cli.py]
-  SV --> MCP[mcp_server.py<br/>MCP tools for agents]
-  SV --> WEB[explorer_server.py + web/<br/>graph explorer]
-  Q --> E[evaluation.py<br/>labelled retrieval eval: eval/questions.jsonl]
-```
-
-Every answer carries `file:line` evidence from the index. `indexer.py` drives discover → extract → resolve → store
-and re-indexes only changed files.

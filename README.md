@@ -7,6 +7,8 @@
 ![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)
 ![Languages](https://img.shields.io/badge/indexes-Python%20%7C%20Java-0f766e)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+[![Evaluation](https://img.shields.io/badge/eval-50%20labelled%20questions-0f766e)](#evaluation)
+[![Cite](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
 
 Docs: [Design](DESIGN.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -253,6 +255,21 @@ Roadmap, in order: overload resolution by argument type, explicit candidate
 sets for dynamic dispatch, atomic snapshot replacement, pagination inside the
 database, and evaluation on larger, independently labelled repositories. New
 languages should come with their own fixtures and citation conventions.
+
+## Citation
+
+If you use codegraph or its evaluation set, please cite it (GitHub's "Cite this repository"
+button reads [`CITATION.cff`](CITATION.cff)):
+
+```bibtex
+@software{karim_codegraph_2026,
+  author  = {Karim, Muhib},
+  title   = {codegraph: a cited code-structure index for Python and Java, with a labelled retrieval evaluation},
+  year    = {2026},
+  version = {1.0.0},
+  url     = {https://github.com/muhib-karim/codegraph}
+}
+```
 
 ## Development and container
 

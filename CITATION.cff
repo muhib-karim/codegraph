@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use codegraph or its retrieval evaluation, please cite it as below."
+title: "codegraph: a cited code-structure index for Python and Java, with a labelled retrieval evaluation"
+abstract: >-
+  codegraph indexes Python and Java repositories into a symbol graph and answers structural
+  questions (definitions, callers, inheritance, unused candidates, change impact) with a symbol
+  identity and a file:line citation for every result, over a CLI and a read-only MCP server. It
+  ships a 50-question hand-labelled evaluation that compares the graph with a text-search
+  baseline and records hashes of every input.
+type: software
+authors:
+  - family-names: Karim
+    given-names: Muhib
+repository-code: "https://github.com/muhib-karim/codegraph"
+license: MIT
+version: 1.0.0
+date-released: "2026-09-29"
+keywords:
+  - code-search
+  - static-analysis
+  - call-graph
+  - model-context-protocol
+  - retrieval-evaluation

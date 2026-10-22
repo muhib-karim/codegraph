@@ -9,6 +9,6 @@
     <circle cx="40" cy="40" r="16"/><circle cx="140" cy="20" r="13"/><circle cx="90" cy="140" r="18"/><circle cx="190" cy="120" r="14"/><circle cx="60" cy="180" r="10"/>
   </g>
   <text x="360" y="150" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="92" font-weight="700" fill="#ffffff">codegraph</text>
-  <text x="364" y="204" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#99f6e4">Checkable answers about Python and Java code, with file:line evidence.</text>
-  <text x="364" y="248" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="22" fill="#5eead4">$ codegraph callers &lt;symbol&gt;  →  every call site, cited as file:line</text>
+  <text x="364" y="204" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="30" fill="#99f6e4">Cited answers about Python, Java, TypeScript and JavaScript code.</text>
+  <text x="364" y="248" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="22" fill="#5eead4">$ codegraph impact &lt;symbol&gt;  →  every reachable site, cited as file:line</text>
 </svg>

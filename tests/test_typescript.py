@@ -176,3 +176,19 @@ def test_module_resolution_prefers_file_and_maps_js_extension(tmp_path):
             ("util.ts:1", "exact"),
             ("esm.ts:1", "exact"),
         ]
+
+
+def test_jsx_components_and_typed_parameters_bind_calls(tmp_path):
+    (tmp_path / "ui.tsx").write_text(
+        "export class Store {\n  load(): number {\n    return 1;\n  }\n}\n"
+        "export function Panel(props: { n: number }) {\n  return <b>{props.n}</b>;\n}\n"
+        "export function App(store: Store) {\n  store.load();\n  return <Panel n={1} />;\n}\n"
+    )
+    db = tmp_path / "g.lbug"
+    index(str(tmp_path), str(db))
+    with GraphService(str(db)) as graph:
+        rows = graph.query("callees", "App")["results"]
+        assert [(r["qualname"], r["citation"], r["confidence"]) for r in rows] == [
+            ("Store.load", "ui.tsx:10", "exact"),
+            ("Panel", "ui.tsx:11", "exact"),
+        ]

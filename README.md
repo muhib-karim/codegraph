@@ -3,20 +3,26 @@
 # codegraph
 
 [![CI](https://github.com/muhib-karim/codegraph/actions/workflows/ci.yml/badge.svg)](https://github.com/muhib-karim/codegraph/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/badge/release-v1.0.0-2dd4bf)](https://github.com/muhib-karim/codegraph/releases/latest)
-![Python](https://img.shields.io/badge/python-3.11%2B-3776ab)
-![Languages](https://img.shields.io/badge/indexes-Python%20%7C%20Java-0f766e)
+[![CodeQL](https://github.com/muhib-karim/codegraph/actions/workflows/codeql.yml/badge.svg)](https://github.com/muhib-karim/codegraph/actions/workflows/codeql.yml)
+[![Pages](https://github.com/muhib-karim/codegraph/actions/workflows/pages.yml/badge.svg)](https://muhib-karim.github.io/codegraph/)
+[![Release](https://img.shields.io/badge/release-v1.1.0-2dd4bf)](CHANGELOG.md)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12-3776ab)
+![Languages](https://img.shields.io/badge/indexes-Python%20%7C%20Java%20%7C%20TypeScript%20%7C%20JavaScript-0f766e)
+![Typed](https://img.shields.io/badge/mypy-strict-2a6db2)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 [![Evaluation](https://img.shields.io/badge/eval-50%20labelled%20questions-0f766e)](#evaluation)
 [![Cite](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
 
-Docs: [Design](DESIGN.md) · [Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+**Website and live demo: [muhib-karim.github.io/codegraph](https://muhib-karim.github.io/codegraph/)** ·
+Docs: [MCP setup](docs/MCP.md) · [Benchmark](bench/README.md) · [Design](DESIGN.md) ·
+[Changelog](CHANGELOG.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-codegraph answers structural questions about a Python or Java codebase: where a
-symbol is defined, who calls it, what inherits from it, what looks unused and
-what a change might affect. It is for developers and coding agents that need
-checkable evidence before they rename, delete or refactor code. Every answer is
-a symbol identity plus a `file:line` citation that you can open and verify.
+codegraph answers structural questions about a Python, Java, TypeScript or
+JavaScript codebase: where a symbol is defined, who calls it, what it calls,
+what inherits from it, what looks unused and what a change might affect. It is
+for developers and coding agents that need checkable evidence before they
+rename, delete or refactor code. Every answer is a symbol identity plus a
+`file:line` citation that you can open and verify.
 
 Text search is the usual tool for these questions, and it is not enough. It
 matches names in comments and in unrelated classes. It cannot follow an import
@@ -24,52 +30,46 @@ or tell two overloads apart. codegraph parses the code with Tree-sitter,
 resolves names into an embedded graph database and answers with graph queries.
 Each relationship carries a confidence tag. There is no LLM in the answer path.
 
-| Question | Interface | Evidence |
-|---|---|---|
-| Where is this symbol defined? | MCP `find_symbol` | Declaration |
-| Who calls or references it? | CLI `callers`, MCP `callers` | Call or value-reference site |
-| What does it call? | MCP `callees` | Call site, plus target declaration |
-| Which classes inherit from it? | CLI / MCP `inherits` | Class declaring the inheritance edge |
-| What appears unused? | CLI `dead-code`, MCP `dead_code` | Candidate declaration |
-| What might a change affect? | CLI `blast`, MCP `blast_radius` | Reverse call, reference or inheritance site |
-| Is this snapshot current? | MCP `index_status`; CLI `stats` for stored metadata | File starts and coverage counts |
+[![The codegraph Pages demo: a graph of the test fixtures with the impact of `scale` highlighted and its cited call sites listed](docs/assets/demo.png)](https://muhib-karim.github.io/codegraph/)
 
-The local explorer (`codegraph explore`) browses the same snapshot in a
-browser, with source previews and a bounded graph view. Indexing rebuilds the
-database in place, so close the explorer and any MCP server before you
-re-index.
+*The [Pages demo](https://muhib-karim.github.io/codegraph/) runs in the browser
+from a bundled index of this repository's test fixtures; no backend.*
 
-```mermaid
-flowchart LR
-    R[Repository] --> D[Discover]
-    D --> P[Parse: Tree-sitter]
-    P --> X[Resolve names, scopes and arity]
-    X --> G[(Embedded graph DB)]
-    G --> C[CLI]
-    G --> M[MCP server: stdio]
-    G --> E[Loopback explorer]
-    F[Committed fixtures + labels] --> V[Evaluation suite]
-    F --> D
-    G --> V
-    F --> T[Lexical baseline]
-    T --> V
-    V --> O[JSON + Markdown reports]
-```
+| Question | CLI | MCP tool | Evidence |
+|---|---|---|---|
+| Which symbols match a name? | `search` | `search` | Declaration |
+| Where is this symbol defined? | | `find_symbol` | Declaration |
+| Who calls or references it? | `callers` | `callers` | Call or value-reference site |
+| What does it call? | `callees` | `callees` | Call site, plus target declaration |
+| What might a change affect? | `impact` (alias `blast`) | `impact` (alias `blast_radius`) | Reverse call, reference or inheritance site |
+| Which classes inherit from it? | `inherits` | `inherits` | Class declaring the inheritance edge |
+| What appears unused? | `dead-code` | `dead_code` | Candidate declaration |
+| Is this snapshot current? | `stats` (stored metadata) | `index_status` (SHA-256 staleness) | File starts and coverage counts |
 
-## Quickstart
+## Install
 
-Use Python 3.11 or 3.12. From this checkout:
+Use Python 3.11 or 3.12.
 
 ```sh
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -e '.[dev,mcp]'
-codegraph index tests/fixtures/mini
-codegraph callers make --repo tests/fixtures/mini
-codegraph inherits Shape --repo tests/fixtures/mini
-codegraph dead-code --repo tests/fixtures/mini --confidence likely
-codegraph blast SCALE --repo tests/fixtures/mini --depth 2 --json
-codegraph explore --repo tests/fixtures/mini --port 8765
+python3 -m venv .venv && . .venv/bin/activate
+pip install "codegraph[mcp] @ git+https://github.com/muhib-karim/codegraph"
+```
+
+From a checkout, `pip install -e '.[dev,mcp]'` also installs the test and lint
+tools. The core install does not need the MCP SDK. Indexing and queries never
+execute repository source code.
+
+## Usage
+
+```sh
+codegraph index path/to/repo               # writes path/to/repo/.codegraph/graph.lbug
+codegraph search scale --repo path/to/repo
+codegraph callers make --repo path/to/repo
+codegraph callees main --repo path/to/repo
+codegraph impact src/util.ts --repo path/to/repo --depth 2
+codegraph inherits Shape --repo path/to/repo
+codegraph dead-code --repo path/to/repo --confidence likely
+codegraph explore --repo path/to/repo      # read-only loopback explorer
 ```
 
 A captured session against the committed `mini` fixture, after indexing:
@@ -90,30 +90,40 @@ src/demo/Dog.java:16	Dog.neverCalled	method	likely
 ```
 
 Each row is tab-separated: citation, symbol, kind, confidence, then traversal
-depth where it applies. For `callers`, the last column is the caller's own
-declaration.
+depth where it applies. For `callers` and `impact` the last column is the
+caller's own declaration; for `callees` it is the target's declaration.
 
 Useful options:
 
-- `--db PATH` selects a custom database.
-- A symbol can be given as a bare name, a qualified name, or a full
-  `path::qualname/arity` ID.
+- `--json` prints machine-readable output; `--db PATH` selects a custom database.
+- A symbol can be a bare name, a qualified name, or a full `path::qualname/arity` ID.
 - `--in FILE` picks the definition in one file when a name is ambiguous.
 - `--scope PREFIX` keeps only results under a path prefix.
 
-CLI JSON output keeps the v0.1 contract. The exit code is 0 for a completed
-query, including an empty result. It is 2 for an unknown target and 1 for a
-database or operational error.
+The exit code is 0 for a completed query, including an empty result. It is 2
+for an unknown target and 1 for a database or operational error. The explorer
+and MCP server read the database; indexing rebuilds it in place, so close them
+before you re-index.
 
-The core install (`pip install .`) does not need the MCP SDK. Indexing and
-queries never execute repository source code.
+### Languages
 
-## MCP setup
+| Language | Extensions | Resolved |
+|---|---|---|
+| Python | `.py` | scopes, imports, `self`/`super`, constructed locals and attributes, arity |
+| Java | `.java` | packages, imports, declared types, overloads by arity, `this`/`super`, method references |
+| TypeScript | `.ts` `.tsx` `.mts` `.cts` | ES imports, re-export barrels, default exports, classes, interfaces, enums, parameter properties, typed and constructed locals, JSX components |
+| JavaScript | `.js` `.jsx` `.mjs` `.cjs` | ES imports, CommonJS `require`/`module.exports`, classes, arrow functions |
 
-Install the `mcp` extra (`pip install '.[mcp]'`) and index your repository.
-Then add this JSON to the configuration of an MCP-capable agent that supports
-stdio servers, replacing the two absolute paths. The test suite parses this
-exact snippet and runs its command through the official SDK client.
+Relative JS/TS specifiers resolve in Node/TypeScript order (`./x` tries
+`x.ts`, `x.tsx`, ... then `x/index.*`; `./x.js` also finds `x.ts`). Package
+imports and `tsconfig` path aliases are treated as external.
+
+## MCP server
+
+Install the `mcp` extra and index your repository. Then add this JSON to the
+configuration of an MCP-capable agent that supports stdio servers, replacing
+the two absolute paths. The test suite parses this exact snippet and runs its
+command through the official SDK client.
 
 ```json
 {
@@ -126,33 +136,86 @@ exact snippet and runs its command through the official SDK client.
 }
 ```
 
-For a database in a custom location, use
-`codegraph mcp --db /absolute/path/to/graph.lbug`.
+Claude Code:
 
-The server exposes the seven tools listed above and opens the database
-read-only. It offers no raw Cypher, no write operations and no way for a client
-to choose a different repository. Every path argument must name an indexed
-path inside the stored repository root. Path traversal (`..`), absolute paths
-and symlinks that point outside the repository are rejected with a tool error.
+```sh
+claude mcp add codegraph -- /absolute/path/to/codegraph/.venv/bin/codegraph mcp --repo /absolute/path/to/repo
+```
+
+Codex CLI (`~/.codex/config.toml`):
+
+```toml
+[mcp_servers.codegraph]
+command = "/absolute/path/to/codegraph/.venv/bin/codegraph"
+args = ["mcp", "--repo", "/absolute/path/to/repo"]
+```
+
+[docs/MCP.md](docs/MCP.md) has the full tool reference. In short: the server
+exposes `index_status`, `search`, `find_symbol`, `callers`, `callees`,
+`impact`, `blast_radius`, `inherits` and `dead_code`, and opens the database
+read-only. It offers no raw query language, no write operations and no way for
+a client to choose a different repository. Path arguments must name indexed
+paths inside the stored repository root; traversal, absolute paths and
+symlinks that point outside are rejected with a tool error.
 
 An agent should call `index_status` first. It reports parser coverage and
-whether the snapshot is stale. Staleness is detected by comparing SHA-256
-content hashes and by listing added and deleted files. Indexes built before
-1.0.0 have no hashes, so their freshness is reported as unknown until rebuilt.
-File-status rows cite line 1 of each file as an anchor, with confidence
-`not_applicable`. They are metadata, not evidence of a relationship.
+whether the snapshot is stale, by comparing SHA-256 content hashes and listing
+added and deleted files. Responses include `results`, `total`, `truncated` and
+`next_offset`; tools accept `limit` (1 to 100) and `offset`. Traversal depth is
+1 to 10. Definitions have confidence `exact`; relationship results keep the
+tag stored on the graph edge. An empty answer is an empty result list, never an
+invented citation. Stdout carries only the protocol. See the
+[MCP specification](https://modelcontextprotocol.io/specification).
 
-Definitions from `find_symbol` have confidence `exact` and reason `definition`.
-Relationship results keep the confidence tag stored on the graph edge. An
-empty answer is an empty result list, never an invented citation.
+## Architecture
 
-Responses include `results`, `total`, `truncated` and `next_offset`. Tools
-accept `limit` (1 to 100) and `offset`; pass `next_offset` back to get the next
-page. Traversal depth is 1 to 10. It defaults to 1 for callers and to 3 for
-inheritance and blast radius. `callees` returns direct calls only. Paging limits
-the response size, not the database work, because results are materialized
-before paging. Errors are returned as MCP tool errors. Stdout carries only the
-protocol. See the [MCP specification](https://modelcontextprotocol.io/specification).
+```mermaid
+flowchart LR
+    R[Repository] --> D[discover.py<br/>walk + classify]
+    D --> PY[extract_python.py]
+    D --> JV[extract_java.py]
+    D --> TS[extract_ts.py<br/>TS / TSX / JS]
+    PY & JV & TS --> FI[FileInfo records<br/>symbols, calls, refs,<br/>imports, bases, types]
+    FI --> RS[resolve.py<br/>bases, imports, calls, refs<br/>+ confidence tags]
+    RS --> ST[store.py<br/>CSV bulk load]
+    ST --> G[(LadybugDB<br/>embedded graph)]
+    G --> Q[queries.py]
+    Q --> CLI[cli.py]
+    Q --> SV[service.py<br/>path guards, paging]
+    SV --> MCP[mcp_server.py<br/>stdio]
+    Q --> EX[explorer<br/>loopback HTTP]
+    SV --> EV[evaluation.py<br/>50 labelled questions]
+    SV --> BN[bench/run.py<br/>CI benchmark]
+    G --> SITE[scripts/build_site.py<br/>Pages demo JSON]
+```
+
+Indexing runs in two passes. Pass 1 parses each file on its own and records
+declarations, imports, base classes, call sites, value references and simple
+type facts. Pass 2 sees the whole repository: it resolves bases first (so
+inherited members can be found), then imports, calls and references, and tags
+every edge `exact` or `heuristic` with a reason. Calls into the standard
+library or third-party packages are counted, not stored. The graph schema is
+unchanged since 1.0.0.
+
+## Benchmark
+
+The `benchmark` CI job clones three pinned public repositories, indexes each in
+a fresh process and times the query paths the MCP server uses. The table is
+copied unchanged from one CI run; see [bench/README.md](bench/README.md) for the
+method and how to run it yourself.
+
+Runner: GitHub Actions · ubuntu24 20261012.334.1 · Linux 6.17.0-1022-azure · x86_64 · 4 CPUs · Python 3.12.15. Date (UTC): 2026-10-22. codegraph 1.1.0, commit e803967b31b6, run 39705868795.
+
+| Repository | Ref | Parsed files | Parsed LOC | Symbols | Edges | Index (s) | Peak RSS (MB) | callers | callees | impact | search |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| requests (Python) | `v2.32.3` | 36 | 11209 | 928 | 946 | 0.92 | 110.1 | 3.57 ms | 3.12 ms | 11.28 ms | 1.97 ms |
+| zod (TypeScript) | `v3.23.8` | 170 | 30994 | 1915 | 7473 | 1.48 | 128.1 | 5.96 ms | 5.79 ms | 10.11 ms | 1.54 ms |
+| gson (Java) | `gson-parent-2.11.0` | 249 | 53021 | 5757 | 27395 | 2.43 | 142.2 | 89.61 ms | 16.16 ms | 137.99 ms | 5.4 ms |
+
+Query columns are medians of 20 runs after a warm-up, with limit 100. Targets
+are chosen from each graph (the most-called function or method, and the
+function with the most outgoing calls), not hand-picked. Numbers from other
+machines are not comparable.
 
 ## Evaluation
 
@@ -226,37 +289,51 @@ performance on arbitrary repositories.
 - **Small dependency surface.** The parser adapters, resolver, queries and
   explorer live in this repository. Tree-sitter, the database and the optional
   MCP SDK are ordinary dependencies.
+- **One binding model for dynamic languages.** TypeScript and JavaScript
+  imports (ES modules, CommonJS `require`, default exports and re-export
+  barrels) are mapped onto the same lexical binding path the resolver uses for
+  Python, so all four languages answer the same questions the same way.
 
 [DESIGN.md](DESIGN.md) records the original contracts, and
 [the v1 addendum](docs/DESIGN-v1.md) describes the interfaces added in 1.0.0.
+[docs/MCP.md](docs/MCP.md) covers MCP client setup.
 The other files in `docs/` are historical design notes. Some refer to external
 evaluation artifacts that are not part of this repository.
 
-## Limitations and roadmap
+## Limitations
 
-Limitations:
-
-- Only Python and Java produce symbols. Files in other languages are recorded
-  as coverage gaps, and there are no cross-language edges.
 - Reflection, framework registration, dynamic attributes and runtime dispatch
-  are only partly handled.
-- Java overloads are resolved by arity, not by argument types.
+  are only partly handled. In JS/TS, receivers whose type comes from a call
+  result or a library are matched by unique name (`heuristic`) or not at all.
+- Java overloads are resolved by arity, not by argument types. JavaScript calls
+  are not arity-checked, because the language allows any argument count;
+  TypeScript calls are checked against declared parameters.
+- TypeScript `tsconfig` path aliases, package `exports` maps and calls across
+  language boundaries are not resolved.
 - A bare name prefers an exact qualified-name match, so a top-level function
   can hide methods with the same name. Use a qualified name or full ID instead.
 - A dead-code result is an unused candidate under local analysis. It is not
-  proof that the code is unreachable.
+  proof that the code is unreachable. Exported JS/TS symbols are `possible`.
 - The evaluation fixtures are small and were written for this project. They
   are not an independent benchmark.
 - The snapshot is rebuilt in place, so indexing must not run while the
   explorer or MCP server is reading it.
 - The explorer and the freshness checks assume a trusted local repository.
-  Path checks do not stop a local process that swaps files while they run.
 - On syntactically invalid files, parser recovery can keep partial symbols.
 
-Roadmap, in order: overload resolution by argument type, explicit candidate
-sets for dynamic dispatch, atomic snapshot replacement, pagination inside the
-database, and evaluation on larger, independently labelled repositories. New
-languages should come with their own fixtures and citation conventions.
+## Roadmap
+
+1. Labelled TypeScript/JavaScript questions in the evaluation suite, next to
+   the Python and Java ones.
+2. `tsconfig` paths and package `exports` resolution for monorepos.
+3. Overload resolution by argument type, and explicit candidate sets for
+   dynamic dispatch.
+4. Atomic snapshot replacement so readers never see a half-written index.
+5. Pagination inside the database, and evaluation on larger, independently
+   labelled repositories.
+
+New languages should come with their own fixtures, query-level tests and
+citation conventions.
 
 ## Citation
 
@@ -266,9 +343,9 @@ button reads [`CITATION.cff`](CITATION.cff)):
 ```bibtex
 @software{karim_codegraph_2026,
   author  = {Karim, Muhib},
-  title   = {codegraph: a cited code-structure index for Python and Java, with a labelled retrieval evaluation},
+  title   = {codegraph: a cited code-structure index for Python, Java and TypeScript/JavaScript, with a labelled retrieval evaluation},
   year    = {2026},
-  version = {1.0.0},
+  version = {1.1.0},
   url     = {https://github.com/muhib-karim/codegraph}
 }
 ```
@@ -276,23 +353,25 @@ button reads [`CITATION.cff`](CITATION.cff)):
 ## Development and container
 
 ```sh
-make lint typecheck test eval
-make demo
-# Build and run with a writable repository mount for indexing:
-docker build -t codegraph:1.0.0 .
-docker run --rm -v "$PWD/tests/fixtures/mini:/repo" codegraph:1.0.0 index /repo
-docker run --rm -v "$PWD/tests/fixtures/mini:/repo:ro" codegraph:1.0.0 callers make --repo /repo
+make install                      # venv + editable install with dev and MCP extras
+make lint typecheck test eval     # ruff, mypy --strict, pytest (coverage >= 85%), evaluation
+python bench/run.py --local tests/fixtures/web --out /tmp/bench
+python scripts/build_site.py --out _site
+docker build -t codegraph:1.1.0 .
+docker run --rm -v "$PWD/tests/fixtures/mini:/repo" codegraph:1.1.0 index /repo
+docker run --rm -v "$PWD/tests/fixtures/mini:/repo:ro" codegraph:1.1.0 callers make --repo /repo
 ```
 
 The container runs as UID 10001. For indexing, the mounted repository must be
 writable by that user, or pass `--user "$(id -u):$(id -g)"`. To run the MCP
 server in a container, use `docker run -i` without a TTY.
 
-CI runs on Python 3.11 and 3.12. It checks lint and formatting, strict types on
-the new modules and package coverage of at least 85%. It also regenerates the
-evaluation report and fails if the committed report differs, and it builds the
-container and runs a smoke test. Browser tests are optional and skip when no
-browser is installed.
+CI runs on Python 3.11 and 3.12: ruff lint and format, mypy strict over the
+package and scripts, tests with at least 85% package coverage, the evaluation
+(the committed report must match), gitleaks, CodeQL for Python,
+JavaScript/TypeScript and workflows, a container build with a non-root smoke
+test, and the benchmark. Dependabot watches pip, Actions and Docker updates.
+Browser tests are optional and skip when no browser is installed.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and
 [CHANGELOG.md](CHANGELOG.md). License: [MIT](LICENSE).

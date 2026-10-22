@@ -108,7 +108,12 @@ def write(graph, db_path: str, meta: dict):
         ):
             if rows:
                 p = dump(table, rows)
-                conn.execute(f"COPY {table} FROM '{p}' (HEADER=false)")
+                # Explicit dialect: auto-detection samples early rows and turns quoting off
+                # when none of them is quoted, which splits a later quoted field.
+                conn.execute(
+                    f"COPY {table} FROM '{p}' "
+                    "(HEADER=false, AUTO_DETECT=false, DELIM=',', QUOTE='\"', ESCAPE='\"')"
+                )
         conn.close() if hasattr(conn, "close") else None
         db.close() if hasattr(db, "close") else None
     finally:

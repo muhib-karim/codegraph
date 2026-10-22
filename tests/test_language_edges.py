@@ -234,3 +234,21 @@ def test_unknown_dynamic_dispatch_is_not_an_exact_edge(tmp_path):
     assert calls == {("route", "A.unique", "heuristic")}
     assert graph.stats["call_ambiguous"] == 1
     assert graph.stats["call_unresolved"] == 1
+
+
+def test_bulk_load_keeps_quoted_fields_after_many_plain_rows(tmp_path):
+    """The database must not sniff the CSV dialect from early rows: a symbol with two
+    decorators (a quoted, comma-joined field) late in the file broke indexing of real repos."""
+    from codegraph.indexer import index
+    from codegraph.service import GraphService
+
+    plain = "".join(f"def f{i}():\n    pass\n" for i in range(1500))
+    late = "@first\n@second(1)\ndef decorated():\n    pass\n"
+    (tmp_path / "a.py").write_text(plain + late)
+    db = tmp_path / "g.lbug"
+    index(str(tmp_path), str(db))
+    with GraphService(str(db)) as graph:
+        rows = graph.conn.execute(
+            "MATCH (s:Symbol {name: 'decorated'}) RETURN s.annotations"
+        ).get_all()
+    assert rows == [["first,second"]]

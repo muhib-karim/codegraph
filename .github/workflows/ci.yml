@@ -24,6 +24,15 @@ jobs:
         with:
           name: coverage-${{ matrix.python }}
           path: coverage.xml
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   evaluation:
     runs-on: ubuntu-latest
     steps:
@@ -38,14 +47,30 @@ jobs:
         with:
           name: retrieval-evaluation
           path: eval/reports/
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install .
+      - name: Index and query pinned public repositories
+        run: python bench/run.py --out bench-out
+      - run: cat bench-out/latest.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark
+          path: bench-out/
   docker:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t codegraph:1.0.0 .
+      - run: docker build -t codegraph:1.1.0 .
       - name: Non-root index and query smoke test
         run: |
-          docker run --rm --entrypoint sh -v "$PWD/tests/fixtures/mini:/fixture:ro" codegraph:1.0.0 -ec '
+          docker run --rm --entrypoint sh -v "$PWD/tests/fixtures/mini:/fixture:ro" codegraph:1.1.0 -ec '
             test "$(id -u)" != 0
             cp -r /fixture /tmp/repo
             codegraph index /tmp/repo

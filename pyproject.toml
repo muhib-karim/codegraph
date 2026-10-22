@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codegraph"
-version = "1.0.0"
+version = "1.1.0"
 description = "Code graph queries with file:line evidence, a local explorer, and MCP tools"
 readme = "README.md"
 license = "MIT"
@@ -14,6 +14,7 @@ dependencies = [
   "tree-sitter>=0.23,<0.26",
   "tree-sitter-python>=0.23,<0.26",
   "tree-sitter-java>=0.23,<0.24",
+  "tree-sitter-typescript>=0.23,<0.24",
   "ladybug>=0.20,<0.21",
 ]
 
@@ -40,7 +41,7 @@ select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["codegraph/service.py", "codegraph/mcp_server.py", "codegraph/evaluation.py"]
+files = ["codegraph", "bench", "scripts"]
 strict = true
 follow_imports = "silent"
 

@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-import tree_sitter_python as tsp
-from tree_sitter import Language, Parser
+from collections.abc import Sequence
 
-from .extract_common import IdAllocator, end_line, line, module_symbol, text
+import tree_sitter_python as tsp
+from tree_sitter import Language, Node, Parser
+
+from .extract_common import IdAllocator, child, end_line, line, module_symbol, text
 from .model import BaseDecl, CallSite, FileInfo, Import, Ref, Symbol
 
 PY = Language(tsp.language())
@@ -28,7 +30,7 @@ _VALUE_PARENTS = {
 }
 
 
-def _params(params_node, is_method: bool, is_static: bool):
+def _params(params_node: Node | None, is_method: bool, is_static: bool) -> tuple[int, int]:
     """Return (min, max) positional arity; max -1 = unbounded."""
     req = opt = 0
     unbounded = False
@@ -63,7 +65,7 @@ def _params(params_node, is_method: bool, is_static: bool):
     return req, (-1 if unbounded else req + opt)
 
 
-def _argc(args_node):
+def _argc(args_node: Node | None) -> tuple[int, bool]:
     if args_node is None:
         return 0, False
     if args_node.type == "generator_expression":
@@ -80,7 +82,7 @@ def _argc(args_node):
     return n, splat
 
 
-def _identifiers(node):
+def _identifiers(node: Node | None) -> list[Node]:
     if node is None:
         return []
     if node.type == "identifier":
@@ -109,11 +111,11 @@ def extract(path: str, src: bytes) -> FileInfo:
     shadow = []  # lambda parameter name sets currently in scope
     module_vars = {}
 
-    def _bind_local(scope, name):
+    def _bind_local(scope: Symbol, name: str) -> None:
         if scope.kind in ("function", "method"):
             fi.locals.setdefault(scope.id, set()).add(name)
 
-    def bind_targets(left, scope, qual, assign_node):
+    def bind_targets(left: Node, scope: Symbol, qual: str, assign_node: Node | None) -> None:
         """Record names bound by an assignment/loop target; visit sub-expressions that are reads."""
         if left.type == "identifier":
             name = text(left)
@@ -150,7 +152,7 @@ def extract(path: str, src: bytes) -> FileInfo:
             return
         visit(left, scope, qual)  # attribute / subscript targets: object is read
 
-    def visit(node, scope: Symbol, qual: str, decorators=()):
+    def visit(node: Node, scope: Symbol, qual: str, decorators: Sequence[str] = ()) -> None:
         t = node.type
         if t == "decorated_definition":
             decs = [
@@ -292,8 +294,9 @@ def extract(path: str, src: bytes) -> FileInfo:
                     )
                 )
             elif fn is not None and fn.type == "attribute":
-                obj = fn.child_by_field_name("object")
-                attr = text(fn.child_by_field_name("attribute"))
+                obj = child(fn, "object")
+                attr_node = child(fn, "attribute")
+                attr = text(attr_node)
                 if obj.type == "identifier" and text(obj) in ("self", "cls"):
                     rk, rv = "self", text(obj)
                 elif obj.type == "call" and text(obj.child_by_field_name("function")) == "super":
@@ -313,8 +316,8 @@ def extract(path: str, src: bytes) -> FileInfo:
                 fi.calls.append(
                     CallSite(
                         scope.id,
-                        line(fn.child_by_field_name("attribute")),
-                        fn.child_by_field_name("attribute").start_point[1],
+                        line(attr_node),
+                        attr_node.start_point[1],
                         attr,
                         rk,
                         rv,
@@ -406,9 +409,9 @@ def extract(path: str, src: bytes) -> FileInfo:
                     visit(v, scope, qual)
             return
         if t == "identifier":
-            nm = text(node)
-            if not any(nm in sh for sh in shadow):
-                fi.refs.append(Ref(scope.id, line(node), node.start_point[1], nm))
+            ident = text(node)
+            if not any(ident in sh for sh in shadow):
+                fi.refs.append(Ref(scope.id, line(node), node.start_point[1], ident))
             return
         if t == "attribute":
             obj = node.child_by_field_name("object")
@@ -419,7 +422,7 @@ def extract(path: str, src: bytes) -> FileInfo:
                 and par is not None
                 and par.type in _VALUE_PARENTS | {"keyword_argument"}
             ):
-                a = node.child_by_field_name("attribute")
+                a = child(node, "attribute")
                 fi.refs.append(Ref(scope.id, line(a), a.start_point[1], text(a), "self"))
                 return
             if obj is not None:
@@ -432,6 +435,7 @@ def extract(path: str, src: bytes) -> FileInfo:
         visit(c, mod, "")
     if fi.is_script:
         mod.entry_reason = "script"
+    fi.syntax_error = tree.root_node.has_error
     return fi
 
 

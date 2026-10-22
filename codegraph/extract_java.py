@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import tree_sitter_java as tsj
-from tree_sitter import Language, Parser
+from tree_sitter import Language, Node, Parser
 
-from .extract_common import IdAllocator, end_line, line, module_symbol, text
+from .extract_common import IdAllocator, child, end_line, line, module_symbol, text
 from .model import BaseDecl, CallSite, FileInfo, Import, Ref, Symbol
 
 JAVA = Language(tsj.language())
@@ -19,7 +19,7 @@ _CLASS_KINDS = {
 }
 
 
-def type_name(node) -> str:
+def type_name(node: Node | None) -> str:
     """Simple (possibly dotted) type name with generics/arrays stripped."""
     if node is None:
         return ""
@@ -39,7 +39,7 @@ def type_name(node) -> str:
     return text(node)
 
 
-def _modifiers(node):
+def _modifiers(node: Node) -> tuple[str, bool, list[str], bool]:
     vis, static, annos, abstract = "package", False, [], False
     for c in node.children:
         if c.type == "modifiers":
@@ -56,7 +56,7 @@ def _modifiers(node):
     return vis, static, annos, abstract
 
 
-def _arity(params):
+def _arity(params: Node | None) -> tuple[int, int]:
     n, var = 0, False
     if params is None:
         return 0, 0
@@ -68,7 +68,7 @@ def _arity(params):
     return n, (-1 if var else n)
 
 
-def _argc(args):
+def _argc(args: Node | None) -> int:
     if args is None:
         return 0
     return sum(
@@ -84,15 +84,22 @@ def extract(path: str, src: bytes) -> FileInfo:
     mod = module_symbol(ids, path, "java", loc, path.rsplit("/", 1)[-1][:-5])
     fi.symbols.append(mod)
 
-    lam_shadow = []
+    lam_shadow: list[set[str]] = []
 
-    def shadowed(name):
+    def shadowed(name: str) -> bool:
         return any(name in sh for sh in lam_shadow)
 
-    def vt(scope_id):
+    def vt(scope_id: str) -> dict[str, str]:
         return fi.var_types.setdefault(scope_id, {})
 
-    def add_class(node, scope, qual, kind, name, iface_default=False):
+    def add_class(
+        node: Node,
+        scope: Symbol,
+        qual: str,
+        kind: str,
+        name: str,
+        iface_default: bool = False,
+    ) -> tuple[Symbol, str]:
         qn = f"{qual}.{name}" if qual else name
         vis, static, annos, abstract = _modifiers(node)
         if iface_default and vis == "package":
@@ -114,7 +121,7 @@ def extract(path: str, src: bytes) -> FileInfo:
         fi.symbols.append(sym)
         return sym, qn
 
-    def class_body(body, sym, qn):
+    def class_body(body: Node | None, sym: Symbol, qn: str) -> None:
         if body is None:
             return
         for c in body.children:
@@ -161,7 +168,7 @@ def extract(path: str, src: bytes) -> FileInfo:
             else:
                 visit(c, sym, qn)
 
-    def visit(node, scope: Symbol, qual: str):
+    def visit(node: Node, scope: Symbol, qual: str) -> None:
         t = node.type
         if t == "package_declaration":
             for c in node.named_children:
@@ -196,8 +203,10 @@ def extract(path: str, src: bytes) -> FileInfo:
                 if c.type in ("super_interfaces", "extends_interfaces"):
                     kind = "implements" if c.type == "super_interfaces" else "extends"
                     for tl in c.named_children:
-                        for ty in tl.named_children if tl.type == "type_list" else [tl]:
-                            fi.bases.append(BaseDecl(sym.id, type_name(ty), line(ty), kind))
+                        for base_type in tl.named_children if tl.type == "type_list" else [tl]:
+                            fi.bases.append(
+                                BaseDecl(sym.id, type_name(base_type), line(base_type), kind)
+                            )
             if t == "record_declaration":
                 params = node.child_by_field_name("parameters")
                 if params is not None:
@@ -274,23 +283,23 @@ def extract(path: str, src: bytes) -> FileInfo:
                     visit(c, sym, qn)
             return
         if t == "field_declaration" or t == "constant_declaration":
-            ty = type_name(node.child_by_field_name("type"))
+            field_type = type_name(node.child_by_field_name("type"))
             vis, static, annos, _ = _modifiers(node)
             if scope.kind == "interface":
                 vis, static = "public", True
             for d in node.children_by_field_name("declarator"):
-                nm = d.child_by_field_name("name")
-                vt(scope.id)[text(nm)] = ty
-                fname = text(nm)
+                decl_name = d.child_by_field_name("name")
+                vt(scope.id)[text(decl_name)] = field_type
+                fname = text(decl_name)
                 fi.symbols.append(
                     Symbol(
-                        id=ids.make(path, f"{qual}.{fname}", None, line(nm)),
+                        id=ids.make(path, f"{qual}.{fname}", None, line(decl_name)),
                         name=fname,
                         qualname=f"{qual}.{fname}",
                         kind="field",
                         lang="java",
                         file=path,
-                        line=line(nm),
+                        line=line(decl_name),
                         end_line=end_line(d),
                         visibility=vis,
                         is_static=static,
@@ -303,11 +312,11 @@ def extract(path: str, src: bytes) -> FileInfo:
                     visit(v, scope, qual)
             return
         if t in ("local_variable_declaration",):
-            ty = type_name(node.child_by_field_name("type"))
+            local_type = type_name(node.child_by_field_name("type"))
             for d in node.children_by_field_name("declarator"):
                 v = d.child_by_field_name("value")
-                vty = ty
-                if ty == "var" and v is not None and v.type == "object_creation_expression":
+                vty = local_type
+                if local_type == "var" and v is not None and v.type == "object_creation_expression":
                     vty = type_name(v.child_by_field_name("type"))
                 vt(scope.id)[text(d.child_by_field_name("name"))] = vty
                 if v is not None:
@@ -325,7 +334,7 @@ def extract(path: str, src: bytes) -> FileInfo:
                 vt(scope.id)[text(nm)] = type_name(ct.named_children[0])
             return
         if t == "method_invocation":
-            nm = node.child_by_field_name("name")
+            nm = child(node, "name")
             obj = node.child_by_field_name("object")
             args = node.child_by_field_name("arguments")
             if obj is None:
@@ -340,7 +349,7 @@ def extract(path: str, src: bytes) -> FileInfo:
                     fi.refs.append(Ref(scope.id, line(obj), obj.start_point[1], rv, "none"))
             elif obj.type == "field_access" and text(obj.child_by_field_name("object")) == "this":
                 rk, rv = "attr_self", text(obj.child_by_field_name("field"))
-                f = obj.child_by_field_name("field")
+                f = child(obj, "field")
                 fi.refs.append(Ref(scope.id, line(f), f.start_point[1], rv, "field", "this"))
             elif obj.type in ("field_access", "scoped_identifier"):
                 rk, rv = "dotted", text(obj).replace(" ", "")
@@ -407,7 +416,7 @@ def extract(path: str, src: bytes) -> FileInfo:
                 if c == left and is_plain:
                     if left.type == "field_access":
                         visit(
-                            left.child_by_field_name("object"), scope, qual
+                            child(left, "object"), scope, qual
                         )  # object is read, field is written
                     elif left.type != "identifier":
                         visit(left, scope, qual)
@@ -444,7 +453,7 @@ def extract(path: str, src: bytes) -> FileInfo:
                 fi.refs.append(Ref(scope.id, line(f), f.start_point[1], text(f), "field", rv))
             return
         if t == "identifier":
-            nm = text(node)
+            ident = text(node)
             par = node.parent.type if node.parent is not None else ""
             if par not in (
                 "labeled_statement",
@@ -454,12 +463,13 @@ def extract(path: str, src: bytes) -> FileInfo:
                 "annotation",
                 "element_value_pair",
                 "scoped_identifier",
-            ) and not shadowed(nm):
-                fi.refs.append(Ref(scope.id, line(node), node.start_point[1], nm, "none"))
+            ) and not shadowed(ident):
+                fi.refs.append(Ref(scope.id, line(node), node.start_point[1], ident, "none"))
             return
         for c in node.children:
             visit(c, scope, qual)
 
     for c in tree.root_node.children:
         visit(c, mod, "")
+    fi.syntax_error = tree.root_node.has_error
     return fi

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 Rows = list[dict[str, Any]]
@@ -25,7 +26,8 @@ class NotFound(Exception):
 
 
 def _rows(conn: Any, q: str, params: dict[str, Any] | None = None) -> list[Any]:
-    return conn.execute(q, params or {}).get_all()
+    rows: list[Any] = conn.execute(q, params or {}).get_all()
+    return rows
 
 
 def _sym(row: Any) -> dict[str, Any]:
@@ -43,7 +45,7 @@ def resolve_symbol(
     and Java fully-qualified names."""
     kinds = kinds or CODE_KINDS + (["external"] if allow_external else [])
     base = "MATCH (s:Symbol) WHERE s.kind IN $kinds "
-    tries = []
+    tries: list[tuple[str, dict[str, Any]]] = []
     if "::" in query:
         tries.append(
             (
@@ -77,7 +79,9 @@ def resolve_symbol(
     raise NotFound(query)
 
 
-def _incoming(conn, ids, rels=("CALLS", "REFERENCES")):
+def _incoming(
+    conn: Any, ids: Iterable[str], rels: tuple[str, ...] = ("CALLS", "REFERENCES")
+) -> list[Any]:
     out = []
     for rel in rels:
         if rel == "INHERITS":
@@ -95,14 +99,14 @@ def _incoming(conn, ids, rels=("CALLS", "REFERENCES")):
     return out
 
 
-def _scoped(results, scope):
+def _scoped(results: Rows, scope: str) -> Rows:
     if not scope:
         return results
     s = scope.rstrip("/")
     return [r for r in results if r["file"] == s or r["file"].startswith(s + "/")]
 
 
-def _sort(results):
+def _sort(results: Rows) -> Rows:
     return sorted(
         results, key=lambda r: (r["file"], r["line"], r.get("qualname", ""), r.get("depth", 0))
     )
@@ -328,6 +332,65 @@ def blast(
         frontier = nxt
     results = _scoped(results, scope)
     return [_sym(t) for t in targets], _sort(results)
+
+
+def callees(conn: Any, target: str, in_file: str = "", scope: str = "") -> tuple[Rows, Rows]:
+    """Direct outgoing calls: one row per (call site, target definition)."""
+    resolved = [_sym(r) for r in resolve_symbol(conn, target, in_file)]
+    rows = _rows(
+        conn,
+        "MATCH (s:Symbol)-[r:CALLS]->(t:Symbol) WHERE s.id IN $ids "
+        "RETURN t.id, t.qualname, t.kind, t.file, t.line, r.file, r.line, "
+        "r.confidence, r.reason, s.id ORDER BY r.file, r.line, t.id",
+        {"ids": [r["id"] for r in resolved]},
+    )
+    results = [
+        {
+            "symbol": sid,
+            "qualname": qn,
+            "kind": kind,
+            "file": f,
+            "line": ln,
+            "citation": f"{f}:{ln}",
+            "def": f"{df}:{dl}",
+            "confidence": conf,
+            "reason": reason,
+            "caller": caller,
+            "edge": "call",
+        }
+        for sid, qn, kind, df, dl, f, ln, conf, reason, caller in rows
+    ]
+    return resolved, _scoped(results, scope)
+
+
+def search(conn: Any, query: str, kinds: list[str] | None = None, scope: str = "") -> Rows:
+    """Case-insensitive substring search over symbol names (qualified names when the query
+    contains a dot). Exact matches rank first, then prefixes, then other substrings."""
+    q = query.lower()
+    field = "s.qualname" if "." in q else "s.name"
+    rows = _rows(
+        conn,
+        f"MATCH (s:Symbol) WHERE s.kind IN $kinds AND lower({field}) CONTAINS $q RETURN {SYM_COLS}",
+        {"q": q, "kinds": kinds or CODE_KINDS},
+    )
+    results = [
+        {
+            **_sym(r),
+            "symbol": r[0],
+            "name": r[5],
+            "lang": r[9],
+            "citation": f"{r[3]}:{r[4]}",
+            "confidence": "exact",
+            "reason": "name-match",
+        }
+        for r in rows
+    ]
+
+    def rank(r: dict[str, Any]) -> tuple[int, str, int, str]:
+        key = (r["qualname"] if "." in q else r["name"]).lower()
+        return (0 if key == q else 1 if key.startswith(q) else 2, r["file"], r["line"], r["id"])
+
+    return sorted(_scoped(results, scope), key=rank)
 
 
 def meta(conn: Any) -> dict[str, str]:

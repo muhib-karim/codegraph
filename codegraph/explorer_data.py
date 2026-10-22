@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import subprocess
 from pathlib import Path
+from typing import Any
 
 from . import SCHEMA_VERSION, queries, store
 
@@ -12,23 +13,28 @@ MAX_PAGE = 100
 MAX_GRAPH = 200
 
 
+Record = dict[str, Any]
+Num = int | str  # HTTP parameters arrive as strings
+
+
 class BadRequest(ValueError):
     pass
 
 
 class Explorer:
-    def __init__(self, db_path):
+    def __init__(self, db_path: str) -> None:
         self.db, self.conn = store.connect(db_path)
         self.meta = queries.meta(self.conn)
         if int(self.meta.get("schema_version", "-1")) != SCHEMA_VERSION:
             raise BadRequest("Unsupported graph schema version")
         self.root = Path(self.meta["repo_root"]).resolve()
 
-    def rows(self, statement, params=None):
-        return self.conn.execute(statement, params or {}).get_all()
+    def rows(self, statement: str, params: Record | None = None) -> list[Any]:
+        rows: list[Any] = self.conn.execute(statement, params or {}).get_all()
+        return rows
 
-    def status(self):
-        m = dict(self.meta)
+    def status(self) -> Record:
+        m: Record = dict(self.meta)
         m["stats"] = json.loads(m.get("stats", "{}"))
         m["indexed_commit"] = m.get("repo_commit", "")
         try:
@@ -59,7 +65,7 @@ class Explorer:
         return m
 
     @staticmethod
-    def page(limit, cursor):
+    def page(limit: Num, cursor: Num) -> tuple[int, int]:
         try:
             n, offset = int(limit), int(cursor)
         except (TypeError, ValueError):
@@ -69,7 +75,7 @@ class Explorer:
         return n, offset
 
     @staticmethod
-    def sliced(items, limit, cursor):
+    def sliced(items: list[Any], limit: Num, cursor: Num) -> Record:
         n, offset = Explorer.page(limit, cursor)
         return {
             "items": items[offset : offset + n],
@@ -78,7 +84,7 @@ class Explorer:
             "truncated": offset + n < len(items),
         }
 
-    def files(self, prefix="", limit=50, cursor=0):
+    def files(self, prefix: str = "", limit: Num = 50, cursor: Num = 0) -> Record:
         # prefix filters by repo-relative path, never touches the filesystem
         rows = self.rows(
             "MATCH (f:File) WHERE f.path STARTS WITH $prefix "
@@ -89,7 +95,7 @@ class Explorer:
             [dict(zip(("path", "lang", "loc", "parsed"), r)) for r in rows], limit, cursor
         )
 
-    def file(self, path, limit=50, cursor=0):
+    def file(self, path: str, limit: Num = 50, cursor: Num = 0) -> Record:
         info = self.rows(
             "MATCH (f:File {path: $path}) RETURN f.path, f.lang, f.loc, f.parsed", {"path": path}
         )
@@ -109,7 +115,7 @@ class Explorer:
             ),
         }
 
-    def symbols(self, q="", file="", limit=50, cursor=0):
+    def symbols(self, q: str = "", file: str = "", limit: Num = 50, cursor: Num = 0) -> Record:
         if len(q) > 200:
             raise BadRequest("Search too long")
         statement = (
@@ -122,7 +128,7 @@ class Explorer:
             [dict(zip(("id", "qualname", "kind", "file", "line"), r)) for r in rows], limit, cursor
         )
 
-    def symbol(self, sid):
+    def symbol(self, sid: str) -> Record:
         rows = self.rows(
             "MATCH (s:Symbol {id: $id}) RETURN s.id, s.name, s.qualname, s.kind, s.lang, "
             "s.file, s.line, s.end_line, s.parent_id, s.entry_reason, s.visibility",
@@ -162,7 +168,13 @@ class Explorer:
         item["children_truncated"] = len(children) > MAX_PAGE
         return item
 
-    def neighborhood(self, sid, direction="both", relations="CALLS,REFERENCES,INHERITS", limit=100):
+    def neighborhood(
+        self,
+        sid: str,
+        direction: str = "both",
+        relations: str = "CALLS,REFERENCES,INHERITS",
+        limit: Num = 100,
+    ) -> Record:
         if direction not in ("in", "out", "both"):
             raise BadRequest("Invalid direction")
         kinds = relations.split(",")
@@ -225,17 +237,17 @@ class Explorer:
 
     def query(
         self,
-        command,
-        target="",
-        file="",
-        scope="",
-        depth=None,
-        ancestors=False,
-        kind="",
-        confidence="all",
-        limit=50,
-        cursor=0,
-    ):
+        command: str,
+        target: str = "",
+        file: str = "",
+        scope: str = "",
+        depth: Num | None = None,
+        ancestors: bool = False,
+        kind: str = "",
+        confidence: str = "all",
+        limit: Num = 50,
+        cursor: Num = 0,
+    ) -> Record:
         if len(target) > 512 or len(file) > 512 or len(scope) > 512:
             raise BadRequest("Query too long")
         if command == "callers":
@@ -268,7 +280,7 @@ class Explorer:
         }
 
     @staticmethod
-    def depth(value, default, min_value):
+    def depth(value: Num | None, default: int, min_value: int) -> int:
         try:
             n = default if value is None else int(value)
         except (TypeError, ValueError):
@@ -277,12 +289,12 @@ class Explorer:
             raise BadRequest("Depth out of range")
         return n
 
-    def source(self, path, start, end):
+    def source(self, path: str, start: Num, end: Num) -> Record:
         try:
-            start, end = int(start), int(end)
+            first, last = int(start), int(end)
         except (TypeError, ValueError):
             raise BadRequest("Invalid source range")
-        if not 1 <= start <= end <= start + 59:
+        if not 1 <= first <= last <= first + 59:
             raise BadRequest("Source range out of bounds")
         if (
             not path
@@ -301,11 +313,11 @@ class Explorer:
             or not candidate.is_file()
         ):
             raise queries.NotFound(path)
-        lines = []
+        lines: list[Record] = []
         with candidate.open("r", encoding="utf-8", errors="replace") as stream:
             for number, line in enumerate(stream, 1):
-                if number > end:
+                if number > last:
                     break
-                if number >= start:
+                if number >= first:
                     lines.append({"line": number, "text": line.rstrip("\n\r")[:2000]})
         return {"path": path, "lines": lines, "indexed_commit": self.meta.get("repo_commit")}

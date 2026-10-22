@@ -6,15 +6,17 @@ import argparse
 import json
 import os
 import sys
+from collections.abc import Callable
+from typing import Any
 
 from . import SCHEMA_VERSION, __version__, queries, store
 
 DEFAULT_DB = os.path.join(".codegraph", "graph.lbug")
 
 
-def find_db(args):
+def find_db(args: argparse.Namespace) -> str:
     if getattr(args, "db", None):
-        return args.db
+        return str(args.db)
     if getattr(args, "repo", None):
         return os.path.join(args.repo, DEFAULT_DB)
     d = os.getcwd()
@@ -28,7 +30,16 @@ def find_db(args):
         d = nd
 
 
-def emit(args, command, query, resolved, results, db, extra=None, error=None):
+def emit(
+    args: argparse.Namespace,
+    command: str,
+    query: str,
+    resolved: list[dict[str, Any]],
+    results: list[dict[str, Any]],
+    db: str,
+    extra: dict[str, Any] | None = None,
+    error: str | None = None,
+) -> None:
     answers, seen = [], set()
     for r in results:
         k = (r["file"], r["line"])
@@ -62,16 +73,18 @@ def emit(args, command, query, resolved, results, db, extra=None, error=None):
             r.get("kind", ""),
             r.get("dead_confidence", r.get("confidence", "")),
         ]
-        if "depth" in r and command in ("callers", "blast", "inherits"):
+        if "depth" in r and command in ("callers", "blast", "impact", "inherits"):
             cols.append(str(r["depth"]))
         if "via" in r:
             cols.append(r.get("def", r["via"]))
+        elif command == "callees":
+            cols.append(r["def"])
         print("\t".join(str(c) for c in cols))
     if not results:
         print(f"# no results ({command} {query})", file=sys.stderr)
 
 
-def cmd_index(args):
+def cmd_index(args: argparse.Namespace) -> int:
     from .indexer import index
 
     repo = os.path.abspath(args.path)
@@ -101,10 +114,20 @@ def cmd_index(args):
             )
         if stats["parse_errors"]:
             print("parse errors: " + "; ".join(stats["parse_errors"]))
+        if stats["files_with_syntax_errors"]:
+            print(
+                "syntax errors (recovered; some declarations may be missing): "
+                + ", ".join(stats["files_with_syntax_errors"][:10])
+            )
     return 0
 
 
-def run_query(args, command, fn, query):
+def run_query(
+    args: argparse.Namespace,
+    command: str,
+    fn: Callable[[Any], tuple[list[dict[str, Any]], list[dict[str, Any]]]],
+    query: str,
+) -> int:
     db = find_db(args)
     try:
         _db, conn = store.connect(db)
@@ -120,7 +143,7 @@ def run_query(args, command, fn, query):
     return 0
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         prog="codegraph",
         description="Codebase knowledge graph: index a repo, then ask "
@@ -129,7 +152,7 @@ def main(argv=None):
     ap.add_argument("--version", action="version", version=f"codegraph {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    def common(p):
+    def common(p: argparse.ArgumentParser) -> None:
         p.add_argument("--db", help=f"graph path (default: nearest {DEFAULT_DB})")
         p.add_argument("--repo", help="repo root whose graph to use")
         p.add_argument("--json", action="store_true", help="machine-readable output")
@@ -149,6 +172,16 @@ def main(argv=None):
     p.add_argument("--depth", type=int, default=1)
     common(p)
 
+    p = sub.add_parser("callees", help="what a symbol calls directly")
+    p.add_argument("symbol")
+    p.add_argument("--in", dest="in_file", default="")
+    common(p)
+
+    p = sub.add_parser("search", help="find symbols by name substring")
+    p.add_argument("query")
+    p.add_argument("--kind", default="", help="comma list of symbol kinds")
+    common(p)
+
     p = sub.add_parser("inherits", help="subclasses (or ancestors) of a class")
     p.add_argument("symbol")
     p.add_argument("--in", dest="in_file", default="")
@@ -165,7 +198,9 @@ def main(argv=None):
     p.add_argument("--confidence", choices=["all", "likely", "possible"], default="all")
     common(p)
 
-    p = sub.add_parser("blast", help="what can break if a file or symbol changes")
+    p = sub.add_parser(
+        "blast", aliases=["impact"], help="what can break if a file or symbol changes"
+    )
     p.add_argument("target")
     p.add_argument("--in", dest="in_file", default="")
     p.add_argument("--depth", type=int, default=3, help="0 = unbounded")
@@ -242,6 +277,29 @@ def main(argv=None):
             lambda c: queries.callers(c, args.symbol, args.in_file, args.depth, args.scope),
             args.symbol,
         )
+    if args.cmd == "callees":
+        return run_query(
+            args,
+            "callees",
+            lambda c: queries.callees(c, args.symbol, args.in_file, args.scope),
+            args.symbol,
+        )
+    if args.cmd == "search":
+        kinds = [k for k in args.kind.split(",") if k] or None
+        if not 0 < len(args.query) <= 512:
+            print("error: a search query of 1..512 characters is required", file=sys.stderr)
+            return 1
+        if kinds and any(k not in queries.CODE_KINDS for k in kinds):
+            print(
+                f"error: unknown symbol kind; use {', '.join(queries.CODE_KINDS)}", file=sys.stderr
+            )
+            return 1
+        return run_query(
+            args,
+            "search",
+            lambda c: ([], queries.search(c, args.query, kinds, args.scope)),
+            args.query,
+        )
     if args.cmd == "inherits":
         return run_query(
             args,
@@ -259,10 +317,10 @@ def main(argv=None):
             lambda c: ([], queries.dead_code(c, args.scope, kinds, args.confidence)),
             args.scope,
         )
-    if args.cmd == "blast":
+    if args.cmd in ("blast", "impact"):
         return run_query(
             args,
-            "blast",
+            args.cmd,
             lambda c: queries.blast(c, args.target, args.in_file, args.depth, args.scope),
             args.target,
         )

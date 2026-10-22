@@ -1,0 +1,20 @@
+[
+  {
+    "name": "requests",
+    "url": "https://github.com/psf/requests.git",
+    "ref": "v2.32.3",
+    "language": "Python"
+  },
+  {
+    "name": "zod",
+    "url": "https://github.com/colinhacks/zod.git",
+    "ref": "v3.23.8",
+    "language": "TypeScript"
+  },
+  {
+    "name": "gson",
+    "url": "https://github.com/google/gson.git",
+    "ref": "gson-parent-2.11.0",
+    "language": "Java"
+  }
+]

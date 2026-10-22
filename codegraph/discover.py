@@ -33,7 +33,13 @@ LANG_BY_EXT = {
     ".sh": "shell",
     ".smali": "smali",
     ".js": "javascript",
+    ".jsx": "javascript",
+    ".mjs": "javascript",
+    ".cjs": "javascript",
     ".ts": "typescript",
+    ".tsx": "typescript",
+    ".mts": "typescript",
+    ".cts": "typescript",
     ".go": "go",
     ".rs": "rust",
     ".c": "c",
@@ -48,12 +54,12 @@ LANG_BY_EXT = {
     ".tsv": "tsv",
     ".txt": "text",
 }
-PARSED_LANGS = {"python", "java"}
+PARSED_LANGS = {"python", "java", "javascript", "typescript"}
 
 
-def discover(root: str):
+def discover(root: str) -> list[tuple[str, str]]:
     """Yield (relpath, lang) for every file under root, sorted."""
-    out = []
+    out: list[tuple[str, str]] = []
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = sorted(
             d for d in dirnames if d not in SKIP_DIRS and not d.endswith(".egg-info")

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'">
+<title>codegraph · cited answers about your code</title>
+<meta name="description" content="codegraph indexes Python, Java, TypeScript and JavaScript into a code graph and answers callers, callees, impact and search queries with file:line citations, from a CLI or an MCP server.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script defer src="demo.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar">
+  <a class="brand" href="#top" aria-label="codegraph home">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><g stroke="currentColor" stroke-width="4" fill="none"><path d="M14 16 44 10M14 16l14 32M44 10l12 26M28 48l28-12M28 48l-6 10"/></g><g fill="#5eead4"><circle cx="14" cy="16" r="7"/><circle cx="44" cy="10" r="6"/><circle cx="28" cy="48" r="8"/><circle cx="56" cy="36" r="6"/><circle cx="22" cy="58" r="4"/></g></svg>
+    <span>codegraph</span><small>v{{VERSION}}</small>
+  </a>
+  <nav aria-label="Sections">
+    <a href="#demo">Demo</a><a href="#quickstart">Quickstart</a><a href="#mcp">MCP</a><a href="#benchmark">Benchmark</a>
+    <a class="gh" href="https://github.com/muhib-karim/codegraph">GitHub</a>
+  </nav>
+</header>
+
+<main id="main">
+<section class="hero" id="top">
+  <div class="hero-copy">
+    <h1>Ask who calls what. Get <span class="cite">file:line</span> answers.</h1>
+  </div>
+  <div class="hero-install">
+    <p class="lede">codegraph parses Python, Java, TypeScript and JavaScript with Tree-sitter, resolves names into an embedded graph database and answers <em>callers</em>, <em>callees</em>, <em>impact</em> and <em>search</em> for people and coding agents. Every result is a symbol plus a citation you can open. No LLM sits in the answer path.</p>
+
+    <pre class="cmd" aria-label="Install"><code>pip install "codegraph[mcp] @ git+https://github.com/muhib-karim/codegraph"</code></pre>
+    <p class="fine">Python 3.11 or 3.12 · MIT licence · indexing never executes repository code</p>
+  </div>
+</section>
+
+<section class="demo" id="demo" aria-labelledby="demo-title">
+  <div class="demo-head">
+    <h2 id="demo-title">The graph, live in your browser</h2>
+    <p>This is a real index of the project's own test fixtures ({{SAMPLE_COUNTS}} across four languages), exported to JSON at build time. Pick a symbol: the panel answers the same questions as the CLI, from the same edges.</p>
+  </div>
+  <div class="stage">
+    <figure class="canvas">
+      <svg id="graph" role="img" aria-labelledby="graph-desc"><desc id="graph-desc">Call, reference and inheritance graph of the codegraph test fixtures. Use the symbol search beside it to explore with the keyboard.</desc></svg>
+      <figcaption class="legend" aria-label="Legend">
+        <span><i class="dot py"></i>Python</span><span><i class="dot java"></i>Java</span><span><i class="dot ts"></i>TypeScript</span><span><i class="dot js"></i>JavaScript</span>
+        <span><i class="ln call"></i>call</span><span><i class="ln ref"></i>reference</span><span><i class="ln inh"></i>inherits</span><span><i class="ln heur"></i>heuristic</span>
+      </figcaption>
+      <p class="noscript" id="graph-status" role="status">Loading the sample index…</p>
+    </figure>
+    <aside class="inspector" aria-label="Query panel">
+      <label for="find">Find a symbol</label>
+      <input id="find" type="search" autocomplete="off" spellcheck="false" placeholder="scale, Circle.area, Emitter.emit…" aria-controls="matches">
+      <div id="matches" class="matches" role="listbox" aria-label="Matching symbols" hidden></div>
+      <div class="selected" aria-live="polite">
+        <h3 id="sel-name">—</h3>
+        <p id="sel-meta" class="meta"></p>
+      </div>
+      <div class="seg" role="tablist" aria-label="Question">
+        <button role="tab" id="tab-callers" aria-selected="false" data-q="callers">Callers</button>
+        <button role="tab" id="tab-callees" aria-selected="false" data-q="callees">Callees</button>
+        <button role="tab" id="tab-impact" aria-selected="true" data-q="impact">Impact</button>
+      </div>
+      <pre class="equiv" aria-label="Equivalent command"><code id="equiv"></code></pre>
+      <ol id="answers" class="answers" aria-live="polite"></ol>
+    </aside>
+  </div>
+</section>
+
+<section class="quick" id="quickstart" aria-labelledby="qs-title">
+  <div class="steps">
+    <h2 id="qs-title">Quickstart</h2>
+    <ol>
+      <li><strong>Install</strong> into a virtual environment (Python 3.11+).<pre class="cmd"><code>python3 -m venv .venv &amp;&amp; . .venv/bin/activate
+pip install "codegraph[mcp] @ git+https://github.com/muhib-karim/codegraph"</code></pre></li>
+      <li><strong>Index</strong> a repository. The graph lands in <code>.codegraph/</code> inside it.<pre class="cmd"><code>codegraph index path/to/repo</code></pre></li>
+      <li><strong>Ask.</strong> Rows are tab-separated: citation, symbol, kind, confidence, then depth or the definition.</li>
+    </ol>
+    <p class="fine"><code>exact</code> means a static binding under the resolver's rules; <code>heuristic</code> marks a unique-name guess for an untyped receiver. Neither proves runtime behaviour.</p>
+  </div>
+  <figure class="term" aria-label="Captured terminal session">
+    <figcaption>Output captured from <code>tests/fixtures/web</code> when this page was built</figcaption>
+    <pre><code>{{CLI_SESSION}}</code></pre>
+  </figure>
+</section>
+
+<section class="mcp" id="mcp" aria-labelledby="mcp-title">
+  <h2 id="mcp-title">Give your coding agent the graph</h2>
+  <p class="lede narrow"><code>codegraph mcp</code> serves the index read-only over stdio with the official MCP SDK. Paths outside the indexed repository are refused, responses are paged, and every row keeps its citation and confidence.</p>
+  <div class="cfg">
+    <div>
+      <h3>Claude Code</h3>
+      <pre class="cmd"><code>claude mcp add codegraph -- /abs/.venv/bin/codegraph mcp --repo /abs/repo</code></pre>
+    </div>
+    <div>
+      <h3>Codex CLI · <code>~/.codex/config.toml</code></h3>
+      <pre class="cmd"><code>[mcp_servers.codegraph]
+command = "/abs/.venv/bin/codegraph"
+args = ["mcp", "--repo", "/abs/repo"]</code></pre>
+    </div>
+  </div>
+  <dl class="tools">
+    <div><dt>search</dt><dd>symbols by name substring, exact matches first</dd></div>
+    <div><dt>callers</dt><dd>incoming calls and value references</dd></div>
+    <div><dt>callees</dt><dd>direct outgoing calls with target definitions</dd></div>
+    <div><dt>impact</dt><dd>what a change to a symbol or file can reach</dd></div>
+    <div><dt>find_symbol</dt><dd>definitions for a name or full id</dd></div>
+    <div><dt>inherits</dt><dd>descendants or ancestors</dd></div>
+    <div><dt>dead_code</dt><dd>unused candidates, never proof</dd></div>
+    <div><dt>index_status</dt><dd>coverage and staleness by SHA-256</dd></div>
+  </dl>
+</section>
+
+<section class="bench" id="benchmark" aria-labelledby="bench-title">
+  <h2 id="bench-title">Benchmark</h2>
+  <p class="lede narrow">Three pinned public repositories, cloned and indexed on the GitHub-hosted Linux runner by the <code>benchmark</code> CI job. The numbers below are copied from one run, unchanged.</p>
+  {{BENCH_TABLE}}
+</section>
+</main>
+
+<footer class="foot">
+  <p>Static analysis has limits: reflection, framework wiring and runtime dispatch are only partly visible, and TypeScript path aliases are not resolved. Dead-code results are candidates.</p>
+  <p><a href="https://github.com/muhib-karim/codegraph#readme">README</a> · <a href="https://github.com/muhib-karim/codegraph/blob/main/CHANGELOG.md">Changelog</a> · <a href="https://github.com/muhib-karim/codegraph/blob/main/docs/MCP.md">MCP guide</a> · MIT licence</p>
+</footer>
+</body>
+</html>

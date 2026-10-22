@@ -20,7 +20,7 @@ class Symbol:
     arity_max: int = 0  # -1 = unbounded
     visibility: str = "public"
     is_static: bool = False
-    annotations: list = field(default_factory=list)
+    annotations: list[str] = field(default_factory=list)
     parent_id: Optional[str] = None
     entry_reason: str = ""
 
@@ -72,15 +72,19 @@ class FileInfo:
     parsed: bool
     content_hash: str = ""
     package: str = ""
-    symbols: list = field(default_factory=list)
-    calls: list = field(default_factory=list)
-    refs: list = field(default_factory=list)
-    imports: list = field(default_factory=list)
-    bases: list = field(default_factory=list)
+    symbols: list[Symbol] = field(default_factory=list)
+    calls: list[CallSite] = field(default_factory=list)
+    refs: list[Ref] = field(default_factory=list)
+    imports: list[Import] = field(default_factory=list)
+    bases: list[BaseDecl] = field(default_factory=list)
     # scope-id -> {var: type-text}; for classes this holds field / self.attr types
-    var_types: dict = field(default_factory=dict)
+    var_types: dict[str, dict[str, str]] = field(default_factory=dict)
     is_script: bool = False
     # scope-id -> names bound locally in that function scope (params, assignments, loop vars)
-    locals: dict = field(default_factory=dict)
+    locals: dict[str, set[str]] = field(default_factory=dict)
     # scope-id -> names declared `global` in that function
-    globals_decl: dict = field(default_factory=dict)
+    globals_decl: dict[str, set[str]] = field(default_factory=dict)
+    # JS/TS: exported name -> local name ("default" for the default export)
+    exports: dict[str, str] = field(default_factory=dict)
+    # the parser recovered from a syntax error; some declarations may be missing
+    syntax_error: bool = False

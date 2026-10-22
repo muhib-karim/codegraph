@@ -25,7 +25,8 @@ def create_server(db_path: str) -> FastMCP:
     server = FastMCP(
         "codegraph",
         lifespan=lifespan,
-        instructions="Read-only indexed Python/Java snapshot. Inspect index_status first. "
+        instructions="Read-only indexed Python/Java/TypeScript/JavaScript snapshot. "
+        "Inspect index_status first; use search to find symbol names. "
         "Citations are repo-relative; exact describes static binding, not runtime proof.",
     )
     annotations = ToolAnnotations(
@@ -110,6 +111,33 @@ def create_server(db_path: str) -> FastMCP:
         return graph.query(
             "blast", target, in_file=in_file, scope=scope, depth=depth, limit=limit, offset=offset
         )
+
+    @server.tool(annotations=annotations)
+    def impact(
+        target: str,
+        in_file: str = "",
+        scope: str = "",
+        depth: int = 3,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """What a change to a symbol or indexed file can affect: reverse calls, references
+        and inheritance, with depth 1..10 (default 3). Same answer as blast_radius."""
+        return graph.query(
+            "impact", target, in_file=in_file, scope=scope, depth=depth, limit=limit, offset=offset
+        )
+
+    @server.tool(annotations=annotations)
+    def search(
+        query: str,
+        kinds: list[str] | None = None,
+        scope: str = "",
+        limit: int = 20,
+        offset: int = 0,
+    ) -> dict[str, Any]:
+        """Case-insensitive substring search over symbol names (qualified names if the query
+        has a dot); exact, then prefix, then substring matches, each citing the definition."""
+        return graph.query("search", query, kinds=kinds, scope=scope, limit=limit, offset=offset)
 
     @server.tool(annotations=annotations)
     def index_status(limit: int = 100, offset: int = 0) -> dict[str, Any]:

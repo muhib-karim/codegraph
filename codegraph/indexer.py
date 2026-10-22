@@ -10,17 +10,22 @@ import time
 from collections import Counter
 from typing import Any
 
-from . import extract_java, extract_python, store
+from . import extract_java, extract_python, extract_ts, store
 from .discover import PARSED_LANGS, discover
 from .model import FileInfo
-from .resolve import Resolver
+from .resolve import Graph, Resolver
 
-EXTRACTORS = {"python": extract_python.extract, "java": extract_java.extract}
+EXTRACTORS = {
+    "python": extract_python.extract,
+    "java": extract_java.extract,
+    "javascript": extract_ts.extract,
+    "typescript": extract_ts.extract,
+}
 
 
-def build(root: str):
-    files = {}
-    errors = []
+def build(root: str) -> tuple[Graph, list[str]]:
+    files: dict[str, FileInfo] = {}
+    errors: list[str] = []
     for rel, lang in discover(root):
         full = os.path.join(root, rel)
         with open(full, "rb") as f:
@@ -40,7 +45,7 @@ def build(root: str):
     return graph, errors
 
 
-def git_head(root):
+def git_head(root: str) -> str:
     try:
         return subprocess.run(
             ["git", "-C", root, "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10
@@ -63,9 +68,7 @@ def index(root: str, db_path: str) -> dict[str, Any]:
         "unparsed_code_files": sorted(
             p
             for p, fi in graph.files.items()
-            if not fi.parsed
-            and fi.lang
-            in ("kotlin", "shell", "smali", "javascript", "typescript", "go", "rust", "c", "cpp")
+            if not fi.parsed and fi.lang in ("kotlin", "shell", "smali", "go", "rust", "c", "cpp")
         ),
         "symbols_by_kind": dict(kinds),
         "calls": len(graph.calls),
@@ -74,6 +77,7 @@ def index(root: str, db_path: str) -> dict[str, Any]:
         "imports_internal": len(set(graph.imports)),
         "resolution": dict(graph.stats),
         "parse_errors": errors,
+        "files_with_syntax_errors": sorted(p for p, fi in graph.files.items() if fi.syntax_error),
     }
     meta = {
         "repo_root": root,

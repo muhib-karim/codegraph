@@ -14,7 +14,7 @@ v1.1.0 in progress on `upgrade/v1.1.0` (plan: `TASKS.md`). TS/JS indexing done: 
 
 ## Next step
 
-Task 4 in `TASKS.md` (benchmark script + CI job).
+Task 5 in `TASKS.md` (Pages site). Tasks 1-4 and 6 committed; benchmark numbers still to be copied from a CI run after the version bump.
 
 ## Gotchas
 

@@ -68,7 +68,7 @@ Global Constraints.
 - [ ] Deploy via Pages workflow, set repo homepage, verify HTTP 200.
 
 ### Task 6: CI gates
-- [ ] mypy strict over the whole package; gitleaks job; `.github/dependabot.yml`; CodeQL workflow.
+- [x] mypy strict over the whole package; gitleaks job; `.github/dependabot.yml`; CodeQL workflow.
 
 ### Task 7: Docs, version, release notes
 - [ ] README refresh (banner, badges, demo screenshot, install, usage, MCP, mermaid architecture, roadmap).

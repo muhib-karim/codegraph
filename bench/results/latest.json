@@ -1,0 +1,153 @@
+{
+  "date": "2026-10-22",
+  "version": "1.1.0",
+  "runner": {
+    "os": "Linux 6.17.0-1022-azure",
+    "image": "ubuntu24 20261012.334.1",
+    "arch": "x86_64",
+    "cpus": "4",
+    "python": "3.12.15",
+    "ci": "GitHub Actions",
+    "run_id": "39705868795",
+    "commit": "e803967b31b6"
+  },
+  "runs_per_query": 20,
+  "repos": [
+    {
+      "name": "requests",
+      "url": "https://github.com/psf/requests.git",
+      "ref": "v2.32.3",
+      "language": "Python",
+      "commit": "0e322af87745eff34caffe4df68456ebc20d9068",
+      "files": 129,
+      "parsed_files": 36,
+      "parsed_by_lang": {
+        "python": 36
+      },
+      "parsed_loc": 11209,
+      "symbols": 928,
+      "edges": 946,
+      "index_seconds": 0.92,
+      "peak_rss_mb": 110.1,
+      "db_mb": 5.1,
+      "queries": {
+        "callers": {
+          "target": "src/requests/exceptions.py::RequestException.__init__/0",
+          "median_ms": 3.57,
+          "p95_ms": 3.61,
+          "results": 36
+        },
+        "callees": {
+          "target": "src/requests/adapters.py::HTTPAdapter.send/1",
+          "median_ms": 3.12,
+          "p95_ms": 3.18,
+          "results": 29
+        },
+        "impact": {
+          "target": "src/requests/exceptions.py::RequestException.__init__/0",
+          "median_ms": 11.28,
+          "p95_ms": 11.52,
+          "results": 117
+        },
+        "search": {
+          "target": "__i",
+          "median_ms": 1.97,
+          "p95_ms": 2.01,
+          "results": 30
+        }
+      },
+      "runs_per_query": 20
+    },
+    {
+      "name": "zod",
+      "url": "https://github.com/colinhacks/zod.git",
+      "ref": "v3.23.8",
+      "language": "TypeScript",
+      "commit": "ca42965df46b2f7e2747db29c40a26bcb32a51d5",
+      "files": 226,
+      "parsed_files": 170,
+      "parsed_by_lang": {
+        "javascript": 5,
+        "typescript": 165
+      },
+      "parsed_loc": 30994,
+      "symbols": 1915,
+      "edges": 7473,
+      "index_seconds": 1.48,
+      "peak_rss_mb": 128.1,
+      "db_mb": 6.0,
+      "queries": {
+        "callers": {
+          "target": "deno/lib/helpers/parseUtil.ts::addIssueToContext/2",
+          "median_ms": 5.96,
+          "p95_ms": 6.01,
+          "results": 71
+        },
+        "callees": {
+          "target": "deno/lib/types.ts::ZodString._parse/1",
+          "median_ms": 5.79,
+          "p95_ms": 5.84,
+          "results": 71
+        },
+        "impact": {
+          "target": "deno/lib/helpers/parseUtil.ts::addIssueToContext/2",
+          "median_ms": 10.11,
+          "p95_ms": 10.54,
+          "results": 74
+        },
+        "search": {
+          "target": "add",
+          "median_ms": 1.54,
+          "p95_ms": 1.58,
+          "results": 16
+        }
+      },
+      "runs_per_query": 20
+    },
+    {
+      "name": "gson",
+      "url": "https://github.com/google/gson.git",
+      "ref": "gson-parent-2.11.0",
+      "language": "Java",
+      "commit": "828a97be0f8d58108b140b77df8dc76b657f4a87",
+      "files": 303,
+      "parsed_files": 249,
+      "parsed_by_lang": {
+        "java": 249
+      },
+      "parsed_loc": 53021,
+      "symbols": 5757,
+      "edges": 27395,
+      "index_seconds": 2.43,
+      "peak_rss_mb": 142.2,
+      "db_mb": 7.8,
+      "queries": {
+        "callers": {
+          "target": "gson/src/main/java/com/google/gson/Gson.java::Gson.fromJson/2",
+          "median_ms": 89.61,
+          "p95_ms": 94.01,
+          "results": 674
+        },
+        "callees": {
+          "target": "gson/src/test/java/com/google/gson/JsonPrimitiveTest.java::JsonPrimitiveTest.testEquals/0",
+          "median_ms": 16.16,
+          "p95_ms": 16.25,
+          "results": 140
+        },
+        "impact": {
+          "target": "gson/src/main/java/com/google/gson/Gson.java::Gson.fromJson/2",
+          "median_ms": 137.99,
+          "p95_ms": 147.09,
+          "results": 736
+        },
+        "search": {
+          "target": "fro",
+          "median_ms": 5.4,
+          "p95_ms": 7.2,
+          "results": 34
+        }
+      },
+      "runs_per_query": 20
+    }
+  ]
+}

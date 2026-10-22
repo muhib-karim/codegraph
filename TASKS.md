@@ -53,9 +53,9 @@ Global Constraints.
 
 ### Task 3: MCP `search` and `impact`
 **Files:** modify `service.py`, `mcp_server.py`, `tests/test_mcp.py`, README MCP section.
-- [ ] `search(query, kinds, scope, limit, offset)`: case-insensitive substring over names and qualified names, exact matches first.
-- [ ] `impact` = documented name for blast radius (`blast_radius` kept for compatibility).
-- [ ] Protocol-level stdio test lists and calls both tools; Claude Code and Codex config documented and tested.
+- [x] `search(query, kinds, scope, limit, offset)`: case-insensitive substring over names and qualified names, exact matches first.
+- [x] `impact` = documented name for blast radius (`blast_radius` kept for compatibility).
+- [x] Protocol-level stdio test lists and calls both tools; Claude Code and Codex config documented and tested.
 
 ### Task 4: Benchmark
 **Files:** create `bench/run.py`, `bench/repos.json`, `bench/README.md`, `bench/results/`; CI job `benchmark`.

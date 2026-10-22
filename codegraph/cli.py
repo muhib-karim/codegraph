@@ -62,10 +62,12 @@ def emit(args, command, query, resolved, results, db, extra=None, error=None):
             r.get("kind", ""),
             r.get("dead_confidence", r.get("confidence", "")),
         ]
-        if "depth" in r and command in ("callers", "blast", "inherits"):
+        if "depth" in r and command in ("callers", "blast", "impact", "inherits"):
             cols.append(str(r["depth"]))
         if "via" in r:
             cols.append(r.get("def", r["via"]))
+        elif command == "callees":
+            cols.append(r["def"])
         print("\t".join(str(c) for c in cols))
     if not results:
         print(f"# no results ({command} {query})", file=sys.stderr)
@@ -149,6 +151,16 @@ def main(argv=None):
     p.add_argument("--depth", type=int, default=1)
     common(p)
 
+    p = sub.add_parser("callees", help="what a symbol calls directly")
+    p.add_argument("symbol")
+    p.add_argument("--in", dest="in_file", default="")
+    common(p)
+
+    p = sub.add_parser("search", help="find symbols by name substring")
+    p.add_argument("query")
+    p.add_argument("--kind", default="", help="comma list of symbol kinds")
+    common(p)
+
     p = sub.add_parser("inherits", help="subclasses (or ancestors) of a class")
     p.add_argument("symbol")
     p.add_argument("--in", dest="in_file", default="")
@@ -165,7 +177,9 @@ def main(argv=None):
     p.add_argument("--confidence", choices=["all", "likely", "possible"], default="all")
     common(p)
 
-    p = sub.add_parser("blast", help="what can break if a file or symbol changes")
+    p = sub.add_parser(
+        "blast", aliases=["impact"], help="what can break if a file or symbol changes"
+    )
     p.add_argument("target")
     p.add_argument("--in", dest="in_file", default="")
     p.add_argument("--depth", type=int, default=3, help="0 = unbounded")
@@ -242,6 +256,21 @@ def main(argv=None):
             lambda c: queries.callers(c, args.symbol, args.in_file, args.depth, args.scope),
             args.symbol,
         )
+    if args.cmd == "callees":
+        return run_query(
+            args,
+            "callees",
+            lambda c: queries.callees(c, args.symbol, args.in_file, args.scope),
+            args.symbol,
+        )
+    if args.cmd == "search":
+        kinds = [k for k in args.kind.split(",") if k] or None
+        return run_query(
+            args,
+            "search",
+            lambda c: ([], queries.search(c, args.query, kinds, args.scope)),
+            args.query,
+        )
     if args.cmd == "inherits":
         return run_query(
             args,
@@ -259,10 +288,10 @@ def main(argv=None):
             lambda c: ([], queries.dead_code(c, args.scope, kinds, args.confidence)),
             args.scope,
         )
-    if args.cmd == "blast":
+    if args.cmd in ("blast", "impact"):
         return run_query(
             args,
-            "blast",
+            args.cmd,
             lambda c: queries.blast(c, args.target, args.in_file, args.depth, args.scope),
             args.target,
         )

@@ -129,12 +129,14 @@ class GraphService:
         elif kind == "callers":
             resolved, results = queries.callers(self.conn, target, in_file, depth, scope)
         elif kind == "callees":
-            resolved, results = self.callees(target, in_file, scope)
+            resolved, results = queries.callees(self.conn, target, in_file, scope)
+        elif kind == "search":
+            resolved, results = [], queries.search(self.conn, target, kinds, scope)
         elif kind == "inherits":
             resolved, results = queries.inherits(
                 self.conn, target, in_file, ancestors, depth, scope
             )
-        elif kind == "blast":
+        elif kind in ("blast", "impact"):
             resolved, results = queries.blast(self.conn, target, in_file, depth, scope)
         elif kind == "dead-code":
             resolved, results = [], queries.dead_code(self.conn, scope, kinds, confidence)
@@ -150,33 +152,6 @@ class GraphService:
             "depth": depth,
             **self.page(results, limit, offset),
         }
-
-    def callees(self, target: str, in_file: str, scope: str) -> tuple[list[Record], list[Record]]:
-        resolved = [queries._sym(r) for r in queries.resolve_symbol(self.conn, target, in_file)]
-        rows = self.conn.execute(
-            "MATCH (s:Symbol)-[r:CALLS]->(t:Symbol) WHERE s.id IN $ids "
-            "RETURN t.id, t.qualname, t.kind, t.file, t.line, r.file, r.line, "
-            "r.confidence, r.reason, s.id ORDER BY r.file, r.line, t.id",
-            {"ids": [r["id"] for r in resolved]},
-        ).get_all()
-        results = [
-            {
-                "symbol": sid,
-                "qualname": qn,
-                "kind": kind,
-                "file": f,
-                "line": ln,
-                "citation": f"{f}:{ln}",
-                "def": f"{df}:{dl}",
-                "confidence": conf,
-                "reason": reason,
-                "caller": caller,
-                "edge": "call",
-            }
-            for sid, qn, kind, df, dl, f, ln, conf, reason, caller in rows
-            if not scope or f == scope.rstrip("/") or f.startswith(scope.rstrip("/") + "/")
-        ]
-        return resolved, results
 
     def status(self, limit: int = 100, offset: int = 0) -> Record:
         hashes: dict[str, str] = json.loads(self.meta.get("file_hashes", "{}"))

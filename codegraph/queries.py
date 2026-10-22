@@ -330,5 +330,64 @@ def blast(
     return [_sym(t) for t in targets], _sort(results)
 
 
+def callees(conn: Any, target: str, in_file: str = "", scope: str = "") -> tuple[Rows, Rows]:
+    """Direct outgoing calls: one row per (call site, target definition)."""
+    resolved = [_sym(r) for r in resolve_symbol(conn, target, in_file)]
+    rows = _rows(
+        conn,
+        "MATCH (s:Symbol)-[r:CALLS]->(t:Symbol) WHERE s.id IN $ids "
+        "RETURN t.id, t.qualname, t.kind, t.file, t.line, r.file, r.line, "
+        "r.confidence, r.reason, s.id ORDER BY r.file, r.line, t.id",
+        {"ids": [r["id"] for r in resolved]},
+    )
+    results = [
+        {
+            "symbol": sid,
+            "qualname": qn,
+            "kind": kind,
+            "file": f,
+            "line": ln,
+            "citation": f"{f}:{ln}",
+            "def": f"{df}:{dl}",
+            "confidence": conf,
+            "reason": reason,
+            "caller": caller,
+            "edge": "call",
+        }
+        for sid, qn, kind, df, dl, f, ln, conf, reason, caller in rows
+    ]
+    return resolved, _scoped(results, scope)
+
+
+def search(conn: Any, query: str, kinds: list[str] | None = None, scope: str = "") -> Rows:
+    """Case-insensitive substring search over symbol names (qualified names when the query
+    contains a dot). Exact matches rank first, then prefixes, then other substrings."""
+    q = query.lower()
+    field = "s.qualname" if "." in q else "s.name"
+    rows = _rows(
+        conn,
+        f"MATCH (s:Symbol) WHERE s.kind IN $kinds AND lower({field}) CONTAINS $q RETURN {SYM_COLS}",
+        {"q": q, "kinds": kinds or CODE_KINDS},
+    )
+    results = [
+        {
+            **_sym(r),
+            "symbol": r[0],
+            "name": r[5],
+            "lang": r[9],
+            "citation": f"{r[3]}:{r[4]}",
+            "confidence": "exact",
+            "reason": "name-match",
+        }
+        for r in rows
+    ]
+
+    def rank(r: dict[str, Any]) -> tuple[int, str, int, str]:
+        key = (r["qualname"] if "." in q else r["name"]).lower()
+        return (0 if key == q else 1 if key.startswith(q) else 2, r["file"], r["line"], r["id"])
+
+    return sorted(_scoped(results, scope), key=rank)
+
+
 def meta(conn: Any) -> dict[str, str]:
     return {k: v for k, v in _rows(conn, "MATCH (m:Meta) RETURN m.key, m.value")}

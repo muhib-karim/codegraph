@@ -14,7 +14,7 @@ v1.1.0 in progress on `upgrade/v1.1.0` (plan: `TASKS.md`). TS/JS indexing done: 
 
 ## Next step
 
-Task 3 in `TASKS.md` (MCP search and impact; also add CLI callees/search/impact).
+Task 4 in `TASKS.md` (benchmark script + CI job).
 
 ## Gotchas
 

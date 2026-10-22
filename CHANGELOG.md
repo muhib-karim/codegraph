@@ -17,7 +17,7 @@
   tested README configuration by a test.
 - `bench/run.py` and a `benchmark` CI job: index time, peak RSS and query
   latency on pinned requests, zod and gson checkouts. Results in
-  `bench/results/` are copied unchanged from CI run 39705868795.
+  `bench/results/` are copied unchanged from CI run 39707970318.
 - GitHub Pages site (`site/`, `scripts/build_site.py`, Pages workflow) with a
   static graph demo built from a bundled index of the test fixtures, the real
   CLI session and the benchmark table.

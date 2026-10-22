@@ -2,14 +2,14 @@
   "date": "2026-10-22",
   "version": "1.1.0",
   "runner": {
-    "os": "Linux 6.17.0-1022-azure",
-    "image": "ubuntu24 20261012.334.1",
+    "os": "Linux 7.0.0-1017-azure",
+    "image": "ubuntu24 20261018.339.1",
     "arch": "x86_64",
     "cpus": "4",
     "python": "3.12.15",
     "ci": "GitHub Actions",
-    "run_id": "39705868795",
-    "commit": "e803967b31b6"
+    "run_id": "39707970318",
+    "commit": "b3daafac4283"
   },
   "runs_per_query": 20,
   "repos": [
@@ -27,32 +27,32 @@
       "parsed_loc": 11209,
       "symbols": 928,
       "edges": 946,
-      "index_seconds": 0.92,
-      "peak_rss_mb": 110.1,
+      "index_seconds": 0.41,
+      "peak_rss_mb": 123.7,
       "db_mb": 5.1,
       "queries": {
         "callers": {
           "target": "src/requests/exceptions.py::RequestException.__init__/0",
-          "median_ms": 3.57,
-          "p95_ms": 3.61,
+          "median_ms": 4.91,
+          "p95_ms": 5.02,
           "results": 36
         },
         "callees": {
           "target": "src/requests/adapters.py::HTTPAdapter.send/1",
-          "median_ms": 3.12,
-          "p95_ms": 3.18,
+          "median_ms": 4.12,
+          "p95_ms": 4.24,
           "results": 29
         },
         "impact": {
           "target": "src/requests/exceptions.py::RequestException.__init__/0",
-          "median_ms": 11.28,
-          "p95_ms": 11.52,
+          "median_ms": 15.28,
+          "p95_ms": 15.92,
           "results": 117
         },
         "search": {
           "target": "__i",
-          "median_ms": 1.97,
-          "p95_ms": 2.01,
+          "median_ms": 2.83,
+          "p95_ms": 2.9,
           "results": 30
         }
       },
@@ -71,34 +71,34 @@
         "typescript": 165
       },
       "parsed_loc": 30994,
-      "symbols": 1915,
-      "edges": 7473,
-      "index_seconds": 1.48,
-      "peak_rss_mb": 128.1,
-      "db_mb": 6.0,
+      "symbols": 1717,
+      "edges": 7275,
+      "index_seconds": 0.87,
+      "peak_rss_mb": 127.0,
+      "db_mb": 5.9,
       "queries": {
         "callers": {
           "target": "deno/lib/helpers/parseUtil.ts::addIssueToContext/2",
-          "median_ms": 5.96,
-          "p95_ms": 6.01,
+          "median_ms": 8.32,
+          "p95_ms": 8.51,
           "results": 71
         },
         "callees": {
           "target": "deno/lib/types.ts::ZodString._parse/1",
-          "median_ms": 5.79,
-          "p95_ms": 5.84,
+          "median_ms": 8.06,
+          "p95_ms": 8.31,
           "results": 71
         },
         "impact": {
           "target": "deno/lib/helpers/parseUtil.ts::addIssueToContext/2",
-          "median_ms": 10.11,
-          "p95_ms": 10.54,
+          "median_ms": 14.01,
+          "p95_ms": 14.51,
           "results": 74
         },
         "search": {
           "target": "add",
-          "median_ms": 1.54,
-          "p95_ms": 1.58,
+          "median_ms": 2.14,
+          "p95_ms": 2.17,
           "results": 16
         }
       },
@@ -118,32 +118,32 @@
       "parsed_loc": 53021,
       "symbols": 5757,
       "edges": 27395,
-      "index_seconds": 2.43,
-      "peak_rss_mb": 142.2,
+      "index_seconds": 1.51,
+      "peak_rss_mb": 156.4,
       "db_mb": 7.8,
       "queries": {
         "callers": {
           "target": "gson/src/main/java/com/google/gson/Gson.java::Gson.fromJson/2",
-          "median_ms": 89.61,
-          "p95_ms": 94.01,
+          "median_ms": 116.26,
+          "p95_ms": 121.72,
           "results": 674
         },
         "callees": {
           "target": "gson/src/test/java/com/google/gson/JsonPrimitiveTest.java::JsonPrimitiveTest.testEquals/0",
-          "median_ms": 16.16,
-          "p95_ms": 16.25,
+          "median_ms": 21.23,
+          "p95_ms": 21.58,
           "results": 140
         },
         "impact": {
           "target": "gson/src/main/java/com/google/gson/Gson.java::Gson.fromJson/2",
-          "median_ms": 137.99,
-          "p95_ms": 147.09,
+          "median_ms": 181.14,
+          "p95_ms": 205.13,
           "results": 736
         },
         "search": {
           "target": "fro",
-          "median_ms": 5.4,
-          "p95_ms": 7.2,
+          "median_ms": 6.98,
+          "p95_ms": 7.08,
           "results": 34
         }
       },

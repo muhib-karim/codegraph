@@ -204,13 +204,13 @@ a fresh process and times the query paths the MCP server uses. The table is
 copied unchanged from one CI run; see [bench/README.md](bench/README.md) for the
 method and how to run it yourself.
 
-Runner: GitHub Actions · ubuntu24 20261012.334.1 · Linux 6.17.0-1022-azure · x86_64 · 4 CPUs · Python 3.12.15. Date (UTC): 2026-10-22. codegraph 1.1.0, commit e803967b31b6, run 39705868795.
+Runner: GitHub Actions · ubuntu24 20261018.339.1 · Linux 7.0.0-1017-azure · x86_64 · 4 CPUs · Python 3.12.15. Date (UTC): 2026-10-22. codegraph 1.1.0, commit b3daafac4283, run 39707970318.
 
 | Repository | Ref | Parsed files | Parsed LOC | Symbols | Edges | Index (s) | Peak RSS (MB) | callers | callees | impact | search |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| requests (Python) | `v2.32.3` | 36 | 11209 | 928 | 946 | 0.92 | 110.1 | 3.57 ms | 3.12 ms | 11.28 ms | 1.97 ms |
-| zod (TypeScript) | `v3.23.8` | 170 | 30994 | 1915 | 7473 | 1.48 | 128.1 | 5.96 ms | 5.79 ms | 10.11 ms | 1.54 ms |
-| gson (Java) | `gson-parent-2.11.0` | 249 | 53021 | 5757 | 27395 | 2.43 | 142.2 | 89.61 ms | 16.16 ms | 137.99 ms | 5.4 ms |
+| requests (Python) | `v2.32.3` | 36 | 11209 | 928 | 946 | 0.41 | 123.7 | 4.91 ms | 4.12 ms | 15.28 ms | 2.83 ms |
+| zod (TypeScript) | `v3.23.8` | 170 | 30994 | 1717 | 7275 | 0.87 | 127.0 | 8.32 ms | 8.06 ms | 14.01 ms | 2.14 ms |
+| gson (Java) | `gson-parent-2.11.0` | 249 | 53021 | 5757 | 27395 | 1.51 | 156.4 | 116.26 ms | 21.23 ms | 181.14 ms | 6.98 ms |
 
 Query columns are medians of 20 runs after a warm-up, with limit 100. Targets
 are chosen from each graph (the most-called function or method, and the

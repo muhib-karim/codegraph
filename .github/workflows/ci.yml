@@ -20,7 +20,7 @@ jobs:
       - run: python -m venv .venv
       - run: .venv/bin/pip install -e '.[dev,mcp]'
       - run: make lint typecheck test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ matrix.python }}
           path: coverage.xml
@@ -43,7 +43,7 @@ jobs:
       - run: pip install .
       - run: codegraph eval
       - run: git diff --exit-code -- eval/reports
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: retrieval-evaluation
           path: eval/reports/
@@ -59,7 +59,7 @@ jobs:
       - name: Index and query pinned public repositories
         run: python bench/run.py --out bench-out
       - run: cat bench-out/latest.md >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: benchmark
           path: bench-out/

@@ -38,6 +38,8 @@
   with two decorators late in a large file): LadybugDB's CSV dialect sniffing
   turned quoting off. The bulk load now passes an explicit dialect. Found by
   indexing psf/requests in the new benchmark.
+- Index statistics list `files_with_syntax_errors`: files the parser recovered
+  from, where some declarations may be missing.
 
 The graph schema is unchanged; 1.0.0 indexes remain readable, but rebuild them
 to pick up TypeScript and JavaScript files.

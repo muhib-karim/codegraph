@@ -59,22 +59,29 @@ Global Constraints.
 
 ### Task 4: Benchmark
 **Files:** create `bench/run.py`, `bench/repos.json`, `bench/README.md`, `bench/results/`; CI job `benchmark`.
-- [ ] Pinned public repositories of increasing size; index time and median query latency per tool.
-- [ ] CI uploads JSON + Markdown; commit numbers from a real CI run with runner, date and run id.
+- [x] Pinned public repositories of increasing size; index time and median query latency per tool.
+- [x] CI uploads JSON + Markdown; commit numbers from a real CI run with runner, date and run id.
 
 ### Task 5: Pages site
 **Files:** create `site/` (HTML, CSS, JS), `scripts/build_site.py`, `.github/workflows/pages.yml`.
-- [ ] Static graph demo from a bundled sample index (JSON exported at build time), benchmark table, quickstart.
-- [ ] Deploy via Pages workflow, set repo homepage, verify HTTP 200.
+- [x] Static graph demo from a bundled sample index (JSON exported at build time), benchmark table, quickstart.
+- [x] Deploy via Pages workflow, set repo homepage, verify HTTP 200.
 
 ### Task 6: CI gates
 - [x] mypy strict over the whole package; gitleaks job; `.github/dependabot.yml`; CodeQL workflow.
 
 ### Task 7: Docs, version, release notes
-- [ ] README refresh (banner, badges, demo screenshot, install, usage, MCP, mermaid architecture, roadmap).
-- [ ] CHANGELOG, version bump, SKILLS_USED.md, HANDOFF.md.
-- [ ] Push, CI green on head.
+- [x] README refresh (banner, badges, demo screenshot, install, usage, MCP, mermaid architecture, roadmap).
+- [x] CHANGELOG, version bump, SKILLS_USED.md, HANDOFF.md.
+- [x] Push, CI green on head.
+
+## Code review
+
+One reviewer pass on `e0940ae..15e39b9`: no critical findings; three important
+and six minor findings, all fixed test-first in `d1f2623` (see HANDOFF.md).
 
 ## Blockers
 
-None so far.
+None. Repository settings changed for DoD item 4: Pages enabled (build type
+GitHub Actions), `upgrade/v1.1.0` added to the `github-pages` environment's
+deployment branches, homepage set to the Pages URL. See HANDOFF.md.

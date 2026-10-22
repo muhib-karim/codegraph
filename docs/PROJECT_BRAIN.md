@@ -10,11 +10,11 @@ with `file:line` citations from the CLI, an MCP server or a loopback explorer.
 
 ## Status
 
-v1.1.0 work in progress on branch `upgrade/v1.1.0`. Plan and checkboxes: `TASKS.md`.
+v1.1.0 in progress on `upgrade/v1.1.0` (plan: `TASKS.md`). TS/JS indexing done: `extract_ts.py` + JS binding in `resolve.py`, fixtures `web` and `webjs`.
 
 ## Next step
 
-Task 1 in `TASKS.md` (TypeScript/JavaScript extractor).
+Task 3 in `TASKS.md` (MCP search and impact; also add CLI callees/search/impact).
 
 ## Gotchas
 

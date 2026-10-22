@@ -41,15 +41,15 @@ Global Constraints.
 
 ### Task 1: TypeScript/JavaScript extractor
 **Files:** create `codegraph/extract_ts.py`; modify `discover.py`, `indexer.py`, `model.py`; fixtures `tests/fixtures/web/` (TS) and `tests/fixtures/webjs/` (JS); test `tests/test_typescript.py`.
-- [ ] Failing tests: symbols (class, interface, enum, function, arrow const, method, constructor, field), imports, bases.
-- [ ] Implement `extract(path: str, src: bytes) -> FileInfo` (lang `typescript` or `javascript`).
-- [ ] Tests pass; commit.
+- [x] Failing tests: symbols (class, interface, enum, function, arrow const, method, constructor, field), imports, bases.
+- [x] Implement `extract(path: str, src: bytes) -> FileInfo` (lang `typescript` or `javascript`).
+- [x] Tests pass; commit.
 
 ### Task 2: Resolver support
 **Files:** modify `codegraph/resolve.py`; test `tests/test_typescript.py`.
-- [ ] Failing query tests: `callers`, `callees`, `inherits`, `blast`, `dead-code` on both fixtures, with exact citations.
-- [ ] Implement `js_module_file`, `js_bind`, re-export and default-export following; reuse the Python call/ref paths.
-- [ ] Tests pass, eval report unchanged; commit.
+- [x] Failing query tests: `callers`, `callees`, `inherits`, `blast`, `dead-code` on both fixtures, with exact citations.
+- [x] Implement `js_module_file`, `js_bind`, re-export and default-export following; reuse the Python call/ref paths.
+- [x] Tests pass, eval report unchanged; commit.
 
 ### Task 3: MCP `search` and `impact`
 **Files:** modify `service.py`, `mcp_server.py`, `tests/test_mcp.py`, README MCP section.

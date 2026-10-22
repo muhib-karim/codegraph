@@ -84,3 +84,5 @@ class FileInfo:
     locals: dict = field(default_factory=dict)
     # scope-id -> names declared `global` in that function
     globals_decl: dict = field(default_factory=dict)
+    # JS/TS: exported name -> local name ("default" for the default export)
+    exports: dict = field(default_factory=dict)

@@ -33,7 +33,13 @@ LANG_BY_EXT = {
     ".sh": "shell",
     ".smali": "smali",
     ".js": "javascript",
+    ".jsx": "javascript",
+    ".mjs": "javascript",
+    ".cjs": "javascript",
     ".ts": "typescript",
+    ".tsx": "typescript",
+    ".mts": "typescript",
+    ".cts": "typescript",
     ".go": "go",
     ".rs": "rust",
     ".c": "c",
@@ -48,7 +54,7 @@ LANG_BY_EXT = {
     ".tsv": "tsv",
     ".txt": "text",
 }
-PARSED_LANGS = {"python", "java"}
+PARSED_LANGS = {"python", "java", "javascript", "typescript"}
 
 
 def discover(root: str):

@@ -10,6 +10,14 @@ from .model import FileInfo, Symbol
 
 CALLABLE = {"function", "method", "constructor"}
 CLASSLIKE = {"class", "interface", "enum", "record"}
+JS = {"javascript", "typescript"}
+# Candidate files for a relative JS/TS module specifier, in Node/TypeScript lookup order.
+JS_EXTS = (".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs")
+
+
+def family(lang: str) -> str:
+    """Languages that can call each other by name: JS and TS share one namespace."""
+    return "js" if lang in JS else lang
 
 
 @dataclass
@@ -59,7 +67,7 @@ class Resolver:
                 if s.parent_id:
                     self.children[s.parent_id].append(s)
                 if s.kind in CALLABLE:
-                    self.by_name[(s.lang, s.name)].append(s)
+                    self.by_name[(family(s.lang), s.name)].append(s)
             if fi.lang == "java":
                 for s in fi.symbols:
                     if s.kind in CLASSLIKE and "$anon" not in s.qualname:
@@ -236,6 +244,98 @@ class Resolver:
                         return "sym", hit, "star-import"
         return None, None, ""
 
+    # ---------- JS/TS scope resolution ----------
+    def js_module_file(self, fi: FileInfo, spec: str):
+        """Resolve a relative import specifier to a repo JS/TS file, or None (package/external)."""
+        if not spec.startswith("."):
+            return None
+        base = posixpath.normpath(posixpath.join(posixpath.dirname(fi.path), spec))
+        stem, ext = posixpath.splitext(base)
+        cands = [base] if ext in JS_EXTS else []
+        if ext in (".js", ".jsx", ".mjs", ".cjs"):  # TS sources imported by their output name
+            ts = {".js": ".ts", ".jsx": ".tsx", ".mjs": ".mts", ".cjs": ".cts"}[ext]
+            cands.append(stem + ts)
+        cands += [base + e for e in JS_EXTS]
+        cands += [posixpath.join(base, "index" + e) for e in JS_EXTS]
+        for c in cands:
+            if c in self.files and self.files[c].lang in JS:
+                return c
+        return None
+
+    def js_export(self, path: str, name: str, depth: int = 0):
+        """What `name` exported by `path` binds to: ('sym', [Symbol]) | ('module', path) | None."""
+        fi = self.files.get(path)
+        if fi is None or depth > 8:
+            return None
+        if name in fi.exports:
+            kind, val, _ = self.js_bind(fi, f"{path}::<module>", fi.exports[name], depth + 1)
+            return (kind, val) if kind in ("sym", "module") else None
+        if name != "default":
+            top = [s for s in self.py_top(path, name) if s.visibility == "public"]
+            if top:
+                return "sym", top
+        for imp in fi.imports:
+            target = self.js_module_file(fi, imp.module)
+            if target is None:
+                continue
+            if imp.kind == "reexport" and (imp.alias or imp.name) == name:
+                return self.js_export(target, imp.name, depth + 1)
+            if imp.kind == "reexport_ns" and imp.alias == name:
+                return "module", target
+        if name == "default":
+            return "module", path  # CommonJS module object without a single default export
+        for imp in fi.imports:
+            if imp.kind == "reexport_star":
+                target = self.js_module_file(fi, imp.module)
+                hit = self.js_export(target, name, depth + 1) if target else None
+                if hit:
+                    return hit
+        return None
+
+    def js_bind(self, fi: FileInfo, scope_id: str, name: str, depth: int = 0):
+        """Bind a bare JS/TS name; same result shape as py_bind."""
+        s = self.sym.get(scope_id)
+        while s is not None and s.kind != "module":
+            if s.kind in ("function", "method", "constructor"):
+                loc = [
+                    c
+                    for c in self.children[s.id]
+                    if c.name == name and (c.kind == "function" or c.kind in CLASSLIKE)
+                ]
+                if loc:
+                    return "sym", loc, "local-scope"
+                if name in fi.locals.get(s.id, ()):
+                    return "local", None, "local-var"
+            s = self.sym.get(s.parent_id) if s.parent_id else None
+        top = self.py_top(fi.path, name)
+        if top:
+            return "sym", top, "same-file"
+        for imp in fi.imports:
+            if imp.kind not in ("from", "module") or (imp.alias or imp.name) != name:
+                continue
+            path = self.js_module_file(fi, imp.module)
+            if path is None:
+                return "external", None, "external-import"
+            if imp.kind == "module":
+                return "module", path, "import"
+            hit = self.js_export(path, imp.name, depth)
+            if hit:
+                return hit[0], hit[1], "import"
+            return "external", None, "unresolved-import"
+        return None, None, ""
+
+    def bind(self, fi: FileInfo, scope_id: str, name: str):
+        if fi.lang in JS:
+            return self.js_bind(fi, scope_id, name)
+        return self.py_bind(fi, scope_id, name)
+
+    def module_attr(self, lang: str, path: str, name: str):
+        """Top-level symbols reached as `<module>.<name>`."""
+        if lang in JS:
+            hit = self.js_export(path, name)
+            return hit[1] if hit and hit[0] == "sym" else []
+        return self.py_top(path, name)
+
     def py_var_class(self, fi, scope_id, var):
         """Class id for a local variable constructed as `var = Cls(...)` in this or an enclosing function."""
         s = self.sym.get(scope_id)
@@ -250,12 +350,12 @@ class Resolver:
 
     def py_class_from_text(self, fi, scope_id, tname):
         parts = tname.split(".")
-        kind, val, _ = self.py_bind(fi, scope_id, parts[0])
+        kind, val, _ = self.bind(fi, scope_id, parts[0])
         if kind == "sym" and len(parts) == 1:
             cl = [v for v in val if v.kind in CLASSLIKE]
             return cl[0].id if cl else None
         if kind == "module" and len(parts) == 2:
-            cl = [v for v in self.py_top(val, parts[1]) if v.kind in CLASSLIKE]
+            cl = [v for v in self.module_attr(fi.lang, val, parts[1]) if v.kind in CLASSLIKE]
             return cl[0].id if cl else None
         return None
 
@@ -372,12 +472,12 @@ class Resolver:
             for b in fi.bases:
                 cls = self.sym[b.cls]
                 target = None
-                if fi.lang == "python":
+                if fi.lang == "python" or fi.lang in JS:
                     target = self.py_class_from_text(
                         fi, cls.parent_id or f"{fi.path}::<module>", b.text
                     )
                     if target is None:
-                        target = self.external(b.text, "python")
+                        target = self.external(b.text, fi.lang)
                 else:
                     r = self.java_type(fi, cls.parent_id, b.text)
                     if r is None or r.startswith("external:"):
@@ -395,7 +495,9 @@ class Resolver:
         for fi in self.files.values():
             for imp in fi.imports:
                 dst = None
-                if fi.lang == "python":
+                if fi.lang in JS:
+                    dst = self.js_module_file(fi, imp.module)
+                elif fi.lang == "python":
                     if imp.kind == "from":
                         dst = self.py_module_file(fi, imp.module)
                         if dst is None:
@@ -462,7 +564,9 @@ class Resolver:
 
     def _by_name(self, kind, fi, c):
         cands = [
-            s for s in self.by_name.get((fi.lang, c.name), []) if s.kind in ("method", "function")
+            s
+            for s in self.by_name.get((family(fi.lang), c.name), [])
+            if s.kind in ("method", "function")
         ]
         if kind == "call":
             cands = [s for s in cands if arity_ok(s, c.argc, c.splat)]
@@ -475,7 +579,7 @@ class Resolver:
             self.g.stats[f"{kind}_unresolved"] += 1
 
     def resolve_call(self, fi: FileInfo, c):
-        py = fi.lang == "python"
+        py = fi.lang == "python" or fi.lang in JS  # lexical binding, Python-style
         st = self.g.stats
         if c.recv_kind in ("new",):
             cid = self.java_type(fi, c.caller, c.recv)
@@ -521,7 +625,7 @@ class Resolver:
             return
         if c.recv_kind == "none":
             if py:
-                kind, val, reason = self.py_bind(fi, c.caller, c.name)
+                kind, val, reason = self.bind(fi, c.caller, c.name)
                 if kind == "sym" and val[0].kind == "variable":
                     self._emit(
                         "ref", c.caller, [val[0]], fi, c.line, c.col, "exact", "called-variable"
@@ -605,9 +709,9 @@ class Resolver:
             return
         if c.recv_kind == "name":
             if py:
-                kind, val, reason = self.py_bind(fi, c.caller, c.recv)
+                kind, val, reason = self.bind(fi, c.caller, c.recv)
                 if kind == "module":
-                    hit = [s for s in self.py_top(val, c.name)]
+                    hit = self.module_attr(fi.lang, val, c.name)
                     if hit and hit[0].kind == "variable":
                         self._emit(
                             "ref", c.caller, hit[:1], fi, c.line, c.col, "exact", "module-attr"
@@ -675,12 +779,14 @@ class Resolver:
         if c.recv_kind == "dotted":
             if py:
                 parts = c.recv.split(".")
-                kind, val, _ = self.py_bind(fi, c.caller, parts[0])
+                kind, val, _ = self.bind(fi, c.caller, parts[0])
                 if kind == "external":
                     st["call_external"] += 1
                     return
                 if kind == "module" and len(parts) == 2:
-                    hit = [s for s in self.py_top(val, parts[1]) if s.kind in CLASSLIKE]
+                    hit = [
+                        s for s in self.module_attr(fi.lang, val, parts[1]) if s.kind in CLASSLIKE
+                    ]
                     if hit and self._methods("call", fi, c, hit[0].id, "module-attr"):
                         return
             else:
@@ -728,15 +834,17 @@ class Resolver:
         return tid if tid and not tid.startswith("external:") else None
 
     def resolve_ref(self, fi: FileInfo, r):
-        if fi.lang == "python":
+        if fi.lang == "python" or fi.lang in JS:
             if r.recv_kind == "self":
                 cls = self.enclosing_class(r.owner)
                 if cls:
                     cands, _ = self.find_member(cls.id, r.name)
                     if cands:
                         self._emit("ref", r.owner, cands, fi, r.line, r.col, "exact", "self")
+                    elif fi.lang in JS and (f := self.find_field(cls.id, r.name)):
+                        self._emit("ref", r.owner, [f], fi, r.line, r.col, "exact", "field")
                 return
-            kind, val, reason = self.py_bind(fi, r.owner, r.name)
+            kind, val, reason = self.bind(fi, r.owner, r.name)
             if kind == "sym":
                 # a value use of a function, class or module-level variable
                 self._emit("ref", r.owner, val[:1], fi, r.line, r.col, "exact", reason)
@@ -794,7 +902,11 @@ class Resolver:
                 ):
                     s.entry_reason = "dunder" if s.lang == "python" else "serial"
                 continue
-            if s.lang == "python":
+            if s.lang in JS:
+                cls = self.sym.get(s.parent_id) if s.kind == "method" else None
+                if cls and self.find_member(cls.id, s.name, include_self=False)[0]:
+                    s.entry_reason = "override"
+            elif s.lang == "python":
                 if s.name.startswith("__") and s.name.endswith("__"):
                     s.entry_reason = "dunder"
                 elif s.name.startswith("test_") or s.name.startswith("Test"):

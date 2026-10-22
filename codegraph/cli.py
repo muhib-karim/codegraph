@@ -6,15 +6,17 @@ import argparse
 import json
 import os
 import sys
+from collections.abc import Callable
+from typing import Any
 
 from . import SCHEMA_VERSION, __version__, queries, store
 
 DEFAULT_DB = os.path.join(".codegraph", "graph.lbug")
 
 
-def find_db(args):
+def find_db(args: argparse.Namespace) -> str:
     if getattr(args, "db", None):
-        return args.db
+        return str(args.db)
     if getattr(args, "repo", None):
         return os.path.join(args.repo, DEFAULT_DB)
     d = os.getcwd()
@@ -28,7 +30,16 @@ def find_db(args):
         d = nd
 
 
-def emit(args, command, query, resolved, results, db, extra=None, error=None):
+def emit(
+    args: argparse.Namespace,
+    command: str,
+    query: str,
+    resolved: list[dict[str, Any]],
+    results: list[dict[str, Any]],
+    db: str,
+    extra: dict[str, Any] | None = None,
+    error: str | None = None,
+) -> None:
     answers, seen = [], set()
     for r in results:
         k = (r["file"], r["line"])
@@ -73,7 +84,7 @@ def emit(args, command, query, resolved, results, db, extra=None, error=None):
         print(f"# no results ({command} {query})", file=sys.stderr)
 
 
-def cmd_index(args):
+def cmd_index(args: argparse.Namespace) -> int:
     from .indexer import index
 
     repo = os.path.abspath(args.path)
@@ -106,7 +117,12 @@ def cmd_index(args):
     return 0
 
 
-def run_query(args, command, fn, query):
+def run_query(
+    args: argparse.Namespace,
+    command: str,
+    fn: Callable[[Any], tuple[list[dict[str, Any]], list[dict[str, Any]]]],
+    query: str,
+) -> int:
     db = find_db(args)
     try:
         _db, conn = store.connect(db)
@@ -122,7 +138,7 @@ def run_query(args, command, fn, query):
     return 0
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         prog="codegraph",
         description="Codebase knowledge graph: index a repo, then ask "
@@ -131,7 +147,7 @@ def main(argv=None):
     ap.add_argument("--version", action="version", version=f"codegraph {__version__}")
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    def common(p):
+    def common(p: argparse.ArgumentParser) -> None:
         p.add_argument("--db", help=f"graph path (default: nearest {DEFAULT_DB})")
         p.add_argument("--repo", help="repo root whose graph to use")
         p.add_argument("--json", action="store_true", help="machine-readable output")

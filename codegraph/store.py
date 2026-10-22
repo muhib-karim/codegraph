@@ -7,11 +7,15 @@ import json
 import os
 import shutil
 import tempfile
-from typing import Any
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any
 
 import ladybug as lb
 
 from . import SCHEMA_VERSION, __version__
+
+if TYPE_CHECKING:
+    from .resolve import Graph
 
 DDL = [
     "CREATE NODE TABLE File(path STRING, lang STRING, loc INT64, parsed BOOLEAN, package STRING, PRIMARY KEY(path))",
@@ -28,11 +32,11 @@ DDL = [
 ]
 
 
-def _b(v):
+def _b(v: object) -> str:
     return "true" if v else "false"
 
 
-def write(graph, db_path: str, meta: dict):
+def write(graph: Graph, db_path: str, meta: dict[str, Any]) -> None:
     if os.path.exists(db_path):
         if os.path.isdir(db_path):
             shutil.rmtree(db_path)
@@ -45,7 +49,7 @@ def write(graph, db_path: str, meta: dict):
     tmp = tempfile.mkdtemp(prefix="codegraph-")
     try:
 
-        def dump(name, rows, header=None):
+        def dump(name: str, rows: Iterable[Sequence[Any]], header: list[str] | None = None) -> str:
             p = os.path.join(tmp, name + ".csv")
             with open(p, "w", newline="", encoding="utf-8") as f:
                 w = csv.writer(f, quoting=csv.QUOTE_MINIMAL)

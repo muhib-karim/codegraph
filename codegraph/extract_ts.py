@@ -319,7 +319,9 @@ class _Extractor:
     def shadowed(self, name: str) -> bool:
         return any(name in s for s in self.shadow)
 
-    def record_type(self, scope: Symbol, name: str, value: Node | None, annotation: Node | None):
+    def record_type(
+        self, scope: Symbol, name: str, value: Node | None, annotation: Node | None
+    ) -> None:
         type_name = _type_name(annotation)
         if not type_name and value is not None:
             ctor = value.child_by_field_name(
@@ -531,11 +533,11 @@ class _Extractor:
         clause = next((c for c in node.named_children if c.type == "export_clause"), None)
         ns = next((c for c in node.named_children if c.type == "namespace_export"), None)
         if clause is not None:
-            for s in clause.named_children:
-                if s.type != "export_specifier":
+            for item in clause.named_children:
+                if item.type != "export_specifier":
                     continue
-                name = text(s.child_by_field_name("name"))
-                alias = text(s.child_by_field_name("alias"))
+                name = text(item.child_by_field_name("name"))
+                alias = text(item.child_by_field_name("alias"))
                 if spec:
                     self.fi.imports.append(Import(ln, spec, name, alias, "reexport"))
                 else:
@@ -626,15 +628,15 @@ class _Extractor:
             )
             return
         if t in ("jsx_opening_element", "jsx_self_closing_element"):
-            name = node.child_by_field_name("name")
-            if name is not None and name.type == "identifier" and text(name)[:1].isupper():
+            tag = node.child_by_field_name("name")
+            if tag is not None and tag.type == "identifier" and text(tag)[:1].isupper():
                 self.fi.calls.append(
-                    CallSite(scope.id, line(name), name.start_point[1], text(name), "none", "", 1)
+                    CallSite(scope.id, line(tag), tag.start_point[1], text(tag), "none", "", 1)
                 )
-            elif name is not None and name.type == "member_expression":
-                self.call(node, name, None, scope, qual)
+            elif tag is not None and tag.type == "member_expression":
+                self.call(node, tag, None, scope, qual)
             for c in node.named_children:
-                if c is not name:
+                if c is not tag:
                     self.visit(c, scope, qual)
             return
         if t == "jsx_closing_element":
@@ -654,8 +656,7 @@ class _Extractor:
                 and scope.parent_id
             ):
                 cls = next(s for s in self.fi.symbols if s.id == scope.parent_id)
-                prop = text(left.child_by_field_name("property"))
-                self.record_type(cls, prop, right, None)
+                self.record_type(cls, text(left.child_by_field_name("property")), right, None)
         if t in ("for_in_statement", "for_statement") and scope.kind != "module":
             left = node.child_by_field_name("left")
             for n in self.pattern_names(left, scope, qual) if left is not None else []:

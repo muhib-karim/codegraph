@@ -13,7 +13,7 @@ from typing import Any
 from . import extract_java, extract_python, extract_ts, store
 from .discover import PARSED_LANGS, discover
 from .model import FileInfo
-from .resolve import Resolver
+from .resolve import Graph, Resolver
 
 EXTRACTORS = {
     "python": extract_python.extract,
@@ -23,9 +23,9 @@ EXTRACTORS = {
 }
 
 
-def build(root: str):
-    files = {}
-    errors = []
+def build(root: str) -> tuple[Graph, list[str]]:
+    files: dict[str, FileInfo] = {}
+    errors: list[str] = []
     for rel, lang in discover(root):
         full = os.path.join(root, rel)
         with open(full, "rb") as f:
@@ -45,7 +45,7 @@ def build(root: str):
     return graph, errors
 
 
-def git_head(root):
+def git_head(root: str) -> str:
     try:
         return subprocess.run(
             ["git", "-C", root, "rev-parse", "HEAD"], capture_output=True, text=True, timeout=10

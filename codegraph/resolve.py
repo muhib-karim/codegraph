@@ -4,9 +4,15 @@ from __future__ import annotations
 
 import posixpath
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass, field
+from typing import Any
 
-from .model import FileInfo, Symbol
+from .model import CallSite, FileInfo, Ref, Symbol
+
+# (kind, value, reason): kind is sym | module | local | external | None; value is a
+# list of Symbols for sym, a file path for module, else None.
+Binding = tuple[str | None, Any, str]
 
 CALLABLE = {"function", "method", "constructor"}
 CLASSLIKE = {"class", "interface", "enum", "record"}
@@ -34,13 +40,19 @@ class Edge:
 
 @dataclass
 class Graph:
-    files: dict
-    symbols: dict
-    calls: list = field(default_factory=list)
-    refs: list = field(default_factory=list)
-    inherits: list = field(default_factory=list)
-    imports: list = field(default_factory=list)  # (src_file, dst_file, line, name, confidence)
-    stats: Counter = field(default_factory=Counter)
+    files: dict[str, FileInfo]
+    symbols: dict[str, Symbol]
+    calls: list[Edge] = field(default_factory=list)
+    refs: list[Edge] = field(default_factory=list)
+    inherits: list[Edge] = field(default_factory=list)
+    # (src_file, dst_file, line, name, confidence)
+    imports: list[tuple[str, str, int, str, str]] = field(default_factory=list)
+    stats: Counter[str] = field(default_factory=Counter)
+
+
+def _source(c: CallSite | Ref) -> str:
+    """Symbol id of the scope that contains a call site or reference."""
+    return c.caller if isinstance(c, CallSite) else c.owner
 
 
 def arity_ok(sym: Symbol, argc: int, splat: bool = False) -> bool:
@@ -52,15 +64,17 @@ def arity_ok(sym: Symbol, argc: int, splat: bool = False) -> bool:
 
 
 class Resolver:
-    def __init__(self, files: dict):
+    def __init__(self, files: dict[str, FileInfo]) -> None:
         self.files: dict[str, FileInfo] = files
         self.sym: dict[str, Symbol] = {}
-        self.children = defaultdict(list)  # parent id -> [Symbol]
-        self.by_name = defaultdict(list)  # (lang, name) -> [callable Symbol]
-        self.java_fqn = {}  # fqn -> class id
-        self.java_pkg = defaultdict(dict)  # pkg -> {simple top-level name: class id}
-        self.bases = defaultdict(list)  # class id -> [base class id (repo or external)]
-        self.externals = {}
+        self.children: defaultdict[str, list[Symbol]] = defaultdict(list)  # parent id -> kids
+        self.by_name: defaultdict[tuple[str, str], list[Symbol]] = defaultdict(list)
+        self.java_fqn: dict[str, str] = {}  # fqn -> class id
+        # pkg -> {simple top-level name: class id}
+        self.java_pkg: defaultdict[str, dict[str, str]] = defaultdict(dict)
+        # class id -> [base class id (repo or external)]
+        self.bases: defaultdict[str, list[str]] = defaultdict(list)
+        self.externals: dict[str, Symbol] = {}
         for fi in files.values():
             for s in fi.symbols:
                 self.sym[s.id] = s
@@ -95,15 +109,15 @@ class Resolver:
             self.externals[sid] = s
         return sid
 
-    def enclosing_class(self, sid: str):
-        s = self.sym.get(sid)
+    def enclosing_class(self, sid: str | None) -> Symbol | None:
+        s = self.sym.get(sid or "")
         while s is not None:
             if s.kind in CLASSLIKE:
                 return s
             s = self.sym.get(s.parent_id) if s.parent_id else None
         return None
 
-    def mro(self, cls_id: str):
+    def mro(self, cls_id: str) -> list[str]:
         out, seen, stack = [], set(), [cls_id]
         while stack:
             c = stack.pop(0)
@@ -120,7 +134,14 @@ class Resolver:
                 return True
         return False
 
-    def find_member(self, cls_id: str, name: str, argc=None, splat=False, include_self=True):
+    def find_member(
+        self,
+        cls_id: str,
+        name: str,
+        argc: int | None = None,
+        splat: bool = False,
+        include_self: bool = True,
+    ) -> tuple[list[Symbol], bool]:
         """Methods named `name` in cls and its repo ancestors, nearest class first.
         Returns (candidates, arity_matched)."""
         chain = self.mro(cls_id)
@@ -135,7 +156,7 @@ class Resolver:
                 return (ok, True) if ok else (cands, False)
         return [], False
 
-    def ctor_targets(self, cls_id: str, argc: int, splat=False):
+    def ctor_targets(self, cls_id: str, argc: int, splat: bool = False) -> tuple[list[str], bool]:
         """Constructor edge targets: matching constructors, else the class itself."""
         cls = self.sym[cls_id]
         if cls.lang == "python":
@@ -144,11 +165,11 @@ class Resolver:
         ctors = [m for m in self.children[cls_id] if m.kind == "constructor"]
         if not ctors:
             return [cls_id], True
-        ok = [m for m in ctors if arity_ok(m, argc, splat)]
-        return ([cls_id] + [m.id for m in (ok or ctors)]), bool(ok)
+        fits = [m for m in ctors if arity_ok(m, argc, splat)]
+        return ([cls_id] + [m.id for m in (fits or ctors)]), bool(fits)
 
     # ---------- python scope resolution ----------
-    def py_module_file(self, fi: FileInfo, module: str):
+    def py_module_file(self, fi: FileInfo, module: str) -> str | None:
         """Resolve a python module path to a repo file, or None (external)."""
         cands = []
         if module.startswith("."):
@@ -175,7 +196,7 @@ class Resolver:
                 return c
         return None
 
-    def py_top(self, path: str, name: str):
+    def py_top(self, path: str, name: str) -> list[Symbol]:
         mod = f"{path}::<module>"
         return [
             s
@@ -183,10 +204,10 @@ class Resolver:
             if s.name == name and (s.kind in CLASSLIKE or s.kind in ("function", "variable"))
         ]
 
-    def py_bind(self, fi: FileInfo, scope_id: str, name: str):
+    def py_bind(self, fi: FileInfo, scope_id: str | None, name: str) -> Binding:
         """Bind a bare python name. Returns ('sym', [Symbol], reason) | ('module', path, reason) | ('external', None, reason) | (None, None, '')."""
         # enclosing function scopes (nested defs), innermost first; class bodies are not visible
-        s = self.sym.get(scope_id)
+        s = self.sym.get(scope_id or "")
         while s is not None and s.kind != "module":
             if s.kind in ("function", "method"):
                 loc = [
@@ -245,7 +266,7 @@ class Resolver:
         return None, None, ""
 
     # ---------- JS/TS scope resolution ----------
-    def js_module_file(self, fi: FileInfo, spec: str):
+    def js_module_file(self, fi: FileInfo, spec: str) -> str | None:
         """Resolve a relative import specifier to a repo JS/TS file, or None (package/external)."""
         if not spec.startswith("."):
             return None
@@ -262,7 +283,7 @@ class Resolver:
                 return c
         return None
 
-    def js_export(self, path: str, name: str, depth: int = 0):
+    def js_export(self, path: str, name: str, depth: int = 0) -> tuple[str, Any] | None:
         """What `name` exported by `path` binds to: ('sym', [Symbol]) | ('module', path) | None."""
         fi = self.files.get(path)
         if fi is None or depth > 8:
@@ -292,9 +313,9 @@ class Resolver:
                     return hit
         return None
 
-    def js_bind(self, fi: FileInfo, scope_id: str, name: str, depth: int = 0):
+    def js_bind(self, fi: FileInfo, scope_id: str | None, name: str, depth: int = 0) -> Binding:
         """Bind a bare JS/TS name; same result shape as py_bind."""
-        s = self.sym.get(scope_id)
+        s = self.sym.get(scope_id or "")
         while s is not None and s.kind != "module":
             if s.kind in ("function", "method", "constructor"):
                 loc = [
@@ -324,21 +345,21 @@ class Resolver:
             return "external", None, "unresolved-import"
         return None, None, ""
 
-    def bind(self, fi: FileInfo, scope_id: str, name: str):
+    def bind(self, fi: FileInfo, scope_id: str | None, name: str) -> Binding:
         if fi.lang in JS:
             return self.js_bind(fi, scope_id, name)
         return self.py_bind(fi, scope_id, name)
 
-    def module_attr(self, lang: str, path: str, name: str):
+    def module_attr(self, lang: str, path: str, name: str) -> list[Symbol]:
         """Top-level symbols reached as `<module>.<name>`."""
         if lang in JS:
             hit = self.js_export(path, name)
             return hit[1] if hit and hit[0] == "sym" else []
         return self.py_top(path, name)
 
-    def py_var_class(self, fi, scope_id, var):
+    def py_var_class(self, fi: FileInfo, scope_id: str | None, var: str) -> str | None:
         """Class id for a local variable constructed as `var = Cls(...)` in this or an enclosing function."""
-        s = self.sym.get(scope_id)
+        s = self.sym.get(scope_id or "")
         while s is not None:
             tname = fi.var_types.get(s.id, {}).get(var)
             if tname:
@@ -348,7 +369,7 @@ class Resolver:
             s = self.sym.get(s.parent_id) if s.parent_id else None
         return None
 
-    def py_class_from_text(self, fi, scope_id, tname):
+    def py_class_from_text(self, fi: FileInfo, scope_id: str | None, tname: str) -> str | None:
         parts = tname.split(".")
         kind, val, _ = self.bind(fi, scope_id, parts[0])
         if kind == "sym" and len(parts) == 1:
@@ -360,7 +381,7 @@ class Resolver:
         return None
 
     # ---------- java type resolution ----------
-    def java_type(self, fi: FileInfo, ctx_id: str, tname: str):
+    def java_type(self, fi: FileInfo, ctx_id: str | None, tname: str) -> str | None:
         """Resolve a Java type name. Returns class id, 'external:<name>' or None."""
         if not tname:
             return None
@@ -417,7 +438,7 @@ class Resolver:
             return "external:" + tname
         return None
 
-    def _java_descend(self, cid, rest):
+    def _java_descend(self, cid: str | None, rest: str) -> str | None:
         if cid is None or not rest:
             return cid
         for part in rest.split("."):
@@ -429,9 +450,11 @@ class Resolver:
             cid = nxt.id
         return cid
 
-    def java_var_type(self, fi, scope_id, var):
+    def java_var_type(
+        self, fi: FileInfo, scope_id: str | None, var: str
+    ) -> tuple[str | None, str | None]:
         """Declared type of a local/param/field visible from scope."""
-        s = self.sym.get(scope_id)
+        s = self.sym.get(scope_id or "")
         while s is not None:
             if var in fi.var_types.get(s.id, {}):
                 return fi.var_types[s.id][var], s.id
@@ -467,7 +490,7 @@ class Resolver:
             setattr(self.g, attr, out)
         return self.g
 
-    def resolve_bases(self):
+    def resolve_bases(self) -> None:
         for fi in self.files.values():
             for b in fi.bases:
                 cls = self.sym[b.cls]
@@ -491,7 +514,7 @@ class Resolver:
                     Edge(cls.id, target, fi.path, b.line, 0, "exact", b.kind, b.kind)
                 )
 
-    def resolve_imports(self):
+    def resolve_imports(self) -> None:
         for fi in self.files.values():
             for imp in fi.imports:
                 dst = None
@@ -521,19 +544,37 @@ class Resolver:
                 else:
                     self.g.stats["imports_external"] += 1
 
-    def _emit(self, kind, src, targets, fi, line, col, conf, reason):
+    def _emit(
+        self,
+        kind: str,
+        src: str,
+        targets: Sequence[str | Symbol],
+        fi: FileInfo,
+        line: int,
+        col: int,
+        conf: str,
+        reason: str,
+    ) -> None:
         lst = self.g.calls if kind == "call" else self.g.refs
         for t in targets:
             tid = t if isinstance(t, str) else t.id
             lst.append(Edge(src, tid, fi.path, line, col, conf, reason, kind))
         self.g.stats[f"{kind}_{conf}"] += len(targets)
 
-    def _methods(self, kind, fi, c, cls_id, reason, include_self=True):
+    def _methods(
+        self,
+        kind: str,
+        fi: FileInfo,
+        c: CallSite | Ref,
+        cls_id: str,
+        reason: str,
+        include_self: bool = True,
+    ) -> bool:
         cands, ok = self.find_member(
             cls_id,
             c.name,
-            c.argc if kind == "call" else None,
-            getattr(c, "splat", False),
+            c.argc if isinstance(c, CallSite) else None,
+            c.splat if isinstance(c, CallSite) else False,
             include_self,
         )
         if not cands:
@@ -541,7 +582,7 @@ class Resolver:
         if ok and len(cands) > 1 and fi.lang == "java":
             self._emit(
                 kind,
-                c.caller if kind == "call" else c.owner,
+                _source(c),
                 cands,
                 fi,
                 c.line,
@@ -552,7 +593,7 @@ class Resolver:
         else:
             self._emit(
                 kind,
-                c.caller if kind == "call" else c.owner,
+                _source(c),
                 cands,
                 fi,
                 c.line,
@@ -562,15 +603,15 @@ class Resolver:
             )
         return True
 
-    def _by_name(self, kind, fi, c):
+    def _by_name(self, kind: str, fi: FileInfo, c: CallSite | Ref) -> None:
         cands = [
             s
             for s in self.by_name.get((family(fi.lang), c.name), [])
             if s.kind in ("method", "function")
         ]
-        if kind == "call":
+        if isinstance(c, CallSite):
             cands = [s for s in cands if arity_ok(s, c.argc, c.splat)]
-        src = c.caller if kind == "call" else c.owner
+        src = _source(c)
         if len(cands) == 1:
             self._emit(kind, src, cands, fi, c.line, c.col, "heuristic", "unique-name")
         elif len(cands) > 1:
@@ -578,7 +619,7 @@ class Resolver:
         else:
             self.g.stats[f"{kind}_unresolved"] += 1
 
-    def resolve_call(self, fi: FileInfo, c):
+    def resolve_call(self, fi: FileInfo, c: CallSite) -> None:
         py = fi.lang == "python" or fi.lang in JS  # lexical binding, Python-style
         st = self.g.stats
         if c.recv_kind in ("new",):
@@ -806,14 +847,14 @@ class Resolver:
         # expr receiver: unknown type
         self._by_name("call", fi, c)
 
-    def find_field(self, cls_id: str, name: str):
+    def find_field(self, cls_id: str, name: str) -> Symbol | None:
         for c in self.mro(cls_id):
             for m in self.children[c]:
                 if m.kind == "field" and m.name == name:
                     return m
         return None
 
-    def _java_field_owner(self, fi, owner, recv):
+    def _java_field_owner(self, fi: FileInfo, owner: str, recv: str) -> str | None:
         """Class id that owns a field accessed as <recv>.<field>, or None."""
         if recv == "this":
             cls = self.enclosing_class(owner)
@@ -833,7 +874,7 @@ class Resolver:
         tid = self.java_type(fi, owner, recv)
         return tid if tid and not tid.startswith("external:") else None
 
-    def resolve_ref(self, fi: FileInfo, r):
+    def resolve_ref(self, fi: FileInfo, r: Ref) -> None:
         if fi.lang == "python" or fi.lang in JS:
             if r.recv_kind == "self":
                 cls = self.enclosing_class(r.owner)
@@ -892,7 +933,7 @@ class Resolver:
                     self._methods("ref", fi, r, tid, "method-ref")
 
     # ---------- entry points ----------
-    def mark_entries(self):
+    def mark_entries(self) -> None:
         for s in self.sym.values():
             if s.kind in ("module", "external") or s.entry_reason:
                 continue
@@ -903,7 +944,7 @@ class Resolver:
                     s.entry_reason = "dunder" if s.lang == "python" else "serial"
                 continue
             if s.lang in JS:
-                cls = self.sym.get(s.parent_id) if s.kind == "method" else None
+                cls = self.sym.get(s.parent_id or "") if s.kind == "method" else None
                 if cls and self.find_member(cls.id, s.name, include_self=False)[0]:
                     s.entry_reason = "override"
             elif s.lang == "python":
@@ -912,7 +953,7 @@ class Resolver:
                 elif s.name.startswith("test_") or s.name.startswith("Test"):
                     s.entry_reason = "test"
                 elif s.kind == "method":
-                    cls = self.sym.get(s.parent_id)
+                    cls = self.sym.get(s.parent_id or "")
                     if cls and self.find_member(cls.id, s.name, include_self=False)[0]:
                         s.entry_reason = "override"
             else:
@@ -938,7 +979,7 @@ class Resolver:
                 elif s.kind == "constructor" and s.visibility == "private" and s.arity_min == 0:
                     s.entry_reason = "init-private"
                 elif s.kind == "method":
-                    cls = self.sym.get(s.parent_id)
+                    cls = self.sym.get(s.parent_id or "")
                     if cls and "$anon" in cls.qualname:
                         s.entry_reason = "override"  # anonymous class bodies implement a supertype
                     elif (

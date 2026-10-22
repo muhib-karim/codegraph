@@ -7,6 +7,8 @@ import signal
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from importlib import resources
+from types import FrameType
+from typing import Any, cast
 from urllib.parse import parse_qs, urlencode, urlsplit
 
 from .explorer_data import BadRequest, Explorer
@@ -40,7 +42,7 @@ ALLOWED = {
 }
 
 
-def make_server(db_path, port=8765):
+def make_server(db_path: str, port: int = 8765) -> ThreadingHTTPServer:
     if not 0 <= port <= 65535:
         raise BadRequest("Port out of range")
     viewer = Explorer(db_path)
@@ -48,7 +50,9 @@ def make_server(db_path, port=8765):
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.0"
 
-        def answer(self, code, data, content_type="application/json; charset=utf-8"):
+        def answer(
+            self, code: int, data: Any, content_type: str = "application/json; charset=utf-8"
+        ) -> None:
             raw = (
                 json.dumps(data, ensure_ascii=False).encode()
                 if not isinstance(data, bytes)
@@ -66,12 +70,10 @@ def make_server(db_path, port=8765):
             self.end_headers()
             self.wfile.write(raw)
 
-        def do_GET(self):
+        def do_GET(self) -> None:
             host = self.headers.get("Host", "")
-            if host not in (
-                f"127.0.0.1:{self.server.server_port}",
-                f"localhost:{self.server.server_port}",
-            ):
+            port = cast(ThreadingHTTPServer, self.server).server_port
+            if host not in (f"127.0.0.1:{port}", f"localhost:{port}"):
                 return self.answer(403, {"error": "Invalid host"})
             parsed = urlsplit(self.path)
             if parsed.path in ASSETS:
@@ -88,7 +90,7 @@ def make_server(db_path, port=8765):
                     for k, v in params.items()
                 ):
                     raise BadRequest("Invalid parameters")
-                p = {k: v[0] for k, v in params.items()}
+                p: dict[str, Any] = {k: v[0] for k, v in params.items()}
                 route = parsed.path
                 if route == "/api/meta":
                     data = viewer.status()
@@ -123,7 +125,7 @@ def make_server(db_path, port=8765):
             except OSError:
                 self.answer(404, {"error": "Source unavailable"})
 
-        def do_POST(self):
+        def do_POST(self) -> None:
             self.answer(405, {"error": "Read-only viewer"})
 
         do_PUT = do_DELETE = do_PATCH = do_POST
@@ -131,7 +133,7 @@ def make_server(db_path, port=8765):
     return ThreadingHTTPServer(("127.0.0.1", port), Handler)
 
 
-def serve(db_path, port=8765):
+def serve(db_path: str, port: int = 8765) -> None:
     server = make_server(db_path, port)
     server.timeout = 0.1
     print(
@@ -139,7 +141,7 @@ def serve(db_path, port=8765):
     )
     previous = signal.getsignal(signal.SIGTERM)
 
-    def stop(signum, frame):
+    def stop(signum: int, frame: FrameType | None) -> None:
         threading.Thread(target=server.shutdown, daemon=True).start()
 
     signal.signal(signal.SIGTERM, stop)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import Any
 
 Rows = list[dict[str, Any]]
@@ -25,7 +26,8 @@ class NotFound(Exception):
 
 
 def _rows(conn: Any, q: str, params: dict[str, Any] | None = None) -> list[Any]:
-    return conn.execute(q, params or {}).get_all()
+    rows: list[Any] = conn.execute(q, params or {}).get_all()
+    return rows
 
 
 def _sym(row: Any) -> dict[str, Any]:
@@ -43,7 +45,7 @@ def resolve_symbol(
     and Java fully-qualified names."""
     kinds = kinds or CODE_KINDS + (["external"] if allow_external else [])
     base = "MATCH (s:Symbol) WHERE s.kind IN $kinds "
-    tries = []
+    tries: list[tuple[str, dict[str, Any]]] = []
     if "::" in query:
         tries.append(
             (
@@ -77,7 +79,9 @@ def resolve_symbol(
     raise NotFound(query)
 
 
-def _incoming(conn, ids, rels=("CALLS", "REFERENCES")):
+def _incoming(
+    conn: Any, ids: Iterable[str], rels: tuple[str, ...] = ("CALLS", "REFERENCES")
+) -> list[Any]:
     out = []
     for rel in rels:
         if rel == "INHERITS":
@@ -95,14 +99,14 @@ def _incoming(conn, ids, rels=("CALLS", "REFERENCES")):
     return out
 
 
-def _scoped(results, scope):
+def _scoped(results: Rows, scope: str) -> Rows:
     if not scope:
         return results
     s = scope.rstrip("/")
     return [r for r in results if r["file"] == s or r["file"].startswith(s + "/")]
 
 
-def _sort(results):
+def _sort(results: Rows) -> Rows:
     return sorted(
         results, key=lambda r: (r["file"], r["line"], r.get("qualname", ""), r.get("depth", 0))
     )

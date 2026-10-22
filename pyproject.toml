@@ -41,7 +41,7 @@ select = ["E4", "E7", "E9", "F", "I"]
 
 [tool.mypy]
 python_version = "3.11"
-files = ["codegraph/service.py", "codegraph/mcp_server.py", "codegraph/evaluation.py"]
+files = ["codegraph", "bench"]
 strict = true
 follow_imports = "silent"
 

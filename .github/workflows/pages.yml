@@ -25,7 +25,7 @@ jobs:
           python-version: '3.12'
       - run: pip install .
       - run: python scripts/build_site.py --out _site
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
   deploy:

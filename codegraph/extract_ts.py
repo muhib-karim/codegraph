@@ -316,6 +316,10 @@ class _Extractor:
         if args is not None:
             self.visit(args, scope, qual)
 
+    def block_local(self, scope: Symbol) -> bool:
+        """True inside a callback or block at module level, where declarations are local."""
+        return scope.kind == "module" and bool(self.shadow)
+
     def shadowed(self, name: str) -> bool:
         return any(name in s for s in self.shadow)
 
@@ -350,13 +354,17 @@ class _Extractor:
                 name = text(name_node)
                 if exported:
                     self.exported.add(name)
-                if value is not None and value.type in _FUNCTION_VALUES:
+                if (
+                    value is not None
+                    and value.type in _FUNCTION_VALUES
+                    and not self.block_local(scope)
+                ):
                     if scope.kind in ("module", "function", "method", "constructor"):
                         self.function(value, name, "function", scope, qual)
                         if scope.kind != "module":
                             self.bind_local(scope, name)
                         continue
-                if value is not None and value.type == "class":
+                if value is not None and value.type == "class" and not self.block_local(scope):
                     self.klass(value, name, scope, qual)
                     continue
                 if scope.kind == "module" and not self.shadow:
@@ -583,16 +591,32 @@ class _Extractor:
         if t == "import_statement":
             self.import_statement(node)
             return
+        if t == "statement_block" and scope.kind == "module":
+            # Blocks at module level (if/for/try bodies, callbacks, namespaces) scope their
+            # declarations: they shadow outer names and never become module-level symbols.
+            self.shadow.append(set())
+            for c in node.named_children:
+                self.visit(c, scope, qual)
+            self.shadow.pop()
+            return
         if t == "export_statement":
             self.export_statement(node, scope, qual)
             return
         if t in ("function_declaration", "generator_function_declaration"):
             name = text(node.child_by_field_name("name"))
+            if self.block_local(scope):
+                self.shadow[-1].add(name)
+                self.anonymous(node, scope, qual)
+                return
             self.function(node, name, "function", scope, qual)
             if scope.kind != "module":
                 self.bind_local(scope, name)
             return
         if t in _CLASS_DECLS and node.child_by_field_name("name") is not None:
+            if self.block_local(scope):
+                self.shadow[-1].add(text(node.child_by_field_name("name")))
+                self.anonymous(node, scope, qual)
+                return
             self.klass(node, text(node.child_by_field_name("name")), scope, qual)
             return
         if t == "interface_declaration":
@@ -694,6 +718,7 @@ class _Extractor:
             self.visit(c, scope, qual)
 
     def run(self) -> FileInfo:
+        self.fi.syntax_error = self.tree.root_node.has_error
         for c in self.tree.root_node.named_children:
             self.visit(c, self.mod, "")
         for name in self.exported:

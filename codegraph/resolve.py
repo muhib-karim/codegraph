@@ -75,6 +75,7 @@ class Resolver:
         # class id -> [base class id (repo or external)]
         self.bases: defaultdict[str, list[str]] = defaultdict(list)
         self.externals: dict[str, Symbol] = {}
+        self.export_cache: dict[tuple[str, str], tuple[str, Any] | None] = {}
         for fi in files.values():
             for s in fi.symbols:
                 self.sym[s.id] = s
@@ -283,15 +284,38 @@ class Resolver:
                 return c
         return None
 
-    def js_export(self, path: str, name: str, depth: int = 0) -> tuple[str, Any] | None:
-        """What `name` exported by `path` binds to: ('sym', [Symbol]) | ('module', path) | None."""
+    def js_export(
+        self, path: str, name: str, seen: set[tuple[str, str]] | None = None
+    ) -> tuple[str, Any] | None:
+        """What `name` exported by `path` binds to: ('sym', [Symbol]) | ('module', path) | None.
+
+        One lookup visits each (file, name) pair at most once, so cyclic `export *` chains
+        terminate in linear time; finished top-level lookups are cached."""
+        top_level = seen is None
+        key = (path, name)
+        if top_level and key in self.export_cache:
+            return self.export_cache[key]
+        visited: set[tuple[str, str]] = set() if seen is None else seen
+        if key in visited:
+            return None
+        visited.add(key)
+        result = self._js_export(path, name, visited)
+        if top_level:
+            self.export_cache[key] = result
+        return result
+
+    def _js_export(
+        self, path: str, name: str, seen: set[tuple[str, str]]
+    ) -> tuple[str, Any] | None:
         fi = self.files.get(path)
-        if fi is None or depth > 8:
+        if fi is None:
             return None
         if name in fi.exports:
-            kind, val, _ = self.js_bind(fi, f"{path}::<module>", fi.exports[name], depth + 1)
+            kind, val, _ = self.js_bind(fi, f"{path}::<module>", fi.exports[name], seen)
             return (kind, val) if kind in ("sym", "module") else None
-        if name != "default":
+        # `export { foo as bar }` exports bar only; foo itself stays private to the file.
+        renamed = name in fi.exports.values()
+        if name != "default" and not renamed:
             top = [s for s in self.py_top(path, name) if s.visibility == "public"]
             if top:
                 return "sym", top
@@ -300,7 +324,7 @@ class Resolver:
             if target is None:
                 continue
             if imp.kind == "reexport" and (imp.alias or imp.name) == name:
-                return self.js_export(target, imp.name, depth + 1)
+                return self.js_export(target, imp.name, seen)
             if imp.kind == "reexport_ns" and imp.alias == name:
                 return "module", target
         if name == "default":
@@ -308,12 +332,18 @@ class Resolver:
         for imp in fi.imports:
             if imp.kind == "reexport_star":
                 target = self.js_module_file(fi, imp.module)
-                hit = self.js_export(target, name, depth + 1) if target else None
+                hit = self.js_export(target, name, seen) if target else None
                 if hit:
                     return hit
         return None
 
-    def js_bind(self, fi: FileInfo, scope_id: str | None, name: str, depth: int = 0) -> Binding:
+    def js_bind(
+        self,
+        fi: FileInfo,
+        scope_id: str | None,
+        name: str,
+        seen: set[tuple[str, str]] | None = None,
+    ) -> Binding:
         """Bind a bare JS/TS name; same result shape as py_bind."""
         s = self.sym.get(scope_id or "")
         while s is not None and s.kind != "module":
@@ -339,7 +369,7 @@ class Resolver:
                 return "external", None, "external-import"
             if imp.kind == "module":
                 return "module", path, "import"
-            hit = self.js_export(path, imp.name, depth)
+            hit = self.js_export(path, imp.name, seen)
             if hit:
                 return hit[0], hit[1], "import"
             return "external", None, "unresolved-import"
@@ -751,6 +781,9 @@ class Resolver:
         if c.recv_kind == "name":
             if py:
                 kind, val, reason = self.bind(fi, c.caller, c.recv)
+                if kind is None and fi.lang in JS:  # console, JSON, window, document...
+                    st["call_external"] += 1
+                    return
                 if kind == "module":
                     hit = self.module_attr(fi.lang, val, c.name)
                     if hit and hit[0].kind == "variable":
@@ -821,7 +854,7 @@ class Resolver:
             if py:
                 parts = c.recv.split(".")
                 kind, val, _ = self.bind(fi, c.caller, parts[0])
-                if kind == "external":
+                if kind == "external" or (kind is None and fi.lang in JS):
                     st["call_external"] += 1
                     return
                 if kind == "module" and len(parts) == 2:

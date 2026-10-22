@@ -101,7 +101,9 @@ class GraphService:
             raise ValueError("depth must be 1..10")
         if not 0 < len(target) <= 512 and kind != "dead-code":
             raise ValueError("A target of 1..512 characters is required")
-        if "::" in target:
+        if kind == "search":
+            pass  # a name fragment, never a path
+        elif "::" in target:
             self.path(target.split("::", 1)[0])
         elif "/" in target or "\\" in target or target.startswith(".") or ":" in target:
             self.path(target)

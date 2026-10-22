@@ -77,6 +77,7 @@ def index(root: str, db_path: str) -> dict[str, Any]:
         "imports_internal": len(set(graph.imports)),
         "resolution": dict(graph.stats),
         "parse_errors": errors,
+        "files_with_syntax_errors": sorted(p for p, fi in graph.files.items() if fi.syntax_error),
     }
     meta = {
         "repo_root": root,

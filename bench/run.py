@@ -175,7 +175,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.measure:  # child process: print one JSON object
         print(json.dumps(measure(Path(args.measure), args.runs)))
         return 0
-    from codegraph import __version__
 
     if args.local:
         repos = [{"name": Path(args.local).name, "url": "", "ref": "local", "language": "mixed"}]
@@ -185,6 +184,16 @@ def main(argv: list[str] | None = None) -> int:
             keep = set(args.only.split(","))
             repos = [r for r in repos if r["name"] in keep]
     work = Path(args.work or tempfile.mkdtemp(prefix="cg-bench-src-"))
+    try:
+        return run_all(args, repos, work)
+    finally:
+        if not args.work:  # only remove clones this run created
+            shutil.rmtree(work, ignore_errors=True)
+
+
+def run_all(args: argparse.Namespace, repos: list[dict[str, str]], work: Path) -> int:
+    from codegraph import __version__
+
     results = []
     for repo in repos:
         path = Path(args.local) if args.local else clone(repo, work)

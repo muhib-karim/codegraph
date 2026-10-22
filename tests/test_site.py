@@ -38,3 +38,19 @@ def test_site_build(tmp_path):
     assert "web/src/util.ts::scale/1" in ids  # the demo's default selection
     js = (out / "demo.js").read_text()
     assert "innerHTML" not in js and "fetch('data/graph.json')" in js
+
+
+def test_output_directory_guard_refuses_source_paths(tmp_path):
+    """Only the pure check runs here: a missing guard must fail the test, never delete files."""
+    import pytest
+
+    check = load().check_out
+    for target in (ROOT, ROOT / "site", ROOT / "codegraph", ROOT / "site" / "data", ROOT.parent):
+        with pytest.raises(SystemExit):
+            check(target)
+    check(tmp_path / "out")  # a fresh directory elsewhere is fine
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "notes.txt").write_text("keep me")
+    with pytest.raises(SystemExit):
+        check(tmp_path / "docs")  # existing content that no build wrote
+    check(ROOT / "_site")  # the conventional build output inside the checkout is fine

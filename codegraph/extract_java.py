@@ -471,4 +471,5 @@ def extract(path: str, src: bytes) -> FileInfo:
 
     for c in tree.root_node.children:
         visit(c, mod, "")
+    fi.syntax_error = tree.root_node.has_error
     return fi

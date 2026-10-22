@@ -192,3 +192,129 @@ def test_jsx_components_and_typed_parameters_bind_calls(tmp_path):
             ("Store.load", "ui.tsx:10", "exact"),
             ("Panel", "ui.tsx:11", "exact"),
         ]
+
+
+def build_repo(tmp_path, files):
+    for name, body in files.items():
+        (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / name).write_text(body)
+    db = tmp_path / "g.lbug"
+    stats = index(str(tmp_path), str(db))
+    return db, stats
+
+
+def test_cyclic_star_reexports_terminate_quickly(tmp_path):
+    import time
+
+    files = {
+        f"{a}.ts": "".join(f"export * from './{b}';\n" for b in "abcd" if b != a) for a in "abcd"
+    }
+    files["app.ts"] = (
+        "import { missing } from './a';\nexport function run() {\n"
+        + "".join(f"  missing({i});\n" for i in range(50))
+        + "}\n"
+    )
+    t0 = time.perf_counter()
+    build_repo(tmp_path, files)
+    assert time.perf_counter() - t0 < 5
+
+
+def test_declarations_inside_callbacks_and_blocks_stay_local(tmp_path):
+    db, _ = build_repo(
+        tmp_path,
+        {
+            "spec.test.js": "function setup() {}\n"
+            "describe('x', () => {\n"
+            "  const setup = () => 2;\n"
+            "  function helper() {}\n"
+            "  it('y', () => { setup(); helper(); });\n"
+            "});\n",
+            "util.ts": "export function helper(n: number) {\n  return n;\n}\n",
+            "shadow.ts": "import { helper } from './util';\n"
+            "if (true) {\n  const helper = () => 9;\n  helper();\n}\n"
+            "export function f() {\n  helper(2);\n}\n",
+        },
+    )
+    with GraphService(str(db)) as graph:
+        assert graph.query("callers", "spec.test.js::setup/0")["results"] == []
+        assert [r["citation"] for r in graph.query("callers", "util.ts::helper/1")["results"]] == [
+            "shadow.ts:7"
+        ]
+        names = {(s["file"], s["qualname"]) for s in graph.query("search", "helper")["results"]}
+        assert names == {("util.ts", "helper")}  # no module-level helper leaks from blocks
+        dead = {(r["file"], r["qualname"]) for r in graph.query("dead-code")["results"]}
+        assert ("spec.test.js", "setup") in dead  # the outer one really is unused
+
+
+def test_unbound_js_globals_do_not_match_repo_methods(tmp_path):
+    db, stats = build_repo(
+        tmp_path,
+        {
+            "logger.ts": "export class Logger {\n  log(msg: string) {}\n"
+            "  stringify(x: object) {}\n}\n",
+            "app.ts": "export function main() {\n  console.log('x');\n  JSON.stringify({});\n"
+            "  window.localStorage.getItem('k');\n}\n",
+        },
+    )
+    with GraphService(str(db)) as graph:
+        assert graph.query("callers", "Logger.log")["results"] == []
+        assert graph.query("callers", "Logger.stringify")["results"] == []
+    assert stats["resolution"]["call_external"] >= 3
+
+
+def test_syntax_errors_are_reported(web):
+    _, stats = web
+    assert stats["files_with_syntax_errors"] == ["src/broken.ts"]
+
+
+def test_renamed_export_hides_the_local_name(tmp_path):
+    db, _ = build_repo(
+        tmp_path,
+        {
+            "lib.ts": "function foo() {}\nexport { foo as bar };\n",
+            "a.ts": "import { bar } from './lib';\nexport function useBar() {\n  bar();\n}\n",
+            "b.ts": "import { foo } from './lib';\nexport function useFoo() {\n  foo();\n}\n",
+        },
+    )
+    with GraphService(str(db)) as graph:
+        assert [r["citation"] for r in graph.query("callers", "lib.ts::foo/0")["results"]] == [
+            "a.ts:3"
+        ]
+
+
+def test_search_accepts_leading_dot_queries(web):
+    graph, _ = web
+    assert [r["qualname"] for r in graph.query("search", ".area")["results"]] == [
+        "Shape.area",
+        "Base.area",
+        "Circle.area",
+    ]
+
+
+def test_less_common_module_syntax(tmp_path):
+    db, stats = build_repo(
+        tmp_path,
+        {
+            "cjs.js": "exports.one = function () { return 1; };\n"
+            "function two() { return 2; }\n"
+            "module.exports.two = two;\n"
+            "module.exports = { three: two, four: () => 4 };\n",
+            "anon.ts": "export default function () {\n  return 5;\n}\n",
+            "klass.ts": "export default class {\n  static make() {}\n}\n",
+            "legacy.ts": "import fs = require('./cjs');\nimport './side';\n"
+            "export function run() {\n  fs.one();\n  try {\n    fs.two();\n  } catch (e) {\n"
+            "    e.toString();\n  }\n}\n",
+            "side.ts": "export const loaded = true;\n",
+            "use.ts": "import anon from './anon';\nimport K from './klass';\nimport * as ns from './index';\n"
+            "export function go() {\n  anon();\n  K.make();\n  ns.inner.one();\n}\n",
+            "index.ts": "export * as inner from './cjs';\n",
+        },
+    )
+    assert stats["parse_errors"] == [] and stats["files_with_syntax_errors"] == []
+    with GraphService(str(db)) as graph:
+        found = {r["qualname"]: r["kind"] for r in graph.query("search", "o")["results"]}
+        assert found["one"] == "function" and found["two"] == "function"
+        callees = {(r["qualname"], r["line"]) for r in graph.query("callees", "run")["results"]}
+        assert ("one", 4) in callees and ("two", 6) in callees
+        callees = {r["qualname"] for r in graph.query("callees", "go")["results"]}
+        assert {"default", "default.make"} <= callees

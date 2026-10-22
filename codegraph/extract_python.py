@@ -435,6 +435,7 @@ def extract(path: str, src: bytes) -> FileInfo:
         visit(c, mod, "")
     if fi.is_script:
         mod.entry_reason = "script"
+    fi.syntax_error = tree.root_node.has_error
     return fi
 
 

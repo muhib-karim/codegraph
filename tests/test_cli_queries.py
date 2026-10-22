@@ -53,3 +53,10 @@ def test_impact_is_blast(db, capsys):
     assert run(capsys, "impact", "src/util.ts", "--db", db) == run(
         capsys, "blast", "src/util.ts", "--db", db
     )
+
+
+def test_search_validates_kind_and_query(db, capsys):
+    code, _, err = run(capsys, "search", "re", "--db", db, "--kind", "bogus")
+    assert code == 1 and "unknown symbol kind" in err
+    code, _, err = run(capsys, "search", "", "--db", db)
+    assert code == 1 and "1..512" in err

@@ -114,6 +114,11 @@ def cmd_index(args: argparse.Namespace) -> int:
             )
         if stats["parse_errors"]:
             print("parse errors: " + "; ".join(stats["parse_errors"]))
+        if stats["files_with_syntax_errors"]:
+            print(
+                "syntax errors (recovered; some declarations may be missing): "
+                + ", ".join(stats["files_with_syntax_errors"][:10])
+            )
     return 0
 
 
@@ -281,6 +286,14 @@ def main(argv: list[str] | None = None) -> int:
         )
     if args.cmd == "search":
         kinds = [k for k in args.kind.split(",") if k] or None
+        if not 0 < len(args.query) <= 512:
+            print("error: a search query of 1..512 characters is required", file=sys.stderr)
+            return 1
+        if kinds and any(k not in queries.CODE_KINDS for k in kinds):
+            print(
+                f"error: unknown symbol kind; use {', '.join(queries.CODE_KINDS)}", file=sys.stderr
+            )
+            return 1
         return run_query(
             args,
             "search",

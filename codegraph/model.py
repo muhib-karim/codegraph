@@ -86,3 +86,5 @@ class FileInfo:
     globals_decl: dict[str, set[str]] = field(default_factory=dict)
     # JS/TS: exported name -> local name ("default" for the default export)
     exports: dict[str, str] = field(default_factory=dict)
+    # the parser recovered from a syntax error; some declarations may be missing
+    syntax_error: bool = False

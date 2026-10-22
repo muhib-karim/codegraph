@@ -2,7 +2,7 @@
 
 Command: `codegraph eval`
 
-codegraph 1.0.0; question schema 1; 50 questions; k=5.
+codegraph 1.1.0; question schema 1; 50 questions; k=5.
 
 Questions SHA-256: `4a27330ebf72d3c336b182e61874a0ea3d8dcce94b8ab51e5cc04aaf68c9c987`
 

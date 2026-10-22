@@ -67,10 +67,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t codegraph:1.0.0 .
+      - run: docker build -t codegraph:1.1.0 .
       - name: Non-root index and query smoke test
         run: |
-          docker run --rm --entrypoint sh -v "$PWD/tests/fixtures/mini:/fixture:ro" codegraph:1.0.0 -ec '
+          docker run --rm --entrypoint sh -v "$PWD/tests/fixtures/mini:/fixture:ro" codegraph:1.1.0 -ec '
             test "$(id -u)" != 0
             cp -r /fixture /tmp/repo
             codegraph index /tmp/repo

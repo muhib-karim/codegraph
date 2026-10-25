@@ -335,6 +335,20 @@ evaluation artifacts that are not part of this repository.
 New languages should come with their own fixtures, query-level tests and
 citation conventions.
 
+## Tech stack
+
+- **Language:** Python
+- **Frameworks and tools:** Playwright, pytest, Ruff, mypy, Docker
+- **CI:** GitHub Actions
+
+## Contributing
+
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow. Before opening a pull request, run `pytest`. Please keep each pull request focused and say how you tested it.
+
+## License
+
+See [LICENSE](LICENSE).
+
 ## Citation
 
 If you use codegraph or its evaluation set, please cite it (GitHub's "Cite this repository"

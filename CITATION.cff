@@ -6,7 +6,7 @@ abstract: >-
   answers structural questions (definitions, callers, callees, inheritance, unused candidates,
   change impact, name search) with a symbol identity and a file:line citation for every result,
   over a CLI and a read-only MCP server. It
-  ships a 50-question hand-labelled evaluation that compares the graph with a text-search
+  ships a 74-question hand-labelled evaluation that compares the graph with a text-search
   baseline and records hashes of every input.
 type: software
 authors:

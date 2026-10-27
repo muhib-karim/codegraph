@@ -15,6 +15,8 @@ from .service import GraphService, Record
 
 KINDS = {"callers", "inherits", "dead-code", "blast", "find"}
 ARGUMENTS = {"target", "in_file", "scope", "depth", "ancestors", "kinds", "confidence"}
+# Language of the code under test; optional per row. Report order follows this tuple.
+LANGUAGES = ("python", "java", "typescript", "javascript")
 
 
 def load_questions(path: Path, fixtures: Path) -> list[Record]:
@@ -31,6 +33,8 @@ def load_questions(path: Path, fixtures: Path) -> list[Record]:
         ids.add(row["id"])
         if row.get("kind") not in KINDS or row.get("difficulty") not in {"easy", "medium", "hard"}:
             raise ValueError(f"Question {number}: invalid kind or difficulty")
+        if "language" in row and row["language"] not in LANGUAGES:
+            raise ValueError(f"Question {number}: invalid language")
         repo = row.get("repo", "")
         if not isinstance(repo, str) or not repo or Path(repo).name != repo:
             raise ValueError(f"Question {number}: invalid repo")
@@ -104,6 +108,20 @@ def score(expected: list[Record], predicted: list[Record], k: int) -> Record:
         "true_positives": tp,
         "predicted_symbols": len(found),
         "expected_symbols": len(gold),
+    }
+
+
+def by_language(results: list[Record]) -> Record:
+    """Macro averages per question language, like by_kind; rows without one are "unspecified"."""
+    groups: dict[str, list[Record]] = {}
+    for r in results:
+        groups.setdefault(r.get("language", "unspecified"), []).append(r)
+    return {
+        lang: {
+            name: aggregate([r["scores"][name] for r in groups[lang]]) for name in ("graph", "text")
+        }
+        for lang in (*LANGUAGES, "unspecified")
+        if lang in groups
     }
 
 
@@ -260,6 +278,24 @@ def render(report: Record) -> str:
             lines.append(f"| {kind} | {retriever} | " + " | ".join(values) + " |")
     lines += [
         "",
+        "## By language",
+        "",
+        "Language of the code under test, as labelled per question. Same macro averages.",
+        "",
+        "| Language | Retriever | Q | P | R | F1 | MRR | hit@k | Citation accuracy |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|",
+    ]
+    for lang, group in report["by_language"].items():
+        for retriever, metrics in group.items():
+            values = [
+                "n/a" if metrics[k] is None else f"{metrics[k]:.4f}"
+                for k in ("precision", "recall", "f1", "mrr", "hit_at_k", "citation_accuracy")
+            ]
+            lines.append(
+                f"| {lang} | {retriever} | {metrics['questions']} | " + " | ".join(values) + " |"
+            )
+    lines += [
+        "",
         "## Confidence breakdown",
         "",
         "Each row keeps only the predictions carrying that tag. P, F1 and citation accuracy",
@@ -373,6 +409,7 @@ def run(questions: str, fixtures: str, output: str, k: int, command: str) -> Rec
         "fixture_hashes": fixture_hashes,
         "overall": overall,
         "by_kind": by_kind,
+        "by_language": by_language(results),
         "by_confidence": by_confidence,
         "results": results,
     }

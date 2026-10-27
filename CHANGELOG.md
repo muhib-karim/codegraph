@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Labelled TypeScript/JavaScript evaluation questions: a new `workflow_ts`
+  fixture (an order/receipt pipeline in `.ts`, `.tsx`, ESM `.js`, `.mjs` and
+  CommonJS `.cjs`, with TS<->JS imports and runtime-dispatch cases the graph is
+  expected to miss) and 24 questions across all five kinds, 12 TypeScript and
+  12 JavaScript. The suite now has 74 questions.
+- An optional `language` field per question (`python`, `java`, `typescript`,
+  `javascript`), validated when present and set on every shipped row. The
+  report has a `by_language` JSON section and a "By language" table with graph
+  and text rows per language.
+
+### Changed
+
+- `eval/reports/` and the README evaluation table were regenerated. Scores of
+  the 50 existing questions are unchanged; the overall numbers move because of
+  the new questions. The site's graph demo now also includes the `workflow_ts`
+  fixture.
+
 ## [1.1.0] - 2026-10-22
 
 ### Added

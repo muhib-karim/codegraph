@@ -8,7 +8,9 @@ required. Expected answers are never passed into either retriever.
 
 `questions.jsonl` has one object per line: `schema_version`, unique `id`, `repo`
 (a directory directly under the fixtures root), `kind`, `arguments`, `expected`,
-and `difficulty` (`easy`, `medium`, `hard`). Arguments match `GraphService.query`:
+`difficulty` (`easy`, `medium`, `hard`) and an optional `language` (`python`,
+`java`, `typescript`, `javascript`). Rows without `language` still load;
+present values must be one of those four. Arguments match `GraphService.query`:
 `target`, `in_file`, `scope`, `depth` (1..10), `ancestors`, `kinds`, `confidence`.
 An omitted `depth` means 1, the `GraphService.query` default.
 Every expected answer has `symbol`, `file`, `line`. The loader checks schema,
@@ -16,6 +18,13 @@ paths, citation ranges and duplicates; the runner verifies IDs against the
 parsed declaration inventory. Those checks do not establish semantic truth.
 
 ## Label policy
+
+`language` names the language of the code under test: the symbol named in
+`target` (for `find`, its intended definition), or the scoped file for
+`dead-code`. A few `workflow_ts` questions cross the TS/JS boundary; they are
+classed by that target, so `callers-013` (a TS function called from JS) is
+`typescript` and `callers-014`/`blast-013` (a CommonJS function used from TSX)
+are `javascript`. Every row in the shipped set carries the field.
 
 Labels were authored from source before the first retrieval run, using the
 existing symbol-ID and citation conventions. Reading the declaration inventory
@@ -46,16 +55,37 @@ integer overload; the String overload is unused. The graph's arity-only
 fan-out causes both a false caller and a missed unused candidate. Decoys in
 comments, strings and unrelated classes are intentional retrieval negatives.
 
+The workflow_ts fixture is the same pipeline in TypeScript (`src/`, including
+one `.tsx`) and JavaScript (`lib/`: ESM `.js`, `.mjs` and CommonJS `.cjs`). It
+has an interface chain (`PricedStep` extends `Step` extends `Named`), an abstract
+`BaseStep` with `this` calls, a re-export barrel with an aliased export,
+aliased and default imports, an arrow function passed only as a value, and
+imports in both directions between TS and JS. Its intended graph misses are
+runtime dispatch. `dispatch(sink, receipt)` receives a `MailSink` from
+`checkout`, but `sink` is an untyped parameter, so `callers-016` and
+`blast-014` are gold the graph cannot reach. `runStep(step: Step)` receives a
+`TaxStep` (which runs the inherited `BaseStep.apply`) and a `DiscountStep`, and
+the graph binds the call to the interface method `Step.apply`, so `callers-017`
+and part of `blast-012` are missed. `find-014` repeats the exact-qualname
+preference of `find-007` across languages (`total` against the JS decoy
+method `Preview.total`). `lib/decoys.js` holds the comment, string and
+same-named-method decoys. The workflow_ts labels were written from source and
+the declaration inventory before the first retrieval run; none was changed
+afterwards.
+
 `mini` keeps its original files/line numbers; `decoys.py` extends it. The set
-has 12 callers, 8 inheritance, 8 dead-code, 10 blast and 12 find questions.
-The 50 questions are curated coverage examples, not a random sample of developer
+has 18 callers, 12 inheritance, 13 dead-code, 14 blast and 17 find questions:
+32 Python, 18 Java, 12 TypeScript and 12 JavaScript. The 74 questions are
+curated coverage examples, not a random sample of developer
 questions; multiple questions reuse the same relationships. Difficulty is a
 human tag, not a measured score.
 
 ## Scoring and baseline
 
-Each question is scored independently; overall and per-kind scores are macro
-averages. Retrieval precision/recall/F1 compare unique symbol IDs. Repeated
+Each question is scored independently; overall, per-kind and per-language
+scores are macro averages. The JSON `by_language` section and the report's
+"By language" table give graph and text rows per language with the question
+count `Q`; rows without a `language` would be grouped as `unspecified`. Retrieval precision/recall/F1 compare unique symbol IDs. Repeated
 sites for the same symbol do not inflate these metrics. MRR is the reciprocal
 rank of the first relevant distinct ID; hit@k is whether any relevant ID occurs
 among the first k. Returned order is deterministic, not a semantic ranking.

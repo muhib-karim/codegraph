@@ -2,9 +2,9 @@
   "schema_version": 1,
   "codegraph_version": "1.1.0",
   "command": "codegraph eval",
-  "questions": 50,
+  "questions": 74,
   "k": 5,
-  "questions_sha256": "4a27330ebf72d3c336b182e61874a0ea3d8dcce94b8ab51e5cc04aaf68c9c987",
+  "questions_sha256": "df674dc628ea02c4a73ca4838828bc9ab08bacbad180c403cd98d4f262779d03",
   "fixture_hashes": {
     "mini": {
       "app.py": "ef00c48a8a40937c03ad704c62178bce37bfd3ced16081125580c87aaa83f339",
@@ -26,112 +26,126 @@
       "src/flow/Decoy.java": "ba84ed1d7767d930ac381d3517f3f38a6d172c977309bbf869f55fb2f27fd8ff",
       "src/flow/Processor.java": "af71666dfc04c7cf37a0948a8310a4885bf44b6c4d3ab8531672324c56a1d8da",
       "src/flow/Runner.java": "59d3781687e05b629b12c8e6d611663011be53c6eea3ea55f5f6c957014c4eef"
+    },
+    "workflow_ts": {
+      "lib/checkout.js": "03e98a830b8213ceee580c8f2c79b992668846704a198958c9221ddbba727dae",
+      "lib/decoys.js": "468d019b9dfb1f72ee78f09c958ee159f784aa8b6aa2bbea11a7d5acc68e19e7",
+      "lib/dispatch.mjs": "f3c50f044f22e28e6b93f8df3176689d1b4162c13fe5d91324e90a3bbf7cd61c",
+      "lib/format.cjs": "84f4bf3620dba26bcfd33a3bc0fe032b0107ca8b1885704b30f45ad78346c0fa",
+      "lib/legacy.cjs": "263c36091819449f99922b05d7539579e92f27d1e253b21b85fa299348f6ae6b",
+      "lib/sinks.js": "6303698b3f4c643726246d6761705ac02e9ac8f8833c6ef93bcb14ba1d5fb152",
+      "src/index.ts": "fb386ef80b61d097d8f96153cbff2907cc711cafe0f407d033db3596ea477fc9",
+      "src/model.ts": "485df4f8bcdf82b46b89d1868a42326c03eff9f199793559208435434ad9bc31",
+      "src/pricing.ts": "4892691d6cdc4dc159c47894f11973c2e860deef124039922ed92cfca1a5b5d9",
+      "src/receipt.tsx": "807f61f6b5fc9d6a394bb422fff7ac68400b4f0ad993989d898ab2eaebf673a8",
+      "src/runner.ts": "f2080a180617fb6195bc552903ada0cd49a170524165ecb6ed6b79dc08144fe0",
+      "src/steps.ts": "63d9c8f921d6e8a1f88234dd76ee9861658896074e4adb17163fc038ca2d4224"
     }
   },
   "overall": {
     "graph": {
-      "questions": 50,
-      "precision": 0.92,
-      "recall": 0.92,
-      "f1": 0.9066666666666666,
-      "mrr": 0.9361702127659575,
-      "hit_at_k": 0.9361702127659575,
-      "citation_accuracy": 0.92
+      "questions": 74,
+      "precision": 0.9054054054054054,
+      "recall": 0.8959459459459459,
+      "f1": 0.8903903903903904,
+      "mrr": 0.9154929577464789,
+      "hit_at_k": 0.9154929577464789,
+      "citation_accuracy": 0.9054054054054054
     },
     "text": {
-      "questions": 50,
-      "precision": 0.7866666666666666,
-      "recall": 0.9066666666666666,
-      "f1": 0.7966666666666666,
-      "mrr": 0.8546099290780141,
-      "hit_at_k": 1.0,
-      "citation_accuracy": 0.7933333333333333
+      "questions": 74,
+      "precision": 0.7657657657657657,
+      "recall": 0.8506756756756757,
+      "f1": 0.7588159588159588,
+      "mrr": 0.8333333333333334,
+      "hit_at_k": 0.9577464788732394,
+      "citation_accuracy": 0.7702702702702703
     }
   },
   "by_kind": {
     "blast": {
       "graph": {
-        "questions": 10,
-        "precision": 0.9,
-        "recall": 0.9,
-        "f1": 0.9,
-        "mrr": 0.8888888888888888,
-        "hit_at_k": 0.8888888888888888,
-        "citation_accuracy": 0.9
+        "questions": 14,
+        "precision": 0.8571428571428571,
+        "recall": 0.8428571428571429,
+        "f1": 0.8492063492063492,
+        "mrr": 0.8461538461538461,
+        "hit_at_k": 0.8461538461538461,
+        "citation_accuracy": 0.8571428571428571
       },
       "text": {
-        "questions": 10,
-        "precision": 0.6666666666666666,
-        "recall": 0.8333333333333334,
-        "f1": 0.72,
-        "mrr": 0.7222222222222222,
+        "questions": 14,
+        "precision": 0.6547619047619048,
+        "recall": 0.7404761904761905,
+        "f1": 0.6537414965986394,
+        "mrr": 0.7307692307692307,
         "hit_at_k": 1.0,
-        "citation_accuracy": 0.6833333333333333
+        "citation_accuracy": 0.6666666666666666
       }
     },
     "callers": {
       "graph": {
-        "questions": 12,
-        "precision": 0.75,
-        "recall": 0.8333333333333334,
-        "f1": 0.75,
-        "mrr": 0.8181818181818182,
-        "hit_at_k": 0.8181818181818182,
-        "citation_accuracy": 0.75
+        "questions": 18,
+        "precision": 0.7222222222222222,
+        "recall": 0.7777777777777778,
+        "f1": 0.7222222222222222,
+        "mrr": 0.7647058823529411,
+        "hit_at_k": 0.7647058823529411,
+        "citation_accuracy": 0.7222222222222222
       },
       "text": {
-        "questions": 12,
-        "precision": 0.5138888888888888,
-        "recall": 1.0,
-        "f1": 0.6361111111111111,
-        "mrr": 0.696969696969697,
-        "hit_at_k": 1.0,
-        "citation_accuracy": 0.5277777777777778
+        "questions": 18,
+        "precision": 0.537037037037037,
+        "recall": 0.9444444444444444,
+        "f1": 0.6444444444444445,
+        "mrr": 0.7156862745098039,
+        "hit_at_k": 0.9411764705882353,
+        "citation_accuracy": 0.5462962962962963
       }
     },
     "dead-code": {
       "graph": {
-        "questions": 8,
+        "questions": 13,
         "precision": 1.0,
-        "recall": 0.9375,
-        "f1": 0.9583333333333334,
+        "recall": 0.9615384615384616,
+        "f1": 0.9743589743589743,
         "mrr": 1.0,
         "hit_at_k": 1.0,
         "citation_accuracy": 1.0
       },
       "text": {
-        "questions": 8,
-        "precision": 1.0,
-        "recall": 0.875,
-        "f1": 0.9166666666666666,
-        "mrr": 1.0,
-        "hit_at_k": 1.0,
-        "citation_accuracy": 1.0
+        "questions": 13,
+        "precision": 0.8461538461538461,
+        "recall": 0.7692307692307693,
+        "f1": 0.7948717948717948,
+        "mrr": 0.8461538461538461,
+        "hit_at_k": 0.8461538461538461,
+        "citation_accuracy": 0.8461538461538461
       }
     },
     "find": {
       "graph": {
-        "questions": 12,
+        "questions": 17,
         "precision": 1.0,
-        "recall": 0.9583333333333334,
-        "f1": 0.9722222222222222,
+        "recall": 0.9411764705882353,
+        "f1": 0.9607843137254902,
         "mrr": 1.0,
         "hit_at_k": 1.0,
         "citation_accuracy": 1.0
       },
       "text": {
-        "questions": 12,
-        "precision": 0.875,
+        "questions": 17,
+        "precision": 0.8725490196078431,
         "recall": 1.0,
-        "f1": 0.9166666666666666,
-        "mrr": 0.9090909090909091,
+        "f1": 0.9117647058823529,
+        "mrr": 0.90625,
         "hit_at_k": 1.0,
-        "citation_accuracy": 0.875
+        "citation_accuracy": 0.8725490196078431
       }
     },
     "inherits": {
       "graph": {
-        "questions": 8,
+        "questions": 12,
         "precision": 1.0,
         "recall": 1.0,
         "f1": 1.0,
@@ -140,29 +154,111 @@
         "citation_accuracy": 1.0
       },
       "text": {
-        "questions": 8,
+        "questions": 12,
         "precision": 1.0,
-        "recall": 0.75,
-        "f1": 0.8333333333333333,
+        "recall": 0.7152777777777778,
+        "f1": 0.7972222222222222,
         "mrr": 1.0,
         "hit_at_k": 1.0,
         "citation_accuracy": 1.0
       }
     }
   },
+  "by_language": {
+    "python": {
+      "graph": {
+        "questions": 32,
+        "precision": 0.9375,
+        "recall": 0.921875,
+        "f1": 0.9270833333333334,
+        "mrr": 0.9333333333333333,
+        "hit_at_k": 0.9333333333333333,
+        "citation_accuracy": 0.9375
+      },
+      "text": {
+        "questions": 32,
+        "precision": 0.7916666666666666,
+        "recall": 0.9166666666666666,
+        "f1": 0.81875,
+        "mrr": 0.8444444444444444,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 0.8020833333333334
+      }
+    },
+    "java": {
+      "graph": {
+        "questions": 18,
+        "precision": 0.8888888888888888,
+        "recall": 0.9166666666666666,
+        "f1": 0.8703703703703703,
+        "mrr": 0.9411764705882353,
+        "hit_at_k": 0.9411764705882353,
+        "citation_accuracy": 0.8888888888888888
+      },
+      "text": {
+        "questions": 18,
+        "precision": 0.7777777777777778,
+        "recall": 0.8888888888888888,
+        "f1": 0.7574074074074074,
+        "mrr": 0.8725490196078431,
+        "hit_at_k": 1.0,
+        "citation_accuracy": 0.7777777777777778
+      }
+    },
+    "typescript": {
+      "graph": {
+        "questions": 12,
+        "precision": 0.9166666666666666,
+        "recall": 0.8583333333333334,
+        "f1": 0.8796296296296297,
+        "mrr": 0.9166666666666666,
+        "hit_at_k": 0.9166666666666666,
+        "citation_accuracy": 0.9166666666666666
+      },
+      "text": {
+        "questions": 12,
+        "precision": 0.6388888888888888,
+        "recall": 0.6486111111111111,
+        "f1": 0.571031746031746,
+        "mrr": 0.6666666666666666,
+        "hit_at_k": 0.8333333333333334,
+        "citation_accuracy": 0.6388888888888888
+      }
+    },
+    "javascript": {
+      "graph": {
+        "questions": 12,
+        "precision": 0.8333333333333334,
+        "recall": 0.8333333333333334,
+        "f1": 0.8333333333333334,
+        "mrr": 0.8333333333333334,
+        "hit_at_k": 0.8333333333333334,
+        "citation_accuracy": 0.8333333333333334
+      },
+      "text": {
+        "questions": 12,
+        "precision": 0.8055555555555556,
+        "recall": 0.8194444444444444,
+        "f1": 0.7888888888888889,
+        "mrr": 0.9166666666666666,
+        "hit_at_k": 0.9166666666666666,
+        "citation_accuracy": 0.8055555555555556
+      }
+    }
+  },
   "by_confidence": {
     "graph/exact": {
-      "questions": 50,
+      "questions": 74,
       "precision": 1.0,
-      "recall": 0.9148936170212766,
-      "f1": 0.9848484848484849,
-      "mrr": 0.9361702127659575,
-      "hit_at_k": 0.9361702127659575,
+      "recall": 0.8915492957746479,
+      "f1": 0.9829059829059829,
+      "mrr": 0.9154929577464789,
+      "hit_at_k": 0.9154929577464789,
       "citation_accuracy": 1.0,
-      "tagged_questions": 44
+      "tagged_questions": 65
     },
     "graph/heuristic": {
-      "questions": 50,
+      "questions": 74,
       "precision": 0.0,
       "recall": 0.0,
       "f1": 0.0,
@@ -172,34 +268,34 @@
       "tagged_questions": 1
     },
     "graph/likely": {
-      "questions": 50,
+      "questions": 74,
       "precision": 1.0,
-      "recall": 0.11702127659574468,
-      "f1": 0.9444444444444444,
-      "mrr": 0.1276595744680851,
-      "hit_at_k": 0.1276595744680851,
+      "recall": 0.11971830985915492,
+      "f1": 0.9,
+      "mrr": 0.14084507042253522,
+      "hit_at_k": 0.14084507042253522,
       "citation_accuracy": 1.0,
-      "tagged_questions": 6
+      "tagged_questions": 10
     },
     "graph/possible": {
-      "questions": 50,
+      "questions": 74,
       "precision": 1.0,
-      "recall": 0.0425531914893617,
-      "f1": 1.0,
-      "mrr": 0.0425531914893617,
-      "hit_at_k": 0.0425531914893617,
+      "recall": 0.056338028169014086,
+      "f1": 0.8666666666666667,
+      "mrr": 0.07042253521126761,
+      "hit_at_k": 0.07042253521126761,
       "citation_accuracy": 1.0,
-      "tagged_questions": 2
+      "tagged_questions": 5
     },
     "text/text": {
-      "questions": 50,
-      "precision": 0.7777777777777778,
-      "recall": 0.900709219858156,
-      "f1": 0.7881944444444444,
-      "mrr": 0.8546099290780141,
-      "hit_at_k": 1.0,
-      "citation_accuracy": 0.7847222222222222,
-      "tagged_questions": 48
+      "questions": 74,
+      "precision": 0.780952380952381,
+      "recall": 0.8443661971830986,
+      "f1": 0.7736054421768708,
+      "mrr": 0.8333333333333334,
+      "hit_at_k": 0.9577464788732394,
+      "citation_accuracy": 0.7857142857142857,
+      "tagged_questions": 70
     }
   },
   "results": [
@@ -208,6 +304,7 @@
       "id": "blast-001",
       "repo": "mini",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "SCALE",
         "depth": 1
@@ -284,6 +381,7 @@
       "id": "blast-002",
       "repo": "mini",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "SCALE",
         "depth": 2
@@ -379,6 +477,7 @@
       "id": "blast-003",
       "repo": "mini",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "make",
         "depth": 2
@@ -500,6 +599,7 @@
       "id": "blast-004",
       "repo": "mini",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "_orphan",
         "depth": 3
@@ -540,6 +640,7 @@
       "id": "blast-005",
       "repo": "mini",
       "kind": "blast",
+      "language": "java",
       "arguments": {
         "target": "Dog.helper",
         "depth": 1
@@ -609,6 +710,7 @@
       "id": "blast-006",
       "repo": "workflow",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "TAX",
         "depth": 1
@@ -685,6 +787,7 @@
       "id": "blast-007",
       "repo": "workflow",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "orders/pricing.py::total/1",
         "depth": 2
@@ -799,6 +902,7 @@
       "id": "blast-008",
       "repo": "workflow",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "dispatch",
         "depth": 1
@@ -875,6 +979,7 @@
       "id": "blast-009",
       "repo": "workflow",
       "kind": "blast",
+      "language": "python",
       "arguments": {
         "target": "MailSink.send",
         "depth": 1
@@ -929,6 +1034,7 @@
       "id": "blast-010",
       "repo": "workflow",
       "kind": "blast",
+      "language": "java",
       "arguments": {
         "target": "BaseProcessor.format",
         "depth": 1
@@ -1028,9 +1134,529 @@
     },
     {
       "schema_version": 1,
+      "id": "blast-011",
+      "repo": "workflow_ts",
+      "kind": "blast",
+      "language": "typescript",
+      "arguments": {
+        "target": "TAX_RATE",
+        "depth": 1
+      },
+      "expected": [
+        {
+          "symbol": "src/pricing.ts::total/1",
+          "file": "src/pricing.ts",
+          "line": 13
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/pricing.ts:13",
+            "file": "src/pricing.ts",
+            "line": 13,
+            "symbol": "src/pricing.ts::total/1",
+            "qualname": "total",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/pricing.ts:13",
+            "target": "src/pricing.ts::TAX_RATE",
+            "def": "src/pricing.ts:12"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/decoys.js::Preview.total/1",
+            "file": "lib/decoys.js",
+            "line": 4,
+            "citation": "lib/decoys.js:4",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/pricing.ts::total/1",
+            "file": "src/pricing.ts",
+            "line": 13,
+            "citation": "src/pricing.ts:13",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-012",
+      "repo": "workflow_ts",
+      "kind": "blast",
+      "language": "typescript",
+      "arguments": {
+        "target": "roundCents",
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "src/pricing.ts::total/1",
+          "file": "src/pricing.ts",
+          "line": 13
+        },
+        {
+          "symbol": "src/steps.ts::BaseStep.apply/1",
+          "file": "src/steps.ts",
+          "line": 12
+        },
+        {
+          "symbol": "lib/checkout.js::checkout/1",
+          "file": "lib/checkout.js",
+          "line": 10
+        },
+        {
+          "symbol": "src/steps.ts::DiscountStep.apply/1",
+          "file": "src/steps.ts",
+          "line": 32
+        },
+        {
+          "symbol": "src/runner.ts::runStep/2",
+          "file": "src/runner.ts",
+          "line": 6
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/checkout.js:10",
+            "file": "lib/checkout.js",
+            "line": 10,
+            "symbol": "lib/checkout.js::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "lib/checkout.js:10",
+            "target": "src/pricing.ts::total/1",
+            "def": "lib/checkout.js:9"
+          },
+          {
+            "citation": "src/pricing.ts:13",
+            "file": "src/pricing.ts",
+            "line": 13,
+            "symbol": "src/pricing.ts::total/1",
+            "qualname": "total",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/pricing.ts:13",
+            "target": "src/pricing.ts::roundCents/1",
+            "def": "src/pricing.ts:12"
+          },
+          {
+            "citation": "src/steps.ts:12",
+            "file": "src/steps.ts",
+            "line": 12,
+            "symbol": "src/steps.ts::BaseStep.apply/1",
+            "qualname": "BaseStep.apply",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/steps.ts:12",
+            "target": "src/pricing.ts::roundCents/1",
+            "def": "src/steps.ts:11"
+          },
+          {
+            "citation": "src/steps.ts:32",
+            "file": "src/steps.ts",
+            "line": 32,
+            "symbol": "src/steps.ts::DiscountStep.apply/1",
+            "qualname": "DiscountStep.apply",
+            "kind": "method",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "src/steps.ts:32",
+            "target": "src/steps.ts::BaseStep.apply/1",
+            "def": "src/steps.ts:31"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/decoys.js::Draft.send/1",
+            "file": "lib/decoys.js",
+            "line": 10,
+            "citation": "lib/decoys.js:10",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/pricing.ts::total/1",
+            "file": "src/pricing.ts",
+            "line": 13,
+            "citation": "src/pricing.ts:13",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 0.8,
+          "f1": 0.888888888888889,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 4,
+          "predicted_symbols": 4,
+          "expected_symbols": 5
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 0.2,
+          "f1": 0.28571428571428575,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 1,
+          "predicted_symbols": 2,
+          "expected_symbols": 5
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-013",
+      "repo": "workflow_ts",
+      "kind": "blast",
+      "language": "javascript",
+      "arguments": {
+        "target": "lib/format.cjs::money/1",
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "lib/checkout.js::checkout/1",
+          "file": "lib/checkout.js",
+          "line": 12
+        },
+        {
+          "symbol": "lib/legacy.cjs::legacyReceipt/1",
+          "file": "lib/legacy.cjs",
+          "line": 5
+        },
+        {
+          "symbol": "lib/legacy.cjs::legacyReceipt/1",
+          "file": "lib/legacy.cjs",
+          "line": 6
+        },
+        {
+          "symbol": "src/receipt.tsx::Line/1",
+          "file": "src/receipt.tsx",
+          "line": 5
+        },
+        {
+          "symbol": "lib/checkout.js::configure/0",
+          "file": "lib/checkout.js",
+          "line": 19
+        },
+        {
+          "symbol": "lib/checkout.js::main/0",
+          "file": "lib/checkout.js",
+          "line": 26
+        },
+        {
+          "symbol": "lib/checkout.js::main/0",
+          "file": "lib/checkout.js",
+          "line": 27
+        },
+        {
+          "symbol": "src/receipt.tsx::ReceiptView/1",
+          "file": "src/receipt.tsx",
+          "line": 9
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/checkout.js:12",
+            "file": "lib/checkout.js",
+            "line": 12,
+            "symbol": "lib/checkout.js::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "lib/checkout.js:12",
+            "target": "lib/format.cjs::money/1",
+            "def": "lib/checkout.js:9"
+          },
+          {
+            "citation": "lib/checkout.js:19",
+            "file": "lib/checkout.js",
+            "line": 19,
+            "symbol": "lib/checkout.js::configure/0",
+            "qualname": "configure",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "lib/checkout.js:19",
+            "target": "lib/checkout.js::checkout/1",
+            "def": "lib/checkout.js:18"
+          },
+          {
+            "citation": "lib/checkout.js:26",
+            "file": "lib/checkout.js",
+            "line": 26,
+            "symbol": "lib/checkout.js::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "lib/checkout.js:26",
+            "target": "lib/legacy.cjs::legacyReceipt/1",
+            "def": "lib/checkout.js:22"
+          },
+          {
+            "citation": "lib/checkout.js:27",
+            "file": "lib/checkout.js",
+            "line": 27,
+            "symbol": "lib/checkout.js::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "lib/checkout.js:27",
+            "target": "lib/checkout.js::checkout/1",
+            "def": "lib/checkout.js:22"
+          },
+          {
+            "citation": "lib/legacy.cjs:5",
+            "file": "lib/legacy.cjs",
+            "line": 5,
+            "symbol": "lib/legacy.cjs::legacyReceipt/1",
+            "qualname": "legacyReceipt",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "lib/legacy.cjs:5",
+            "target": "lib/format.cjs::money/1",
+            "def": "lib/legacy.cjs:4"
+          },
+          {
+            "citation": "lib/legacy.cjs:6",
+            "file": "lib/legacy.cjs",
+            "line": 6,
+            "symbol": "lib/legacy.cjs::legacyReceipt/1",
+            "qualname": "legacyReceipt",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "lib/legacy.cjs:6",
+            "target": "lib/format.cjs::money/1",
+            "def": "lib/legacy.cjs:4"
+          },
+          {
+            "citation": "src/receipt.tsx:5",
+            "file": "src/receipt.tsx",
+            "line": 5,
+            "symbol": "src/receipt.tsx::Line/1",
+            "qualname": "Line",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 1,
+            "via": "src/receipt.tsx:5",
+            "target": "lib/format.cjs::money/1",
+            "def": "src/receipt.tsx:4"
+          },
+          {
+            "citation": "src/receipt.tsx:9",
+            "file": "src/receipt.tsx",
+            "line": 9,
+            "symbol": "src/receipt.tsx::ReceiptView/1",
+            "qualname": "ReceiptView",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "depth": 2,
+            "via": "src/receipt.tsx:9",
+            "target": "src/receipt.tsx::Line/1",
+            "def": "src/receipt.tsx:8"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/checkout.js::checkout/1",
+            "file": "lib/checkout.js",
+            "line": 12,
+            "citation": "lib/checkout.js:12",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/decoys.js::Preview.total/1",
+            "file": "lib/decoys.js",
+            "line": 4,
+            "citation": "lib/decoys.js:4",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/format.cjs::<module>",
+            "file": "lib/format.cjs",
+            "line": 11,
+            "citation": "lib/format.cjs:11",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/legacy.cjs::<module>",
+            "file": "lib/legacy.cjs",
+            "line": 2,
+            "citation": "lib/legacy.cjs:2",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/legacy.cjs::legacyReceipt/1",
+            "file": "lib/legacy.cjs",
+            "line": 5,
+            "citation": "lib/legacy.cjs:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/receipt.tsx::Line/1",
+            "file": "src/receipt.tsx",
+            "line": 5,
+            "citation": "src/receipt.tsx:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 6,
+          "predicted_symbols": 6,
+          "expected_symbols": 6
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 0.5,
+          "f1": 0.5,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 3,
+          "predicted_symbols": 6,
+          "expected_symbols": 6
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "blast-014",
+      "repo": "workflow_ts",
+      "kind": "blast",
+      "language": "javascript",
+      "arguments": {
+        "target": "MailSink.send",
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "lib/dispatch.mjs::dispatch/2",
+          "file": "lib/dispatch.mjs",
+          "line": 5
+        },
+        {
+          "symbol": "lib/checkout.js::checkout/1",
+          "file": "lib/checkout.js",
+          "line": 12
+        },
+        {
+          "symbol": "lib/dispatch.mjs::notifyAll/2",
+          "file": "lib/dispatch.mjs",
+          "line": 11
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [],
+        "text": [
+          {
+            "symbol": "lib/dispatch.mjs::dispatch/2",
+            "file": "lib/dispatch.mjs",
+            "line": 5,
+            "citation": "lib/dispatch.mjs:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 3
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "f1": 0.5,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 3
+        }
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "callers-001",
       "repo": "mini",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "make"
       },
@@ -1134,6 +1760,7 @@
       "id": "callers-002",
       "repo": "mini",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "Circle.area"
       },
@@ -1217,6 +1844,7 @@
       "id": "callers-003",
       "repo": "mini",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "Ring.area"
       },
@@ -1300,6 +1928,7 @@
       "id": "callers-004",
       "repo": "mini",
       "kind": "callers",
+      "language": "java",
       "arguments": {
         "target": "src/demo/Dog.java::Dog.bark/1"
       },
@@ -1376,6 +2005,7 @@
       "id": "callers-005",
       "repo": "mini",
       "kind": "callers",
+      "language": "java",
       "arguments": {
         "target": "Dog.helper"
       },
@@ -1445,6 +2075,7 @@
       "id": "callers-006",
       "repo": "mini",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "SCALE"
       },
@@ -1521,6 +2152,7 @@
       "id": "callers-007",
       "repo": "workflow",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "orders/pricing.py::total/1"
       },
@@ -1597,6 +2229,7 @@
       "id": "callers-008",
       "repo": "workflow",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "checkout"
       },
@@ -1700,6 +2333,7 @@
       "id": "callers-009",
       "repo": "workflow",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "dispatch"
       },
@@ -1776,6 +2410,7 @@
       "id": "callers-010",
       "repo": "workflow",
       "kind": "callers",
+      "language": "python",
       "arguments": {
         "target": "MailSink.send"
       },
@@ -1829,6 +2464,7 @@
       "id": "callers-011",
       "repo": "workflow",
       "kind": "callers",
+      "language": "java",
       "arguments": {
         "target": "CardProcessor.process"
       },
@@ -1896,6 +2532,7 @@
       "id": "callers-012",
       "repo": "workflow",
       "kind": "callers",
+      "language": "java",
       "arguments": {
         "target": "src/flow/CardProcessor.java::CardProcessor.convert/1@13"
       },
@@ -1963,9 +2600,548 @@
     },
     {
       "schema_version": 1,
+      "id": "callers-013",
+      "repo": "workflow_ts",
+      "kind": "callers",
+      "language": "typescript",
+      "arguments": {
+        "target": "src/pricing.ts::total/1"
+      },
+      "expected": [
+        {
+          "symbol": "lib/checkout.js::checkout/1",
+          "file": "lib/checkout.js",
+          "line": 10
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/checkout.js:10",
+            "file": "lib/checkout.js",
+            "line": 10,
+            "symbol": "lib/checkout.js::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "lib/checkout.js:10",
+            "target": "src/pricing.ts::total/1",
+            "def": "lib/checkout.js:9"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/decoys.js::Preview.total/1",
+            "file": "lib/decoys.js",
+            "line": 4,
+            "citation": "lib/decoys.js:4",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/index.ts::<module>",
+            "file": "src/index.ts",
+            "line": 2,
+            "citation": "src/index.ts:2",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 2,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-014",
+      "repo": "workflow_ts",
+      "kind": "callers",
+      "language": "javascript",
+      "arguments": {
+        "target": "money"
+      },
+      "expected": [
+        {
+          "symbol": "lib/checkout.js::checkout/1",
+          "file": "lib/checkout.js",
+          "line": 12
+        },
+        {
+          "symbol": "lib/legacy.cjs::legacyReceipt/1",
+          "file": "lib/legacy.cjs",
+          "line": 5
+        },
+        {
+          "symbol": "lib/legacy.cjs::legacyReceipt/1",
+          "file": "lib/legacy.cjs",
+          "line": 6
+        },
+        {
+          "symbol": "src/receipt.tsx::Line/1",
+          "file": "src/receipt.tsx",
+          "line": 5
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/checkout.js:12",
+            "file": "lib/checkout.js",
+            "line": 12,
+            "symbol": "lib/checkout.js::checkout/1",
+            "qualname": "checkout",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "lib/checkout.js:12",
+            "target": "lib/format.cjs::money/1",
+            "def": "lib/checkout.js:9"
+          },
+          {
+            "citation": "lib/legacy.cjs:5",
+            "file": "lib/legacy.cjs",
+            "line": 5,
+            "symbol": "lib/legacy.cjs::legacyReceipt/1",
+            "qualname": "legacyReceipt",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "module-attr",
+            "depth": 1,
+            "via": "lib/legacy.cjs:5",
+            "target": "lib/format.cjs::money/1",
+            "def": "lib/legacy.cjs:4"
+          },
+          {
+            "citation": "lib/legacy.cjs:6",
+            "file": "lib/legacy.cjs",
+            "line": 6,
+            "symbol": "lib/legacy.cjs::legacyReceipt/1",
+            "qualname": "legacyReceipt",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "lib/legacy.cjs:6",
+            "target": "lib/format.cjs::money/1",
+            "def": "lib/legacy.cjs:4"
+          },
+          {
+            "citation": "src/receipt.tsx:5",
+            "file": "src/receipt.tsx",
+            "line": 5,
+            "symbol": "src/receipt.tsx::Line/1",
+            "qualname": "Line",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "import",
+            "depth": 1,
+            "via": "src/receipt.tsx:5",
+            "target": "lib/format.cjs::money/1",
+            "def": "src/receipt.tsx:4"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/checkout.js::checkout/1",
+            "file": "lib/checkout.js",
+            "line": 12,
+            "citation": "lib/checkout.js:12",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/decoys.js::Preview.total/1",
+            "file": "lib/decoys.js",
+            "line": 4,
+            "citation": "lib/decoys.js:4",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/format.cjs::<module>",
+            "file": "lib/format.cjs",
+            "line": 11,
+            "citation": "lib/format.cjs:11",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/legacy.cjs::<module>",
+            "file": "lib/legacy.cjs",
+            "line": 2,
+            "citation": "lib/legacy.cjs:2",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/legacy.cjs::legacyReceipt/1",
+            "file": "lib/legacy.cjs",
+            "line": 5,
+            "citation": "lib/legacy.cjs:5",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/receipt.tsx::Line/1",
+            "file": "src/receipt.tsx",
+            "line": 5,
+            "citation": "src/receipt.tsx:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 3,
+          "predicted_symbols": 3,
+          "expected_symbols": 3
+        },
+        "text": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.5,
+          "true_positives": 3,
+          "predicted_symbols": 6,
+          "expected_symbols": 3
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-015",
+      "repo": "workflow_ts",
+      "kind": "callers",
+      "language": "javascript",
+      "arguments": {
+        "target": "checkout"
+      },
+      "expected": [
+        {
+          "symbol": "lib/checkout.js::configure/0",
+          "file": "lib/checkout.js",
+          "line": 19
+        },
+        {
+          "symbol": "lib/checkout.js::main/0",
+          "file": "lib/checkout.js",
+          "line": 27
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/checkout.js:19",
+            "file": "lib/checkout.js",
+            "line": 19,
+            "symbol": "lib/checkout.js::configure/0",
+            "qualname": "configure",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "reason": "same-file",
+            "depth": 1,
+            "via": "lib/checkout.js:19",
+            "target": "lib/checkout.js::checkout/1",
+            "def": "lib/checkout.js:18"
+          },
+          {
+            "citation": "lib/checkout.js:27",
+            "file": "lib/checkout.js",
+            "line": 27,
+            "symbol": "lib/checkout.js::main/0",
+            "qualname": "main",
+            "kind": "function",
+            "edge": "call",
+            "confidence": "exact",
+            "reason": "same-file",
+            "depth": 1,
+            "via": "lib/checkout.js:27",
+            "target": "lib/checkout.js::checkout/1",
+            "def": "lib/checkout.js:22"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/checkout.js::configure/0",
+            "file": "lib/checkout.js",
+            "line": 19,
+            "citation": "lib/checkout.js:19",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/checkout.js::main/0",
+            "file": "lib/checkout.js",
+            "line": 27,
+            "citation": "lib/checkout.js:27",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/decoys.js::Preview.total/1",
+            "file": "lib/decoys.js",
+            "line": 4,
+            "citation": "lib/decoys.js:4",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 0.6666666666666666,
+          "recall": 1.0,
+          "f1": 0.8,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.6666666666666666,
+          "true_positives": 2,
+          "predicted_symbols": 3,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-016",
+      "repo": "workflow_ts",
+      "kind": "callers",
+      "language": "javascript",
+      "arguments": {
+        "target": "MailSink.send"
+      },
+      "expected": [
+        {
+          "symbol": "lib/dispatch.mjs::dispatch/2",
+          "file": "lib/dispatch.mjs",
+          "line": 5
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [],
+        "text": [
+          {
+            "symbol": "lib/dispatch.mjs::dispatch/2",
+            "file": "lib/dispatch.mjs",
+            "line": 5,
+            "citation": "lib/dispatch.mjs:5",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-017",
+      "repo": "workflow_ts",
+      "kind": "callers",
+      "language": "typescript",
+      "arguments": {
+        "target": "DiscountStep.apply"
+      },
+      "expected": [
+        {
+          "symbol": "src/runner.ts::runStep/2",
+          "file": "src/runner.ts",
+          "line": 6
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [],
+        "text": [
+          {
+            "symbol": "src/runner.ts::<module>",
+            "file": "src/runner.ts",
+            "line": 4,
+            "citation": "src/runner.ts:4",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/runner.ts::runStep/2",
+            "file": "src/runner.ts",
+            "line": 6,
+            "citation": "src/runner.ts:6",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/steps.ts::DiscountStep.apply/1",
+            "file": "src/steps.ts",
+            "line": 32,
+            "citation": "src/steps.ts:32",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.3333333333333333,
+          "true_positives": 1,
+          "predicted_symbols": 3,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "callers-018",
+      "repo": "workflow_ts",
+      "kind": "callers",
+      "language": "typescript",
+      "arguments": {
+        "target": "addItem"
+      },
+      "expected": [
+        {
+          "symbol": "src/pricing.ts::subtotal/1",
+          "file": "src/pricing.ts",
+          "line": 9
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/pricing.ts:9",
+            "file": "src/pricing.ts",
+            "line": 9,
+            "symbol": "src/pricing.ts::subtotal/1",
+            "qualname": "subtotal",
+            "kind": "function",
+            "edge": "ref",
+            "confidence": "exact",
+            "reason": "same-file",
+            "depth": 1,
+            "via": "src/pricing.ts:9",
+            "target": "src/pricing.ts::addItem/2",
+            "def": "src/pricing.ts:8"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/pricing.ts::subtotal/1",
+            "file": "src/pricing.ts",
+            "line": 9,
+            "citation": "src/pricing.ts:9",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "dead-code-001",
       "repo": "mini",
       "kind": "dead-code",
+      "language": "python",
       "arguments": {
         "scope": "pkg",
         "kinds": [
@@ -2035,6 +3211,7 @@
       "id": "dead-code-002",
       "repo": "mini",
       "kind": "dead-code",
+      "language": "java",
       "arguments": {
         "scope": "src/demo/Dog.java",
         "kinds": [
@@ -2120,6 +3297,7 @@
       "id": "dead-code-003",
       "repo": "mini",
       "kind": "dead-code",
+      "language": "python",
       "arguments": {
         "scope": "decoys.py",
         "confidence": "likely"
@@ -2186,6 +3364,7 @@
       "id": "dead-code-004",
       "repo": "mini",
       "kind": "dead-code",
+      "language": "python",
       "arguments": {
         "scope": "pkg",
         "kinds": [
@@ -2254,6 +3433,7 @@
       "id": "dead-code-005",
       "repo": "workflow",
       "kind": "dead-code",
+      "language": "python",
       "arguments": {
         "scope": "orders/pricing.py",
         "kinds": [
@@ -2322,6 +3502,7 @@
       "id": "dead-code-006",
       "repo": "workflow",
       "kind": "dead-code",
+      "language": "python",
       "arguments": {
         "scope": "orders/pricing.py",
         "kinds": [
@@ -2390,6 +3571,7 @@
       "id": "dead-code-007",
       "repo": "workflow",
       "kind": "dead-code",
+      "language": "java",
       "arguments": {
         "scope": "src/flow/CardProcessor.java",
         "kinds": [
@@ -2463,6 +3645,7 @@
       "id": "dead-code-008",
       "repo": "workflow",
       "kind": "dead-code",
+      "language": "java",
       "arguments": {
         "scope": "src/flow/Decoy.java",
         "kinds": [
@@ -2528,9 +3711,382 @@
     },
     {
       "schema_version": 1,
+      "id": "dead-code-009",
+      "repo": "workflow_ts",
+      "kind": "dead-code",
+      "language": "typescript",
+      "arguments": {
+        "scope": "src/pricing.ts",
+        "kinds": [
+          "function",
+          "variable"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "src/pricing.ts::UNUSED_RATE",
+          "file": "src/pricing.ts",
+          "line": 2
+        },
+        {
+          "symbol": "src/pricing.ts::legacyDiscount/1",
+          "file": "src/pricing.ts",
+          "line": 16
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/pricing.ts:16",
+            "file": "src/pricing.ts",
+            "line": 16,
+            "symbol": "src/pricing.ts::legacyDiscount/1",
+            "qualname": "legacyDiscount",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          },
+          {
+            "citation": "src/pricing.ts:2",
+            "file": "src/pricing.ts",
+            "line": 2,
+            "symbol": "src/pricing.ts::UNUSED_RATE",
+            "qualname": "UNUSED_RATE",
+            "kind": "variable",
+            "confidence": "exact",
+            "dead_confidence": "possible",
+            "visibility": "public"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/pricing.ts::UNUSED_RATE",
+            "file": "src/pricing.ts",
+            "line": 2,
+            "citation": "src/pricing.ts:2",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/pricing.ts::legacyDiscount/1",
+            "file": "src/pricing.ts",
+            "line": 16,
+            "citation": "src/pricing.ts:16",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-010",
+      "repo": "workflow_ts",
+      "kind": "dead-code",
+      "language": "typescript",
+      "arguments": {
+        "scope": "src/steps.ts",
+        "kinds": [
+          "method"
+        ],
+        "confidence": "likely"
+      },
+      "expected": [
+        {
+          "symbol": "src/steps.ts::DiscountStep.audit/0",
+          "file": "src/steps.ts",
+          "line": 35
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/steps.ts:35",
+            "file": "src/steps.ts",
+            "line": 35,
+            "symbol": "src/steps.ts::DiscountStep.audit/0",
+            "qualname": "DiscountStep.audit",
+            "kind": "method",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": []
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-011",
+      "repo": "workflow_ts",
+      "kind": "dead-code",
+      "language": "javascript",
+      "arguments": {
+        "scope": "lib/format.cjs",
+        "confidence": "likely"
+      },
+      "expected": [
+        {
+          "symbol": "lib/format.cjs::padLeft/2",
+          "file": "lib/format.cjs",
+          "line": 7
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/format.cjs:7",
+            "file": "lib/format.cjs",
+            "line": 7,
+            "symbol": "lib/format.cjs::padLeft/2",
+            "qualname": "padLeft",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/format.cjs::padLeft/2",
+            "file": "lib/format.cjs",
+            "line": 7,
+            "citation": "lib/format.cjs:7",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-012",
+      "repo": "workflow_ts",
+      "kind": "dead-code",
+      "language": "javascript",
+      "arguments": {
+        "scope": "lib/dispatch.mjs"
+      },
+      "expected": [
+        {
+          "symbol": "lib/dispatch.mjs::RETRY_LIMIT",
+          "file": "lib/dispatch.mjs",
+          "line": 1
+        },
+        {
+          "symbol": "lib/dispatch.mjs::notifyAll/2",
+          "file": "lib/dispatch.mjs",
+          "line": 10
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/dispatch.mjs:1",
+            "file": "lib/dispatch.mjs",
+            "line": 1,
+            "symbol": "lib/dispatch.mjs::RETRY_LIMIT",
+            "qualname": "RETRY_LIMIT",
+            "kind": "variable",
+            "confidence": "exact",
+            "dead_confidence": "likely",
+            "visibility": "private"
+          },
+          {
+            "citation": "lib/dispatch.mjs:10",
+            "file": "lib/dispatch.mjs",
+            "line": 10,
+            "symbol": "lib/dispatch.mjs::notifyAll/2",
+            "qualname": "notifyAll",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "possible",
+            "visibility": "public"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/dispatch.mjs::RETRY_LIMIT",
+            "file": "lib/dispatch.mjs",
+            "line": 1,
+            "citation": "lib/dispatch.mjs:1",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/dispatch.mjs::notifyAll/2",
+            "file": "lib/dispatch.mjs",
+            "line": 10,
+            "citation": "lib/dispatch.mjs:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "dead-code-013",
+      "repo": "workflow_ts",
+      "kind": "dead-code",
+      "language": "javascript",
+      "arguments": {
+        "scope": "lib/legacy.cjs",
+        "kinds": [
+          "function"
+        ]
+      },
+      "expected": [
+        {
+          "symbol": "lib/legacy.cjs::subtotal/1",
+          "file": "lib/legacy.cjs",
+          "line": 9
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/legacy.cjs:9",
+            "file": "lib/legacy.cjs",
+            "line": 9,
+            "symbol": "lib/legacy.cjs::subtotal/1",
+            "qualname": "subtotal",
+            "kind": "function",
+            "confidence": "exact",
+            "dead_confidence": "possible",
+            "visibility": "public"
+          }
+        ],
+        "text": []
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "mrr": 0.0,
+          "hit_at_k": 0.0,
+          "citation_accuracy": 0.0,
+          "true_positives": 0,
+          "predicted_symbols": 0,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "find-001",
       "repo": "mini",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "Circle"
       },
@@ -2596,6 +4152,7 @@
       "id": "find-002",
       "repo": "mini",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "make.inner"
       },
@@ -2661,6 +4218,7 @@
       "id": "find-003",
       "repo": "mini",
       "kind": "find",
+      "language": "java",
       "arguments": {
         "target": "Dog.bark"
       },
@@ -2749,6 +4307,7 @@
       "id": "find-004",
       "repo": "mini",
       "kind": "find",
+      "language": "java",
       "arguments": {
         "target": "demo.Base"
       },
@@ -2821,6 +4380,7 @@
       "id": "find-005",
       "repo": "mini",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "SCALE"
       },
@@ -2886,6 +4446,7 @@
       "id": "find-006",
       "repo": "mini",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "not_present"
       },
@@ -2925,6 +4486,7 @@
       "id": "find-007",
       "repo": "workflow",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "total"
       },
@@ -3002,6 +4564,7 @@
       "id": "find-008",
       "repo": "workflow",
       "kind": "find",
+      "language": "java",
       "arguments": {
         "target": "CardProcessor.convert"
       },
@@ -3090,6 +4653,7 @@
       "id": "find-009",
       "repo": "workflow",
       "kind": "find",
+      "language": "java",
       "arguments": {
         "target": "src/flow/CardProcessor.java::CardProcessor.convert/1@13"
       },
@@ -3162,6 +4726,7 @@
       "id": "find-010",
       "repo": "workflow",
       "kind": "find",
+      "language": "java",
       "arguments": {
         "target": "flow.Processor"
       },
@@ -3234,6 +4799,7 @@
       "id": "find-011",
       "repo": "workflow",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "AuditSink.record"
       },
@@ -3299,6 +4865,7 @@
       "id": "find-012",
       "repo": "workflow",
       "kind": "find",
+      "language": "python",
       "arguments": {
         "target": "checkout",
         "in_file": "orders/service.py"
@@ -3362,9 +4929,436 @@
     },
     {
       "schema_version": 1,
+      "id": "find-013",
+      "repo": "workflow_ts",
+      "kind": "find",
+      "language": "typescript",
+      "arguments": {
+        "target": "TaxStep"
+      },
+      "expected": [
+        {
+          "symbol": "src/steps.ts::TaxStep",
+          "file": "src/steps.ts",
+          "line": 20
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/steps.ts::TaxStep",
+            "qualname": "TaxStep",
+            "kind": "class",
+            "file": "src/steps.ts",
+            "line": 20,
+            "symbol": "src/steps.ts::TaxStep",
+            "citation": "src/steps.ts:20",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/steps.ts::TaxStep",
+            "file": "src/steps.ts",
+            "line": 20,
+            "citation": "src/steps.ts:20",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-014",
+      "repo": "workflow_ts",
+      "kind": "find",
+      "language": "typescript",
+      "arguments": {
+        "target": "total"
+      },
+      "expected": [
+        {
+          "symbol": "src/pricing.ts::total/1",
+          "file": "src/pricing.ts",
+          "line": 12
+        },
+        {
+          "symbol": "lib/decoys.js::Preview.total/1",
+          "file": "lib/decoys.js",
+          "line": 3
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/pricing.ts::total/1",
+            "qualname": "total",
+            "kind": "function",
+            "file": "src/pricing.ts",
+            "line": 12,
+            "symbol": "src/pricing.ts::total/1",
+            "citation": "src/pricing.ts:12",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/decoys.js::Preview.total/1",
+            "file": "lib/decoys.js",
+            "line": 3,
+            "citation": "lib/decoys.js:3",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/pricing.ts::total/1",
+            "file": "src/pricing.ts",
+            "line": 12,
+            "citation": "src/pricing.ts:12",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 0.5,
+          "f1": 0.6666666666666666,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-015",
+      "repo": "workflow_ts",
+      "kind": "find",
+      "language": "javascript",
+      "arguments": {
+        "target": "subtotal",
+        "in_file": "lib/legacy.cjs"
+      },
+      "expected": [
+        {
+          "symbol": "lib/legacy.cjs::subtotal/1",
+          "file": "lib/legacy.cjs",
+          "line": 9
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "id": "lib/legacy.cjs::subtotal/1",
+            "qualname": "subtotal",
+            "kind": "function",
+            "file": "lib/legacy.cjs",
+            "line": 9,
+            "symbol": "lib/legacy.cjs::subtotal/1",
+            "citation": "lib/legacy.cjs:9",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/legacy.cjs::subtotal/1",
+            "file": "lib/legacy.cjs",
+            "line": 9,
+            "citation": "lib/legacy.cjs:9",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-016",
+      "repo": "workflow_ts",
+      "kind": "find",
+      "language": "javascript",
+      "arguments": {
+        "target": "send"
+      },
+      "expected": [
+        {
+          "symbol": "lib/sinks.js::Sink.send/1",
+          "file": "lib/sinks.js",
+          "line": 3
+        },
+        {
+          "symbol": "lib/sinks.js::MailSink.send/1",
+          "file": "lib/sinks.js",
+          "line": 9
+        },
+        {
+          "symbol": "lib/sinks.js::ArchiveSink.send/1",
+          "file": "lib/sinks.js",
+          "line": 19
+        },
+        {
+          "symbol": "lib/decoys.js::Draft.send/1",
+          "file": "lib/decoys.js",
+          "line": 9
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "lib/decoys.js::Draft.send/1",
+            "qualname": "Draft.send",
+            "kind": "method",
+            "file": "lib/decoys.js",
+            "line": 9,
+            "symbol": "lib/decoys.js::Draft.send/1",
+            "citation": "lib/decoys.js:9",
+            "confidence": "exact",
+            "reason": "definition"
+          },
+          {
+            "id": "lib/sinks.js::Sink.send/1",
+            "qualname": "Sink.send",
+            "kind": "method",
+            "file": "lib/sinks.js",
+            "line": 3,
+            "symbol": "lib/sinks.js::Sink.send/1",
+            "citation": "lib/sinks.js:3",
+            "confidence": "exact",
+            "reason": "definition"
+          },
+          {
+            "id": "lib/sinks.js::MailSink.send/1",
+            "qualname": "MailSink.send",
+            "kind": "method",
+            "file": "lib/sinks.js",
+            "line": 9,
+            "symbol": "lib/sinks.js::MailSink.send/1",
+            "citation": "lib/sinks.js:9",
+            "confidence": "exact",
+            "reason": "definition"
+          },
+          {
+            "id": "lib/sinks.js::ArchiveSink.send/1",
+            "qualname": "ArchiveSink.send",
+            "kind": "method",
+            "file": "lib/sinks.js",
+            "line": 19,
+            "symbol": "lib/sinks.js::ArchiveSink.send/1",
+            "citation": "lib/sinks.js:19",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/decoys.js::Draft.send/1",
+            "file": "lib/decoys.js",
+            "line": 9,
+            "citation": "lib/decoys.js:9",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/sinks.js::Sink.send/1",
+            "file": "lib/sinks.js",
+            "line": 3,
+            "citation": "lib/sinks.js:3",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/sinks.js::MailSink.send/1",
+            "file": "lib/sinks.js",
+            "line": 9,
+            "citation": "lib/sinks.js:9",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/sinks.js::ArchiveSink.send/1",
+            "file": "lib/sinks.js",
+            "line": 19,
+            "citation": "lib/sinks.js:19",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 4,
+          "predicted_symbols": 4,
+          "expected_symbols": 4
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 4,
+          "predicted_symbols": 4,
+          "expected_symbols": 4
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "find-017",
+      "repo": "workflow_ts",
+      "kind": "find",
+      "language": "typescript",
+      "arguments": {
+        "target": "BaseStep.apply"
+      },
+      "expected": [
+        {
+          "symbol": "src/steps.ts::BaseStep.apply/1",
+          "file": "src/steps.ts",
+          "line": 11
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "id": "src/steps.ts::BaseStep.apply/1",
+            "qualname": "BaseStep.apply",
+            "kind": "method",
+            "file": "src/steps.ts",
+            "line": 11,
+            "symbol": "src/steps.ts::BaseStep.apply/1",
+            "citation": "src/steps.ts:11",
+            "confidence": "exact",
+            "reason": "definition"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/model.ts::Step.apply/1",
+            "file": "src/model.ts",
+            "line": 7,
+            "citation": "src/model.ts:7",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/steps.ts::BaseStep.apply/1",
+            "file": "src/steps.ts",
+            "line": 11,
+            "citation": "src/steps.ts:11",
+            "confidence": "text"
+          },
+          {
+            "symbol": "src/steps.ts::DiscountStep.apply/1",
+            "file": "src/steps.ts",
+            "line": 31,
+            "citation": "src/steps.ts:31",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 0.3333333333333333,
+          "recall": 1.0,
+          "f1": 0.5,
+          "mrr": 0.5,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 0.3333333333333333,
+          "true_positives": 1,
+          "predicted_symbols": 3,
+          "expected_symbols": 1
+        }
+      }
+    },
+    {
+      "schema_version": 1,
       "id": "inherits-001",
       "repo": "mini",
       "kind": "inherits",
+      "language": "python",
       "arguments": {
         "target": "Shape",
         "depth": 1
@@ -3432,6 +5426,7 @@
       "id": "inherits-002",
       "repo": "mini",
       "kind": "inherits",
+      "language": "python",
       "arguments": {
         "target": "Shape",
         "depth": 3
@@ -3516,6 +5511,7 @@
       "id": "inherits-003",
       "repo": "mini",
       "kind": "inherits",
+      "language": "python",
       "arguments": {
         "target": "Ring",
         "ancestors": true,
@@ -3601,6 +5597,7 @@
       "id": "inherits-004",
       "repo": "mini",
       "kind": "inherits",
+      "language": "java",
       "arguments": {
         "target": "Animal"
       },
@@ -3667,6 +5664,7 @@
       "id": "inherits-005",
       "repo": "mini",
       "kind": "inherits",
+      "language": "java",
       "arguments": {
         "target": "Base"
       },
@@ -3733,6 +5731,7 @@
       "id": "inherits-006",
       "repo": "workflow",
       "kind": "inherits",
+      "language": "python",
       "arguments": {
         "target": "Sink"
       },
@@ -3823,6 +5822,7 @@
       "id": "inherits-007",
       "repo": "workflow",
       "kind": "inherits",
+      "language": "java",
       "arguments": {
         "target": "Processor",
         "depth": 3
@@ -3907,6 +5907,7 @@
       "id": "inherits-008",
       "repo": "workflow",
       "kind": "inherits",
+      "language": "java",
       "arguments": {
         "target": "CardProcessor",
         "ancestors": true,
@@ -3984,6 +5985,388 @@
           "true_positives": 1,
           "predicted_symbols": 1,
           "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-009",
+      "repo": "workflow_ts",
+      "kind": "inherits",
+      "language": "typescript",
+      "arguments": {
+        "target": "Step",
+        "depth": 3
+      },
+      "expected": [
+        {
+          "symbol": "src/model.ts::PricedStep",
+          "file": "src/model.ts",
+          "line": 10
+        },
+        {
+          "symbol": "src/steps.ts::BaseStep",
+          "file": "src/steps.ts",
+          "line": 4
+        },
+        {
+          "symbol": "src/steps.ts::TaxStep",
+          "file": "src/steps.ts",
+          "line": 20
+        },
+        {
+          "symbol": "src/steps.ts::DiscountStep",
+          "file": "src/steps.ts",
+          "line": 26
+        }
+      ],
+      "difficulty": "medium",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/model.ts:10",
+            "file": "src/model.ts",
+            "line": 10,
+            "symbol": "src/model.ts::PricedStep",
+            "qualname": "PricedStep",
+            "kind": "interface",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Step"
+          },
+          {
+            "citation": "src/steps.ts:4",
+            "file": "src/steps.ts",
+            "line": 4,
+            "symbol": "src/steps.ts::BaseStep",
+            "qualname": "BaseStep",
+            "kind": "class",
+            "relation": "implements",
+            "confidence": "exact",
+            "depth": 2,
+            "parent": "PricedStep"
+          },
+          {
+            "citation": "src/steps.ts:20",
+            "file": "src/steps.ts",
+            "line": 20,
+            "symbol": "src/steps.ts::TaxStep",
+            "qualname": "TaxStep",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 3,
+            "parent": "BaseStep"
+          },
+          {
+            "citation": "src/steps.ts:26",
+            "file": "src/steps.ts",
+            "line": 26,
+            "symbol": "src/steps.ts::DiscountStep",
+            "qualname": "DiscountStep",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 3,
+            "parent": "BaseStep"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/model.ts::PricedStep",
+            "file": "src/model.ts",
+            "line": 10,
+            "citation": "src/model.ts:10",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 4,
+          "predicted_symbols": 4,
+          "expected_symbols": 4
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.25,
+          "f1": 0.4,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 4
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-010",
+      "repo": "workflow_ts",
+      "kind": "inherits",
+      "language": "typescript",
+      "arguments": {
+        "target": "TaxStep",
+        "ancestors": true,
+        "depth": 3
+      },
+      "expected": [
+        {
+          "symbol": "src/steps.ts::BaseStep",
+          "file": "src/steps.ts",
+          "line": 20
+        },
+        {
+          "symbol": "src/model.ts::PricedStep",
+          "file": "src/steps.ts",
+          "line": 4
+        },
+        {
+          "symbol": "src/model.ts::Step",
+          "file": "src/model.ts",
+          "line": 10
+        }
+      ],
+      "difficulty": "hard",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "src/model.ts:10",
+            "file": "src/model.ts",
+            "line": 10,
+            "symbol": "src/model.ts::Step",
+            "qualname": "Step",
+            "kind": "interface",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 3,
+            "declared_by": "PricedStep"
+          },
+          {
+            "citation": "src/steps.ts:4",
+            "file": "src/steps.ts",
+            "line": 4,
+            "symbol": "src/model.ts::PricedStep",
+            "qualname": "PricedStep",
+            "kind": "interface",
+            "relation": "implements",
+            "confidence": "exact",
+            "depth": 2,
+            "declared_by": "BaseStep"
+          },
+          {
+            "citation": "src/steps.ts:20",
+            "file": "src/steps.ts",
+            "line": 20,
+            "symbol": "src/steps.ts::BaseStep",
+            "qualname": "BaseStep",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "declared_by": "TaxStep"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "src/steps.ts::BaseStep",
+            "file": "src/steps.ts",
+            "line": 20,
+            "citation": "src/steps.ts:20",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 3,
+          "predicted_symbols": 3,
+          "expected_symbols": 3
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 0.3333333333333333,
+          "f1": 0.5,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 3
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-011",
+      "repo": "workflow_ts",
+      "kind": "inherits",
+      "language": "javascript",
+      "arguments": {
+        "target": "Sink"
+      },
+      "expected": [
+        {
+          "symbol": "lib/sinks.js::MailSink",
+          "file": "lib/sinks.js",
+          "line": 8
+        },
+        {
+          "symbol": "lib/sinks.js::ArchiveSink",
+          "file": "lib/sinks.js",
+          "line": 18
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/sinks.js:8",
+            "file": "lib/sinks.js",
+            "line": 8,
+            "symbol": "lib/sinks.js::MailSink",
+            "qualname": "MailSink",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Sink"
+          },
+          {
+            "citation": "lib/sinks.js:18",
+            "file": "lib/sinks.js",
+            "line": 18,
+            "symbol": "lib/sinks.js::ArchiveSink",
+            "qualname": "ArchiveSink",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "parent": "Sink"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/sinks.js::MailSink",
+            "file": "lib/sinks.js",
+            "line": 8,
+            "citation": "lib/sinks.js:8",
+            "confidence": "text"
+          },
+          {
+            "symbol": "lib/sinks.js::ArchiveSink",
+            "file": "lib/sinks.js",
+            "line": 18,
+            "citation": "lib/sinks.js:18",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 2,
+          "predicted_symbols": 2,
+          "expected_symbols": 2
+        }
+      }
+    },
+    {
+      "schema_version": 1,
+      "id": "inherits-012",
+      "repo": "workflow_ts",
+      "kind": "inherits",
+      "language": "javascript",
+      "arguments": {
+        "target": "MailSink",
+        "ancestors": true,
+        "depth": 2
+      },
+      "expected": [
+        {
+          "symbol": "lib/sinks.js::Sink",
+          "file": "lib/sinks.js",
+          "line": 8
+        }
+      ],
+      "difficulty": "easy",
+      "predictions": {
+        "graph": [
+          {
+            "citation": "lib/sinks.js:8",
+            "file": "lib/sinks.js",
+            "line": 8,
+            "symbol": "lib/sinks.js::Sink",
+            "qualname": "Sink",
+            "kind": "class",
+            "relation": "extends",
+            "confidence": "exact",
+            "depth": 1,
+            "declared_by": "MailSink"
+          }
+        ],
+        "text": [
+          {
+            "symbol": "lib/sinks.js::Sink",
+            "file": "lib/sinks.js",
+            "line": 8,
+            "citation": "lib/sinks.js:8",
+            "confidence": "text"
+          }
+        ]
+      },
+      "scores": {
+        "graph": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
+        },
+        "text": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "mrr": 1.0,
+          "hit_at_k": 1.0,
+          "citation_accuracy": 1.0,
+          "true_positives": 1,
+          "predicted_symbols": 1,
+          "expected_symbols": 1
         }
       }
     }

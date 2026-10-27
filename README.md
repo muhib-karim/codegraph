@@ -10,7 +10,7 @@
 ![Languages](https://img.shields.io/badge/indexes-Python%20%7C%20Java%20%7C%20TypeScript%20%7C%20JavaScript-0f766e)
 ![Typed](https://img.shields.io/badge/mypy-strict-2a6db2)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
-[![Evaluation](https://img.shields.io/badge/eval-50%20labelled%20questions-0f766e)](#evaluation)
+[![Evaluation](https://img.shields.io/badge/eval-74%20labelled%20questions-0f766e)](#evaluation)
 [![Cite](https://img.shields.io/badge/cite-CITATION.cff-informational)](CITATION.cff)
 
 **Website and live demo: [muhib-karim.github.io/codegraph](https://muhib-karim.github.io/codegraph/)** ·
@@ -184,7 +184,7 @@ flowchart LR
     Q --> SV[service.py<br/>path guards, paging]
     SV --> MCP[mcp_server.py<br/>stdio]
     Q --> EX[explorer<br/>loopback HTTP]
-    SV --> EV[evaluation.py<br/>50 labelled questions]
+    SV --> EV[evaluation.py<br/>74 labelled questions]
     SV --> BN[bench/run.py<br/>CI benchmark]
     G --> SITE[scripts/build_site.py<br/>Pages demo JSON]
 ```
@@ -223,8 +223,9 @@ machines are not comparable.
 codegraph eval
 ```
 
-The command indexes both committed fixture repositories into temporary
-databases. It then runs 50 hand-labelled questions through two retrievers, the
+The command indexes the three labelled fixture repositories (`mini`,
+`workflow` and the TypeScript/JavaScript `workflow_ts`) into temporary
+databases. It then runs 74 hand-labelled questions through two retrievers, the
 graph and a text-search baseline, and scores both. It writes
 [a Markdown report](eval/reports/latest.md) and
 [the full JSON evidence](eval/reports/latest.json). The report records the
@@ -232,7 +233,8 @@ exact command and SHA-256 hashes of the question file and every fixture file.
 No network, external harness, browser or model is needed.
 
 The questions cover callers, inheritance, unused candidates, change impact and
-symbol lookup. Labels follow the fixture source and the intended language
+symbol lookup in Python (32 questions), Java (18), TypeScript (12) and
+JavaScript (12). Labels follow the fixture source and the intended language
 behavior. Some questions involve runtime
 dispatch and same-arity overloads that the resolver cannot answer correctly;
 they stay in the set and count as failures. Each expected answer has a symbol
@@ -251,8 +253,17 @@ Actual overall results from `codegraph eval` (macro averages; hit@5):
 
 | Retriever | Precision | Recall | F1 | MRR | hit@5 | Citation accuracy |
 |---|---:|---:|---:|---:|---:|---:|
-| Graph | 0.9200 | 0.9200 | 0.9067 | 0.9362 | 0.9362 | 0.9200 |
-| Text baseline | 0.7867 | 0.9067 | 0.7967 | 0.8546 | 1.0000 | 0.7933 |
+| Graph | 0.9054 | 0.8959 | 0.8904 | 0.9155 | 0.9155 | 0.9054 |
+| Text baseline | 0.7658 | 0.8507 | 0.7588 | 0.8333 | 0.9577 | 0.7703 |
+
+By language (F1 and citation accuracy; the report has every metric):
+
+| Language | Questions | Graph F1 | Text F1 | Graph citation accuracy | Text citation accuracy |
+|---|---:|---:|---:|---:|---:|
+| Python | 32 | 0.9271 | 0.8187 | 0.9375 | 0.8021 |
+| Java | 18 | 0.8704 | 0.7574 | 0.8889 | 0.7778 |
+| TypeScript | 12 | 0.8796 | 0.5710 | 0.9167 | 0.6389 |
+| JavaScript | 12 | 0.8333 | 0.7889 | 0.8333 | 0.8056 |
 
 How to read the table:
 
@@ -264,7 +275,7 @@ How to read the table:
   match a labelled tuple.
 - MRR and hit@5 read the same ranked list per question, so they match
   whenever the first relevant result is either ranked first or missing from
-  the top 5. That is why the graph row shows 0.9362 for both.
+  the top 5. That is why the graph row shows 0.9155 for both.
 - Three questions have an empty expected answer. They are excluded from MRR
   and hit@5.
 
@@ -323,13 +334,11 @@ evaluation artifacts that are not part of this repository.
 
 ## Roadmap
 
-1. Labelled TypeScript/JavaScript questions in the evaluation suite, next to
-   the Python and Java ones.
-2. `tsconfig` paths and package `exports` resolution for monorepos.
-3. Overload resolution by argument type, and explicit candidate sets for
+1. `tsconfig` paths and package `exports` resolution for monorepos.
+2. Overload resolution by argument type, and explicit candidate sets for
    dynamic dispatch.
-4. Atomic snapshot replacement so readers never see a half-written index.
-5. Pagination inside the database, and evaluation on larger, independently
+3. Atomic snapshot replacement so readers never see a half-written index.
+4. Pagination inside the database, and evaluation on larger, independently
    labelled repositories.
 
 New languages should come with their own fixtures, query-level tests and

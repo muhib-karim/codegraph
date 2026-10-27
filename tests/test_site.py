@@ -32,9 +32,15 @@ def test_site_build(tmp_path):
     assert not re.search(r'(src|href)="https?://(?!github\.com/muhib-karim/codegraph)', page)
     graph = json.loads((out / "data" / "graph.json").read_text())
     ids = {n["id"] for n in graph["nodes"]}
-    assert graph["parsed_by_lang"] == {"python": 10, "java": 7, "typescript": 7, "javascript": 5}
+    assert graph["parsed_by_lang"] == {"python": 10, "java": 7, "typescript": 13, "javascript": 11}
     assert all(e["source"] in ids and e["target"] in ids for e in graph["edges"])
-    assert {n["group"] for n in graph["nodes"]} == {"mini", "workflow", "web", "webjs"}
+    assert {n["group"] for n in graph["nodes"]} == {
+        "mini",
+        "workflow",
+        "workflow_ts",
+        "web",
+        "webjs",
+    }
     assert "web/src/util.ts::scale/1" in ids  # the demo's default selection
     js = (out / "demo.js").read_text()
     assert "innerHTML" not in js and "fetch('data/graph.json')" in js

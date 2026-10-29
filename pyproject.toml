@@ -20,7 +20,7 @@ dependencies = [
 
 [project.optional-dependencies]
 mcp = ["mcp>=1.26,<2"]
-browser = ["playwright>=1.64.0,<2"]
+browser = ["playwright>=1.64.1,<2"]
 dev = ["pytest>=9.1.1", "pytest-cov>=7.1.0", "ruff>=0.17.1", "mypy>=2.4.0", "coverage>=7.16.2"]
 
 [project.scripts]

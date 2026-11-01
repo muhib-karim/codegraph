@@ -13,9 +13,8 @@ make lint typecheck test eval
 
 Ruff checks lint and formatting across project code and tests. Fixtures are
 excluded from autoformatting because their line numbers are evaluation data.
-Mypy runs in strict mode on `service.py`, `mcp_server.py` and `evaluation.py`;
-the older parser/resolver/explorer modules are not yet fully typed. Add new
-modules to the strict check. Pytest measures the entire package, including CLI
+Mypy runs in strict mode over the whole `codegraph` package, `bench/` and
+`scripts/`. Pytest measures the entire package, including CLI
 subprocesses, with an 85% minimum. Do not lower the gate or exclude difficult
 code to make a change pass.
 

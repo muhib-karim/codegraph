@@ -171,6 +171,13 @@ class _Extractor:
         elif scope.kind in ("function", "method", "constructor"):
             self.fi.locals.setdefault(scope.id, set()).add(name)
 
+    def bind_function(self, scope: Symbol, name: str) -> None:
+        """A named function nested in a function is that function's symbol even when it is
+        declared inside a callback, so it never joins the callback's shadow set: that
+        would drop every call and reference to it."""
+        if scope.kind in ("function", "method", "constructor"):
+            self.fi.locals.setdefault(scope.id, set()).add(name)
+
     def pattern_names(self, node: Node | None, scope: Symbol, qual: str) -> list[Node]:
         """Identifier nodes bound by a declaration/parameter pattern; default values are visited."""
         if node is None:
@@ -361,8 +368,7 @@ class _Extractor:
                 ):
                     if scope.kind in ("module", "function", "method", "constructor"):
                         self.function(value, name, "function", scope, qual)
-                        if scope.kind != "module":
-                            self.bind_local(scope, name)
+                        self.bind_function(scope, name)
                         continue
                 if value is not None and value.type == "class" and not self.block_local(scope):
                     self.klass(value, name, scope, qual)
@@ -609,8 +615,7 @@ class _Extractor:
                 self.anonymous(node, scope, qual)
                 return
             self.function(node, name, "function", scope, qual)
-            if scope.kind != "module":
-                self.bind_local(scope, name)
+            self.bind_function(scope, name)
             return
         if t in _CLASS_DECLS and node.child_by_field_name("name") is not None:
             if self.block_local(scope):

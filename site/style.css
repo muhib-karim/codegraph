@@ -176,7 +176,7 @@ svg.focused .edge.lit.draw { stroke-dasharray: var(--len); stroke-dashoffset: va
 .quick { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr); gap: 40px 56px; padding: 72px var(--gutter); border-top: 1px solid var(--line); }
 .steps, .term, .cfg > div { min-width: 0; }
 .steps ol { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 18px; }
-.steps li { counter-increment: s; color: var(--muted); }
+.steps li { counter-increment: s; color: var(--muted); min-width: 0; }
 .steps li .cmd { margin-top: 10px; }
 .steps li strong { color: #f3f8fa; }
 .steps li::before { content: counter(s); font: 700 0.8rem var(--mono); color: var(--accent); margin-right: 10px; }

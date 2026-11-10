@@ -352,7 +352,7 @@ citation conventions.
 
 ## Contributing
 
-Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow. Before opening a pull request, run `pytest`. Please keep each pull request focused and say how you tested it.
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow. Before opening a pull request, run `make check`. Please keep each pull request focused and say how you tested it.
 
 ## License
 
@@ -373,13 +373,29 @@ button reads [`CITATION.cff`](CITATION.cff)):
 }
 ```
 
-## Development and container
+## Development
 
 ```sh
-make install                      # venv + editable install with dev and MCP extras
-make lint typecheck test eval     # ruff, mypy --strict, pytest (coverage >= 85%), evaluation
-python bench/run.py --local tests/fixtures/web --out /tmp/bench
-python scripts/build_site.py --out _site
+make install       # create .venv, upgrade pip/setuptools/wheel, editable install with dev and MCP extras
+make check         # lint + typecheck + test: ruff, mypy --strict, pytest (coverage >= 85%)
+make eval-drift    # run the evaluation and fail if the committed eval/reports no longer match
+.venv/bin/python bench/run.py --local tests/fixtures/web --out /tmp/bench
+.venv/bin/python scripts/build_site.py --out _site
+```
+
+`make lint`, `make typecheck`, `make test` and `make eval` run one step each.
+
+CI calls the same `make install`, `make check` and `make eval-drift` targets.
+It runs on Python 3.11 and 3.12: ruff lint and format, mypy strict over the
+package and scripts, tests with at least 85% package coverage, the evaluation
+(the committed report must match), gitleaks, CodeQL for Python,
+JavaScript/TypeScript and workflows, a container build with a non-root smoke
+test, and the benchmark. Dependabot watches pip, Actions and Docker updates.
+Browser tests are optional and skip when no browser is installed.
+
+### Container
+
+```sh
 docker build -t codegraph:1.1.0 .
 docker run --rm -v "$PWD/tests/fixtures/mini:/repo" codegraph:1.1.0 index /repo
 docker run --rm -v "$PWD/tests/fixtures/mini:/repo:ro" codegraph:1.1.0 callers make --repo /repo
@@ -388,13 +404,6 @@ docker run --rm -v "$PWD/tests/fixtures/mini:/repo:ro" codegraph:1.1.0 callers m
 The container runs as UID 10001. For indexing, the mounted repository must be
 writable by that user, or pass `--user "$(id -u):$(id -g)"`. To run the MCP
 server in a container, use `docker run -i` without a TTY.
-
-CI runs on Python 3.11 and 3.12: ruff lint and format, mypy strict over the
-package and scripts, tests with at least 85% package coverage, the evaluation
-(the committed report must match), gitleaks, CodeQL for Python,
-JavaScript/TypeScript and workflows, a container build with a non-root smoke
-test, and the benchmark. Dependabot watches pip, Actions and Docker updates.
-Browser tests are optional and skip when no browser is installed.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and
 [CHANGELOG.md](CHANGELOG.md). License: [MIT](LICENSE).

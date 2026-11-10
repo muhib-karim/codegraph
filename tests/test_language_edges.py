@@ -353,3 +353,26 @@ def test_inherited_field_type_resolves_in_the_declaring_file(tmp_path):
     assert ("c/Child.java::Child.viaThis/0", run, "exact") in calls
     assert ("c/Child.java::Child.viaField/0", "b/Helper.java::Helper.count", "exact") in refs
     assert ("c/Child.java::Child.viaReference/0", run, "exact") in refs
+
+
+def test_python_parameter_defaults_and_annotations_are_references(tmp_path):
+    """`def run(cb=helper)` uses helper: a bare-name default is a value reference made in
+    the enclosing scope, and a parameter name itself is never one."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "defaults.py": """
+            def helper(): return 1
+            LIMIT = 3
+            args = ()
+            class Kind: pass
+            def run(cb=helper, n: int = LIMIT, *args: Kind, **kwargs):
+                return cb()
+        """,
+        },
+    )
+    refs = edges(graph, "refs")
+    assert ("<module>", "helper", "exact") in refs
+    assert ("<module>", "LIMIT", "exact") in refs
+    assert ("<module>", "Kind", "exact") in refs
+    assert not any(dst == "args" for _, dst, _ in refs)

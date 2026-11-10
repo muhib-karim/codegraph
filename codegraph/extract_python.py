@@ -236,9 +236,13 @@ def extract(path: str, src: bytes) -> FileInfo:
                     )
                     if nm is not None:
                         loc_names.add(text(nm))
-                    for c in p.named_children:
-                        if c.type not in ("identifier",):
-                            visit(c, scope, qual)  # default values evaluate in enclosing scope
+                    # Annotations and default values evaluate in the enclosing scope. They are
+                    # picked by field: a bare-name default (`cb=helper`) is an identifier
+                    # just like the parameter name, which is not a reference.
+                    for part in ("type", "value"):
+                        sub = p.child_by_field_name(part)
+                        if sub is not None:
+                            visit(sub, scope, qual)
             body = node.child_by_field_name("body")
             if body is not None:
                 for c in body.children:

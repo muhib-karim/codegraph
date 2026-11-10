@@ -476,3 +476,24 @@ def test_ts_function_declared_in_a_callback_is_callable(tmp_path):
     assert ("wrap", "wrap.local", "exact") in calls
     assert ("outer", "outer.other", "exact") in edges(graph, "refs")
     assert {dst for src, dst, _ in calls if src == "outer"} == {"outer.helper", "outer.other"}
+
+
+def test_java_record_compact_constructor_takes_the_record_components(tmp_path):
+    """`Pair { ... }` is the canonical constructor: its arity is the component count."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "p/Pair.java": """
+            package p;
+            record Pair(int x, String name) {
+                Pair { if (x < 0) throw new IllegalArgumentException(name); }
+                static Pair of() { return new Pair(1, "a"); }
+            }
+        """,
+        },
+    )
+    ctor = graph.symbols["p/Pair.java::Pair.<init>/2"]
+    assert (ctor.kind, ctor.arity_min, ctor.arity_max) == ("constructor", 2, 2)
+    calls = {(e.src, e.dst, e.confidence, e.reason) for e in graph.calls}
+    assert ("p/Pair.java::Pair.of/0", ctor.id, "exact", "new") in calls
+    assert ("p/Pair.java::Pair.of/0", "p/Pair.java::Pair", "exact", "new") in calls

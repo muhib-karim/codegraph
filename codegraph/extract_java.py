@@ -226,6 +226,12 @@ def extract(path: str, src: bytes) -> FileInfo:
             name = text(node.child_by_field_name("name")) if not is_ctor else scope.name
             qn = f"{qual}.<init>" if is_ctor else (f"{qual}.{name}" if qual else name)
             params = node.child_by_field_name("parameters")
+            if t == "compact_constructor_declaration":
+                # `Pair { ... }` has no parameter list of its own: it is the canonical
+                # constructor and takes the components of the enclosing record.
+                record = node.parent.parent if node.parent is not None else None
+                if record is not None and record.type == "record_declaration":
+                    params = record.child_by_field_name("parameters")
             amin, amax = _arity(params)
             vis, static, annos, abstract = _modifiers(node)
             body = node.child_by_field_name("body")

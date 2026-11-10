@@ -12,23 +12,6 @@ from .model import BaseDecl, CallSite, FileInfo, Import, Ref, Symbol
 
 PY = Language(tsp.language())
 
-# Parent node types in which a bare identifier is a value use (a reference).
-_VALUE_PARENTS = {
-    "argument_list",
-    "list",
-    "tuple",
-    "set",
-    "pair",
-    "return_statement",
-    "expression_list",
-    "conditional_expression",
-    "boolean_operator",
-    "lambda",
-    "parenthesized_expression",
-    "subscript",
-    "yield",
-}
-
 
 def _params(params_node: Node | None, is_method: bool, is_static: bool) -> tuple[int, int]:
     """Return (min, max) positional arity; max -1 = unbounded."""
@@ -153,7 +136,13 @@ def extract(path: str, src: bytes) -> FileInfo:
             for c in left.named_children:
                 bind_targets(c, scope, qual, assign_node)
             return
-        visit(left, scope, qual)  # attribute / subscript targets: object is read
+        if left.type == "attribute":
+            # `self.x = ...` writes x: only the object expression is read
+            target = left.child_by_field_name("object")
+            if target is not None:
+                visit(target, scope, qual)
+            return
+        visit(left, scope, qual)  # subscript targets: object and index are read
 
     def visit(node: Node, scope: Symbol, qual: str, decorators: Sequence[str] = ()) -> None:
         t = node.type
@@ -432,13 +421,9 @@ def extract(path: str, src: bytes) -> FileInfo:
             return
         if t == "attribute":
             obj = node.child_by_field_name("object")
-            par = node.parent
-            if (
-                obj is not None
-                and text(obj) in ("self", "cls")
-                and par is not None
-                and par.type in _VALUE_PARENTS | {"keyword_argument"}
-            ):
+            if obj is not None and text(obj) in ("self", "cls"):
+                # Reading self.<name> uses the method or property <name> wherever the read
+                # appears; assignment targets never get here (see bind_targets).
                 a = child(node, "attribute")
                 fi.refs.append(Ref(scope.id, line(a), a.start_point[1], text(a), "self"))
                 return

@@ -407,3 +407,36 @@ def test_python_lambda_parameters_shadow_calls_and_receivers(tmp_path):
     refs = edges(graph, "refs")
     assert ("unshadowed", "shape", "exact") in refs
     assert not any(src == "receiver_parameter" for src, _, _ in refs)
+
+
+def test_python_self_attribute_reads_are_references_in_any_position(tmp_path):
+    """Reading `self.name` uses the method or property `name` wherever the read appears;
+    assigning to `self.name` does not."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "reads.py": """
+            class Shape:
+                @property
+                def area(self): return 1
+                @property
+                def label(self): return "s"
+                def handler(self): return 2
+                def listed(self): return 3
+                def replaced(self): return 4
+                def swapped(self): return 5
+                def use(self):
+                    callback = self.handler
+                    total = self.area * 2
+                    if self.area > 1:
+                        total += 1
+                    self.replaced = None
+                    self.swapped, other = None, total
+                    return [self.listed], callback, self.label.upper()
+        """,
+        },
+    )
+    refs = edges(graph, "refs")
+    for name in ("handler", "area", "listed", "label"):
+        assert ("Shape.use", f"Shape.{name}", "exact") in refs, name
+    assert not any(dst in ("Shape.replaced", "Shape.swapped") for _, dst, _ in refs)

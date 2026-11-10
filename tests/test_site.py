@@ -29,7 +29,8 @@ def test_site_build(tmp_path):
     for repo in bench["repos"]:
         assert f"<td>{repo['index_seconds']:.2f}</td>" in page
     # Static only: no third-party origins in scripts, styles or fetches.
-    assert not re.search(r'(src|href)="https?://(?!github\.com/muhib-karim/codegraph)', page)
+    own = r"github\.com/muhib-karim/codegraph|muhib-karim\.github\.io/codegraph/"
+    assert not re.search(rf'(src|href)="https?://(?!{own})', page)
     graph = json.loads((out / "data" / "graph.json").read_text())
     ids = {n["id"] for n in graph["nodes"]}
     assert graph["parsed_by_lang"] == {"python": 10, "java": 7, "typescript": 13, "javascript": 11}

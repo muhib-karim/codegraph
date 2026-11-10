@@ -4,7 +4,8 @@
 Install the extra and index the repository first:
 
 ```sh
-pip install 'codegraph[mcp]'        # or: pip install -e '.[mcp]' in a checkout
+pip install "codegraph[mcp] @ git+https://github.com/muhib-karim/codegraph"
+# or, in a checkout: pip install -e '.[mcp]'
 codegraph index /absolute/path/to/repo
 ```
 

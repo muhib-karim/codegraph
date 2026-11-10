@@ -88,6 +88,9 @@ def cmd_index(args: argparse.Namespace) -> int:
     from .indexer import index
 
     repo = os.path.abspath(args.path)
+    if not os.path.isdir(repo):
+        print(f"error: not a directory: {args.path}", file=sys.stderr)
+        return 1
     db = args.db or os.path.join(repo, DEFAULT_DB)
     stats = index(repo, db)
     if args.json:

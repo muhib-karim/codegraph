@@ -12,23 +12,6 @@ from .model import BaseDecl, CallSite, FileInfo, Import, Ref, Symbol
 
 PY = Language(tsp.language())
 
-# Parent node types in which a bare identifier is a value use (a reference).
-_VALUE_PARENTS = {
-    "argument_list",
-    "list",
-    "tuple",
-    "set",
-    "pair",
-    "return_statement",
-    "expression_list",
-    "conditional_expression",
-    "boolean_operator",
-    "lambda",
-    "parenthesized_expression",
-    "subscript",
-    "yield",
-}
-
 
 def _params(params_node: Node | None, is_method: bool, is_static: bool) -> tuple[int, int]:
     """Return (min, max) positional arity; max -1 = unbounded."""
@@ -108,8 +91,11 @@ def extract(path: str, src: bytes) -> FileInfo:
     mod = module_symbol(ids, path, "python", loc, _module_name(path))
     fi.symbols.append(mod)
 
-    shadow = []  # lambda parameter name sets currently in scope
+    shadow: list[set[str]] = []  # lambda parameter name sets currently in scope
     module_vars = {}
+
+    def shadowed(name: str) -> bool:
+        return any(name in sh for sh in shadow)
 
     def _bind_local(scope: Symbol, name: str) -> None:
         if scope.kind in ("function", "method"):
@@ -150,7 +136,13 @@ def extract(path: str, src: bytes) -> FileInfo:
             for c in left.named_children:
                 bind_targets(c, scope, qual, assign_node)
             return
-        visit(left, scope, qual)  # attribute / subscript targets: object is read
+        if left.type == "attribute":
+            # `self.x = ...` writes x: only the object expression is read
+            target = left.child_by_field_name("object")
+            if target is not None:
+                visit(target, scope, qual)
+            return
+        visit(left, scope, qual)  # subscript targets: object and index are read
 
     def visit(node: Node, scope: Symbol, qual: str, decorators: Sequence[str] = ()) -> None:
         t = node.type
@@ -236,9 +228,13 @@ def extract(path: str, src: bytes) -> FileInfo:
                     )
                     if nm is not None:
                         loc_names.add(text(nm))
-                    for c in p.named_children:
-                        if c.type not in ("identifier",):
-                            visit(c, scope, qual)  # default values evaluate in enclosing scope
+                    # Annotations and default values evaluate in the enclosing scope. They are
+                    # picked by field: a bare-name default (`cb=helper`) is an identifier
+                    # just like the parameter name, which is not a reference.
+                    for part in ("type", "value"):
+                        sub = p.child_by_field_name(part)
+                        if sub is not None:
+                            visit(sub, scope, qual)
             body = node.child_by_field_name("body")
             if body is not None:
                 for c in body.children:
@@ -288,11 +284,19 @@ def extract(path: str, src: bytes) -> FileInfo:
             fn = node.child_by_field_name("function")
             argc, splat = _argc(node.child_by_field_name("arguments"))
             if fn is not None and fn.type == "identifier":
-                fi.calls.append(
-                    CallSite(
-                        scope.id, line(node), node.start_point[1], text(fn), "none", "", argc, splat
+                if not shadowed(text(fn)):  # calling a lambda parameter binds nothing
+                    fi.calls.append(
+                        CallSite(
+                            scope.id,
+                            line(node),
+                            node.start_point[1],
+                            text(fn),
+                            "none",
+                            "",
+                            argc,
+                            splat,
+                        )
                     )
-                )
             elif fn is not None and fn.type == "attribute":
                 obj = child(fn, "object")
                 attr_node = child(fn, "attribute")
@@ -301,6 +305,8 @@ def extract(path: str, src: bytes) -> FileInfo:
                     rk, rv = "self", text(obj)
                 elif obj.type == "call" and text(obj.child_by_field_name("function")) == "super":
                     rk, rv = "super", ""
+                elif obj.type == "identifier" and shadowed(text(obj)):
+                    rk, rv = "expr", ""  # a lambda parameter: its type is unknown
                 elif obj.type == "identifier":
                     rk, rv = "name", text(obj)
                     fi.refs.append(Ref(scope.id, line(obj), obj.start_point[1], rv, "recv"))
@@ -410,18 +416,14 @@ def extract(path: str, src: bytes) -> FileInfo:
             return
         if t == "identifier":
             ident = text(node)
-            if not any(ident in sh for sh in shadow):
+            if not shadowed(ident):
                 fi.refs.append(Ref(scope.id, line(node), node.start_point[1], ident))
             return
         if t == "attribute":
             obj = node.child_by_field_name("object")
-            par = node.parent
-            if (
-                obj is not None
-                and text(obj) in ("self", "cls")
-                and par is not None
-                and par.type in _VALUE_PARENTS | {"keyword_argument"}
-            ):
+            if obj is not None and text(obj) in ("self", "cls"):
+                # Reading self.<name> uses the method or property <name> wherever the read
+                # appears; assignment targets never get here (see bind_targets).
                 a = child(node, "attribute")
                 fi.refs.append(Ref(scope.id, line(a), a.start_point[1], text(a), "self"))
                 return

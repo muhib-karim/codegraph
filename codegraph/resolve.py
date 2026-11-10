@@ -391,9 +391,13 @@ class Resolver:
         """Class id for a local variable constructed as `var = Cls(...)` in this or an enclosing function."""
         s = self.sym.get(scope_id or "")
         while s is not None:
-            tname = fi.var_types.get(s.id, {}).get(var)
-            if tname:
-                return self.py_class_from_text(fi, s.id, tname)
+            # An enclosing class body is not in scope: its entries are `self.<var>` / field types.
+            if s.kind not in CLASSLIKE or s.id == scope_id:
+                tname = fi.var_types.get(s.id, {}).get(var)
+                if tname:
+                    return self.py_class_from_text(fi, s.id, tname)
+                if var in fi.locals.get(s.id, ()) and var not in fi.globals_decl.get(s.id, ()):
+                    return None  # rebound here (parameter, loop variable...) with no known type
             if s.kind == "module":
                 break
             s = self.sym.get(s.parent_id) if s.parent_id else None

@@ -252,3 +252,47 @@ def test_bulk_load_keeps_quoted_fields_after_many_plain_rows(tmp_path):
             "MATCH (s:Symbol {name: 'decorated'}) RETURN s.annotations"
         ).get_all()
     assert rows == [["first,second"]]
+
+
+def test_untyped_local_shadows_outer_variable_and_field_types(tmp_path):
+    """A parameter is a different variable from the module-level or `self.` name it shadows,
+    so the outer name's constructed type must not produce an exact edge."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "shadow.py": """
+            class Foo:
+                def run(self): return 1
+            class Bar:
+                def run(self): return 2
+            x = Foo()
+            def param(x):
+                x.run()
+            def uses_global():
+                x.run()
+            def closure():
+                y = Foo()
+                def inner(): return y.run()
+                def rebinds(y): return y.run()
+                return inner, rebinds
+            class Holder:
+                def __init__(self): self.x = Foo()
+                def go(self, x): x.run()
+        """,
+            "shadow.ts": """
+            class Foo { run(): number { return 1; } }
+            class Bar { run(): number { return 2; } }
+            export class Holder {
+              x = new Foo();
+              go(x: any): number { return x.run(); }
+              typed(x: Bar): number { return x.run(); }
+            }
+        """,
+        },
+    )
+    calls = edges(graph)
+    assert ("uses_global", "Foo.run", "exact") in calls
+    assert ("closure.inner", "Foo.run", "exact") in calls
+    assert ("Holder.typed", "Bar.run", "exact") in calls
+    for caller in ("param", "closure.rebinds", "Holder.go"):
+        assert not any(src == caller for src, _, _ in calls), caller

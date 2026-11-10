@@ -13,6 +13,9 @@
   `javascript`), validated when present and set on every shipped row. The
   report has a `by_language` JSON section and a "By language" table with graph
   and text rows per language.
+- `make check` (lint, typecheck and test in one target) and `make eval-drift`
+  (run the evaluation and fail when the committed `eval/reports` no longer
+  match).
 
 ### Changed
 
@@ -20,6 +23,48 @@
   the 50 existing questions are unchanged; the overall numbers move because of
   the new questions. The site's graph demo now also includes the `workflow_ts`
   fixture.
+- `make install` upgrades pip, setuptools and wheel in the new virtual
+  environment before installing the package.
+- CI bootstraps with `make install` and runs `make check` and
+  `make eval-drift`. A new push to a pull request cancels the run it
+  supersedes; runs for pushes are never cancelled.
+- The README "Development and container" section is now "Development", with
+  the container commands under their own heading.
+
+### Fixed
+
+The resolver fixes below remove wrong `exact` edges and add missing ones. The
+evaluation reports are unchanged, because the labelled fixtures do not contain
+these patterns.
+
+- A parameter or other untyped local no longer takes the type of an outer
+  variable or class field it shadows. `x = Foo()` at module level followed by
+  `def go(x): x.run()` stored an `exact` call to `Foo.run`; the same happened
+  for a parameter named like a `self.x = Foo()` attribute or a TS/JS class
+  field of known type. Such calls now use the unique-name heuristic.
+- The type of an inherited field is resolved in the file that declares the
+  field. In Python a same-named class in the subclass's module received the
+  `exact` edge. In Java, calls, field reads and method references through a
+  field inherited from another package were counted as external and stored
+  no edge.
+- Python: a bare-name default parameter value (`def run(cb=helper)`) is a
+  reference to that name. Before, `helper` could be listed as dead code. A
+  typed `*args` parameter no longer records its own name as a reference.
+- Python: a lambda parameter shadows a function or variable of the same name
+  when it is called or used as a receiver, not only when it is read.
+- Python: reading `self.name` or `cls.name` is a reference to the method or
+  property `name` in any position, including the right side of an assignment
+  and inside operators and comparisons. Assigning to `self.name` is not.
+- TypeScript/JavaScript: a named function declared inside a callback of a
+  function keeps its call and reference edges. Before, it had none and was
+  listed as likely dead code.
+- Java: a record's compact canonical constructor has the arity of the record
+  components, so `new Pair(1, "a")` is an `exact` call. Its symbol ID changes
+  from `Pair.<init>/0` to `Pair.<init>/2` for a two-component record.
+- `codegraph index` on a path that is not a directory prints an error and
+  exits with 1. Before, a mistyped path was created and "indexed" as an empty
+  repository, and a file path ended in a traceback. `indexer.index` raises
+  `NotADirectoryError`.
 
 ## [1.1.0] - 2026-10-22
 

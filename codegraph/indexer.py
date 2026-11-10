@@ -57,6 +57,10 @@ def git_head(root: str) -> str:
 def index(root: str, db_path: str) -> dict[str, Any]:
     t0 = time.time()
     root = os.path.abspath(root)
+    if not os.path.isdir(root):
+        # os.walk yields nothing for a missing path, which would "index" an empty repo
+        # and create <root>/.codegraph for a mistyped name
+        raise NotADirectoryError(root)
     graph, errors = build(root)
     langs = Counter(fi.lang for fi in graph.files.values())
     parsed = Counter(fi.lang for fi in graph.files.values() if fi.parsed)

@@ -60,3 +60,23 @@ def test_search_validates_kind_and_query(db, capsys):
     assert code == 1 and "unknown symbol kind" in err
     code, _, err = run(capsys, "search", "", "--db", db)
     assert code == 1 and "1..512" in err
+
+
+def test_index_rejects_a_path_that_is_not_a_directory(tmp_path, capsys):
+    missing = tmp_path / "typo"
+    code, lines, err = run(capsys, "index", str(missing))
+    assert (code, lines) == (1, [])
+    assert "not a directory" in err
+    assert not missing.exists()  # a mistyped path must not be created and "indexed"
+    source = tmp_path / "one.py"
+    source.write_text("x = 1\n")
+    code, lines, err = run(capsys, "index", str(source))
+    assert (code, lines) == (1, [])
+    assert "not a directory" in err
+
+
+def test_index_api_refuses_a_missing_root(tmp_path):
+    missing = tmp_path / "typo"
+    with pytest.raises(NotADirectoryError):
+        index(str(missing), str(tmp_path / "graph.lbug"))
+    assert not missing.exists() and not (tmp_path / "graph.lbug").exists()

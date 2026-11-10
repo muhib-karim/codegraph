@@ -108,8 +108,11 @@ def extract(path: str, src: bytes) -> FileInfo:
     mod = module_symbol(ids, path, "python", loc, _module_name(path))
     fi.symbols.append(mod)
 
-    shadow = []  # lambda parameter name sets currently in scope
+    shadow: list[set[str]] = []  # lambda parameter name sets currently in scope
     module_vars = {}
+
+    def shadowed(name: str) -> bool:
+        return any(name in sh for sh in shadow)
 
     def _bind_local(scope: Symbol, name: str) -> None:
         if scope.kind in ("function", "method"):
@@ -292,11 +295,19 @@ def extract(path: str, src: bytes) -> FileInfo:
             fn = node.child_by_field_name("function")
             argc, splat = _argc(node.child_by_field_name("arguments"))
             if fn is not None and fn.type == "identifier":
-                fi.calls.append(
-                    CallSite(
-                        scope.id, line(node), node.start_point[1], text(fn), "none", "", argc, splat
+                if not shadowed(text(fn)):  # calling a lambda parameter binds nothing
+                    fi.calls.append(
+                        CallSite(
+                            scope.id,
+                            line(node),
+                            node.start_point[1],
+                            text(fn),
+                            "none",
+                            "",
+                            argc,
+                            splat,
+                        )
                     )
-                )
             elif fn is not None and fn.type == "attribute":
                 obj = child(fn, "object")
                 attr_node = child(fn, "attribute")
@@ -305,6 +316,8 @@ def extract(path: str, src: bytes) -> FileInfo:
                     rk, rv = "self", text(obj)
                 elif obj.type == "call" and text(obj.child_by_field_name("function")) == "super":
                     rk, rv = "super", ""
+                elif obj.type == "identifier" and shadowed(text(obj)):
+                    rk, rv = "expr", ""  # a lambda parameter: its type is unknown
                 elif obj.type == "identifier":
                     rk, rv = "name", text(obj)
                     fi.refs.append(Ref(scope.id, line(obj), obj.start_point[1], rv, "recv"))
@@ -414,7 +427,7 @@ def extract(path: str, src: bytes) -> FileInfo:
             return
         if t == "identifier":
             ident = text(node)
-            if not any(ident in sh for sh in shadow):
+            if not shadowed(ident):
                 fi.refs.append(Ref(scope.id, line(node), node.start_point[1], ident))
             return
         if t == "attribute":

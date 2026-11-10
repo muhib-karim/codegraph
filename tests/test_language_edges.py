@@ -376,3 +376,34 @@ def test_python_parameter_defaults_and_annotations_are_references(tmp_path):
     assert ("<module>", "LIMIT", "exact") in refs
     assert ("<module>", "Kind", "exact") in refs
     assert not any(dst == "args" for _, dst, _ in refs)
+
+
+def test_python_lambda_parameters_shadow_calls_and_receivers(tmp_path):
+    """A lambda parameter hides the module-level function or typed variable of the same
+    name when it is called or used as a receiver, just as it does when it is read."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "lam.py": """
+            class Foo:
+                def run(self): return 1
+            class Bar:
+                def run(self): return 2
+            def make(value): return value
+            shape = Foo()
+            def calls_parameter(items):
+                return map(lambda make: make(2), items)
+            def receiver_parameter(items):
+                return map(lambda shape: shape.run(), items)
+            def unshadowed(items):
+                return map(lambda item: (make(item), shape.run()), items)
+        """,
+        },
+    )
+    calls = edges(graph)
+    assert ("unshadowed", "make", "exact") in calls
+    assert ("unshadowed", "Foo.run", "exact") in calls
+    assert not any(src in ("calls_parameter", "receiver_parameter") for src, _, _ in calls)
+    refs = edges(graph, "refs")
+    assert ("unshadowed", "shape", "exact") in refs
+    assert not any(src == "receiver_parameter" for src, _, _ in refs)

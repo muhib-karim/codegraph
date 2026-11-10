@@ -296,3 +296,60 @@ def test_untyped_local_shadows_outer_variable_and_field_types(tmp_path):
     assert ("Holder.typed", "Bar.run", "exact") in calls
     for caller in ("param", "closure.rebinds", "Holder.go"):
         assert not any(src == caller for src, _, _ in calls), caller
+
+
+def test_inherited_field_type_resolves_in_the_declaring_file(tmp_path):
+    """A field's type name is written against the imports of the class that declares it,
+    not those of the subclass that uses the field."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "helpers.py": """
+            class Helper:
+                def run(self): return 1
+        """,
+            "base.py": """
+            from helpers import Helper
+            class Base:
+                def __init__(self): self.helper = Helper()
+        """,
+            "child.py": """
+            from base import Base
+            class Helper:
+                def run(self): return 2
+            class Child(Base):
+                def go(self): return self.helper.run()
+        """,
+            "b/Helper.java": """
+            package b;
+            public class Helper {
+                public int count;
+                public void run() {}
+            }
+        """,
+            "a/Base.java": """
+            package a;
+            import b.Helper;
+            public class Base { protected Helper helper = new Helper(); }
+        """,
+            "c/Child.java": """
+            package c;
+            import a.Base;
+            public class Child extends Base {
+                void viaName() { helper.run(); }
+                void viaThis() { this.helper.run(); }
+                int viaField() { return helper.count; }
+                Runnable viaReference() { return helper::run; }
+            }
+        """,
+        },
+    )
+    calls = {(e.src, e.dst, e.confidence) for e in graph.calls}
+    refs = {(e.src, e.dst, e.confidence) for e in graph.refs}
+    assert ("child.py::Child.go/0", "helpers.py::Helper.run/0", "exact") in calls
+    assert not any(dst == "child.py::Helper.run/0" for _, dst, _ in calls)
+    run = "b/Helper.java::Helper.run/0"
+    assert ("c/Child.java::Child.viaName/0", run, "exact") in calls
+    assert ("c/Child.java::Child.viaThis/0", run, "exact") in calls
+    assert ("c/Child.java::Child.viaField/0", "b/Helper.java::Helper.count", "exact") in refs
+    assert ("c/Child.java::Child.viaReference/0", run, "exact") in refs

@@ -500,6 +500,13 @@ class Resolver:
             s = self.sym.get(s.parent_id) if s.parent_id else None
         return None, None
 
+    def java_declared_type(self, fi: FileInfo, where: str | None, tname: str) -> str | None:
+        """Resolve the type java_var_type found in scope `where`. An inherited field is
+        declared in the ancestor's file, so its type name follows that file's imports
+        and package, not those of the file that uses the field."""
+        scope = self.sym.get(where or "")
+        return self.java_type(self.files.get(scope.file, fi) if scope else fi, where, tname)
+
     # ---------- pass 2 ----------
     def run(self) -> Graph:
         self.resolve_bases()
@@ -765,16 +772,18 @@ class Resolver:
             cls = self.enclosing_class(c.caller)
             if cls:
                 if py:
-                    tname = None
+                    tid = None
                     for anc in self.mro(cls.id):
                         afi = self.files[self.sym[anc].file]
                         tname = afi.var_types.get(anc, {}).get(c.recv)
                         if tname:
+                            # bind the type name where the field is assigned: an inherited
+                            # field follows the ancestor's imports, not the subclass's
+                            tid = self.py_class_from_text(afi, self.sym[anc].parent_id, tname)
                             break
-                    tid = self.py_class_from_text(fi, cls.parent_id, tname) if tname else None
                 else:
                     tn, where = self.java_var_type(fi, cls.id, c.recv)
-                    tid = self.java_type(fi, where, tn) if tn else None
+                    tid = self.java_declared_type(fi, where, tn) if tn else None
                     if tid and tid.startswith("external:"):
                         st["call_external"] += 1
                         return
@@ -834,7 +843,7 @@ class Resolver:
             # java: variable with declared type, else a type name (static call)
             tn, where = self.java_var_type(fi, c.caller, c.recv)
             if tn:
-                tid = self.java_type(fi, where, tn)
+                tid = self.java_declared_type(fi, where, tn)
                 if tid is None or tid.startswith("external:"):
                     st["call_external"] += 1
                     return
@@ -906,7 +915,7 @@ class Resolver:
         if "." not in recv:
             tn, where = self.java_var_type(fi, owner, recv)
             if tn:
-                tid = self.java_type(fi, where, tn)
+                tid = self.java_declared_type(fi, where, tn)
                 return tid if tid and not tid.startswith("external:") else None
         tid = self.java_type(fi, owner, recv)
         return tid if tid and not tid.startswith("external:") else None
@@ -961,7 +970,11 @@ class Resolver:
             return
         if r.recv_kind == "type":
             tn, where = self.java_var_type(fi, r.owner, r.recv)
-            tid = self.java_type(fi, where if tn else r.owner, tn or r.recv)
+            tid = (
+                self.java_declared_type(fi, where, tn)
+                if tn
+                else self.java_type(fi, r.owner, r.recv)
+            )
             if tid and not tid.startswith("external:"):
                 if r.name == "<init>":
                     targets, _ = self.ctor_targets(tid, 0)

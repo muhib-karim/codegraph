@@ -440,3 +440,39 @@ def test_python_self_attribute_reads_are_references_in_any_position(tmp_path):
     for name in ("handler", "area", "listed", "label"):
         assert ("Shape.use", f"Shape.{name}", "exact") in refs, name
     assert not any(dst in ("Shape.replaced", "Shape.swapped") for _, dst, _ in refs)
+
+
+def test_ts_function_declared_in_a_callback_is_callable(tmp_path):
+    """A named function declared inside a callback of a function is that function's
+    nested symbol; the callback must not hide it from its own call sites."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "nested.ts": """
+            export function outer(items: number[], apply: (n: number) => number): void {
+              items.forEach((item) => {
+                const helper = (n: number) => n + 1;
+                function other(n: number) { return n; }
+                helper(item);
+                other(item);
+                items.map(other);
+                apply(item);
+              });
+            }
+        """,
+            "nested.js": """
+            export function wrap(items) {
+              items.forEach(function (item) {
+                const local = () => item;
+                local();
+              });
+            }
+        """,
+        },
+    )
+    calls = edges(graph)
+    assert ("outer", "outer.helper", "exact") in calls
+    assert ("outer", "outer.other", "exact") in calls
+    assert ("wrap", "wrap.local", "exact") in calls
+    assert ("outer", "outer.other", "exact") in edges(graph, "refs")
+    assert {dst for src, dst, _ in calls if src == "outer"} == {"outer.helper", "outer.other"}

@@ -252,3 +252,248 @@ def test_bulk_load_keeps_quoted_fields_after_many_plain_rows(tmp_path):
             "MATCH (s:Symbol {name: 'decorated'}) RETURN s.annotations"
         ).get_all()
     assert rows == [["first,second"]]
+
+
+def test_untyped_local_shadows_outer_variable_and_field_types(tmp_path):
+    """A parameter is a different variable from the module-level or `self.` name it shadows,
+    so the outer name's constructed type must not produce an exact edge."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "shadow.py": """
+            class Foo:
+                def run(self): return 1
+            class Bar:
+                def run(self): return 2
+            x = Foo()
+            def param(x):
+                x.run()
+            def uses_global():
+                x.run()
+            def closure():
+                y = Foo()
+                def inner(): return y.run()
+                def rebinds(y): return y.run()
+                return inner, rebinds
+            class Holder:
+                def __init__(self): self.x = Foo()
+                def go(self, x): x.run()
+        """,
+            "shadow.ts": """
+            class Foo { run(): number { return 1; } }
+            class Bar { run(): number { return 2; } }
+            export class Holder {
+              x = new Foo();
+              go(x: any): number { return x.run(); }
+              typed(x: Bar): number { return x.run(); }
+            }
+        """,
+        },
+    )
+    calls = edges(graph)
+    assert ("uses_global", "Foo.run", "exact") in calls
+    assert ("closure.inner", "Foo.run", "exact") in calls
+    assert ("Holder.typed", "Bar.run", "exact") in calls
+    for caller in ("param", "closure.rebinds", "Holder.go"):
+        assert not any(src == caller for src, _, _ in calls), caller
+
+
+def test_inherited_field_type_resolves_in_the_declaring_file(tmp_path):
+    """A field's type name is written against the imports of the class that declares it,
+    not those of the subclass that uses the field."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "helpers.py": """
+            class Helper:
+                def run(self): return 1
+        """,
+            "base.py": """
+            from helpers import Helper
+            class Base:
+                def __init__(self): self.helper = Helper()
+        """,
+            "child.py": """
+            from base import Base
+            class Helper:
+                def run(self): return 2
+            class Child(Base):
+                def go(self): return self.helper.run()
+        """,
+            "b/Helper.java": """
+            package b;
+            public class Helper {
+                public int count;
+                public void run() {}
+            }
+        """,
+            "a/Base.java": """
+            package a;
+            import b.Helper;
+            public class Base { protected Helper helper = new Helper(); }
+        """,
+            "c/Child.java": """
+            package c;
+            import a.Base;
+            public class Child extends Base {
+                void viaName() { helper.run(); }
+                void viaThis() { this.helper.run(); }
+                int viaField() { return helper.count; }
+                Runnable viaReference() { return helper::run; }
+            }
+        """,
+        },
+    )
+    calls = {(e.src, e.dst, e.confidence) for e in graph.calls}
+    refs = {(e.src, e.dst, e.confidence) for e in graph.refs}
+    assert ("child.py::Child.go/0", "helpers.py::Helper.run/0", "exact") in calls
+    assert not any(dst == "child.py::Helper.run/0" for _, dst, _ in calls)
+    run = "b/Helper.java::Helper.run/0"
+    assert ("c/Child.java::Child.viaName/0", run, "exact") in calls
+    assert ("c/Child.java::Child.viaThis/0", run, "exact") in calls
+    assert ("c/Child.java::Child.viaField/0", "b/Helper.java::Helper.count", "exact") in refs
+    assert ("c/Child.java::Child.viaReference/0", run, "exact") in refs
+
+
+def test_python_parameter_defaults_and_annotations_are_references(tmp_path):
+    """`def run(cb=helper)` uses helper: a bare-name default is a value reference made in
+    the enclosing scope, and a parameter name itself is never one."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "defaults.py": """
+            def helper(): return 1
+            LIMIT = 3
+            args = ()
+            class Kind: pass
+            def run(cb=helper, n: int = LIMIT, *args: Kind, **kwargs):
+                return cb()
+        """,
+        },
+    )
+    refs = edges(graph, "refs")
+    assert ("<module>", "helper", "exact") in refs
+    assert ("<module>", "LIMIT", "exact") in refs
+    assert ("<module>", "Kind", "exact") in refs
+    assert not any(dst == "args" for _, dst, _ in refs)
+
+
+def test_python_lambda_parameters_shadow_calls_and_receivers(tmp_path):
+    """A lambda parameter hides the module-level function or typed variable of the same
+    name when it is called or used as a receiver, just as it does when it is read."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "lam.py": """
+            class Foo:
+                def run(self): return 1
+            class Bar:
+                def run(self): return 2
+            def make(value): return value
+            shape = Foo()
+            def calls_parameter(items):
+                return map(lambda make: make(2), items)
+            def receiver_parameter(items):
+                return map(lambda shape: shape.run(), items)
+            def unshadowed(items):
+                return map(lambda item: (make(item), shape.run()), items)
+        """,
+        },
+    )
+    calls = edges(graph)
+    assert ("unshadowed", "make", "exact") in calls
+    assert ("unshadowed", "Foo.run", "exact") in calls
+    assert not any(src in ("calls_parameter", "receiver_parameter") for src, _, _ in calls)
+    refs = edges(graph, "refs")
+    assert ("unshadowed", "shape", "exact") in refs
+    assert not any(src == "receiver_parameter" for src, _, _ in refs)
+
+
+def test_python_self_attribute_reads_are_references_in_any_position(tmp_path):
+    """Reading `self.name` uses the method or property `name` wherever the read appears;
+    assigning to `self.name` does not."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "reads.py": """
+            class Shape:
+                @property
+                def area(self): return 1
+                @property
+                def label(self): return "s"
+                def handler(self): return 2
+                def listed(self): return 3
+                def replaced(self): return 4
+                def swapped(self): return 5
+                def use(self):
+                    callback = self.handler
+                    total = self.area * 2
+                    if self.area > 1:
+                        total += 1
+                    self.replaced = None
+                    self.swapped, other = None, total
+                    return [self.listed], callback, self.label.upper()
+        """,
+        },
+    )
+    refs = edges(graph, "refs")
+    for name in ("handler", "area", "listed", "label"):
+        assert ("Shape.use", f"Shape.{name}", "exact") in refs, name
+    assert not any(dst in ("Shape.replaced", "Shape.swapped") for _, dst, _ in refs)
+
+
+def test_ts_function_declared_in_a_callback_is_callable(tmp_path):
+    """A named function declared inside a callback of a function is that function's
+    nested symbol; the callback must not hide it from its own call sites."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "nested.ts": """
+            export function outer(items: number[], apply: (n: number) => number): void {
+              items.forEach((item) => {
+                const helper = (n: number) => n + 1;
+                function other(n: number) { return n; }
+                helper(item);
+                other(item);
+                items.map(other);
+                apply(item);
+              });
+            }
+        """,
+            "nested.js": """
+            export function wrap(items) {
+              items.forEach(function (item) {
+                const local = () => item;
+                local();
+              });
+            }
+        """,
+        },
+    )
+    calls = edges(graph)
+    assert ("outer", "outer.helper", "exact") in calls
+    assert ("outer", "outer.other", "exact") in calls
+    assert ("wrap", "wrap.local", "exact") in calls
+    assert ("outer", "outer.other", "exact") in edges(graph, "refs")
+    assert {dst for src, dst, _ in calls if src == "outer"} == {"outer.helper", "outer.other"}
+
+
+def test_java_record_compact_constructor_takes_the_record_components(tmp_path):
+    """`Pair { ... }` is the canonical constructor: its arity is the component count."""
+    graph = build_sources(
+        tmp_path,
+        {
+            "p/Pair.java": """
+            package p;
+            record Pair(int x, String name) {
+                Pair { if (x < 0) throw new IllegalArgumentException(name); }
+                static Pair of() { return new Pair(1, "a"); }
+            }
+        """,
+        },
+    )
+    ctor = graph.symbols["p/Pair.java::Pair.<init>/2"]
+    assert (ctor.kind, ctor.arity_min, ctor.arity_max) == ("constructor", 2, 2)
+    calls = {(e.src, e.dst, e.confidence, e.reason) for e in graph.calls}
+    assert ("p/Pair.java::Pair.of/0", ctor.id, "exact", "new") in calls
+    assert ("p/Pair.java::Pair.of/0", "p/Pair.java::Pair", "exact", "new") in calls
